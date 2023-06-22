@@ -12,11 +12,9 @@ object LibraryConnector {
         System.loadLibrary("dawn")
     }
 
-    fun mGetTempId(id: String): String? {
+    fun mGetTempId(id: String): TempId {
         val libraryResponseJSON = getTempId(id)
-        val libraryResponse = Json.decodeFromString<TempId>(libraryResponseJSON)
-        if(libraryResponse.status != "ok") return null
-        return libraryResponse.id
+        return Json.decodeFromString(libraryResponseJSON)
     }
 
     private external fun getTempId(id: String): String
