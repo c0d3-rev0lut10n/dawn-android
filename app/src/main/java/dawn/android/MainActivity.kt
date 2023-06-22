@@ -35,8 +35,12 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private lateinit var mLibraryConnector: LibraryConnector
 
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        mLibraryConnector = LibraryConnector
+
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
