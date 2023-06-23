@@ -48,7 +48,7 @@ object LibraryConnector {
         return Json.decodeFromString(libraryResponseJSON)
     }
 
-    fun mSymkeygen(): SymKey {
+    fun mSymKeygen(): SymKey {
         val libraryResponseJSON = symKeygen()
         return Json.decodeFromString(libraryResponseJSON)
     }
