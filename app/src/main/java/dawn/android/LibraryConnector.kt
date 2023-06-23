@@ -10,7 +10,14 @@ data class InitCrypto(val status: String, val id: String? = null)
 data class SignKeys(val status: String, val own_pubkey_sig: String? = null, val own_seckey_sig: String? = null)
 
 @Serializable
-data class TempId(val status: String, val id: String? = null)
+data class TempId(
+    val status: String,
+    val id: String? = null,
+    val own_pubkey_kyber: String? = null,
+    val own_seckey_kyber: String? = null,
+    val own_pubkey_curve: String? = null,
+    val own_seckey_curve: String? = null
+)
 
 object LibraryConnector {
 
