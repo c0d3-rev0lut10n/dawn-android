@@ -4,10 +4,10 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 
 @Serializable
-data class TempId(val status: String, val id: String? = null)
+data class InitCrypto(val status: String, val id: String? = null)
 
 @Serializable
-data class InitCrypto(val status: String, val id: String? = null)
+data class TempId(val status: String, val id: String? = null)
 
 object LibraryConnector {
 
