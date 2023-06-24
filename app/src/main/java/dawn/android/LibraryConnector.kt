@@ -23,6 +23,12 @@ data class SymKey(
 )
 
 @Serializable
+data class GenId(
+    val status: String,
+    val id: String? = null
+)
+
+@Serializable
 data class TempId(
     val status: String,
     val id: String? = null,
@@ -53,6 +59,11 @@ object LibraryConnector {
         return Json.decodeFromString(libraryResponseJSON)
     }
 
+    fun mGenId(): GenId {
+        val libraryResponseJSON = genId()
+        return Json.decodeFromString(libraryResponseJSON)
+    }
+
     fun mGetTempId(id: String): TempId {
         val libraryResponseJSON = getTempId(id)
         return Json.decodeFromString(libraryResponseJSON)
@@ -61,5 +72,6 @@ object LibraryConnector {
     private external fun initCrypto(): String
     private external fun signKeygen(): String
     private external fun symKeygen(): String
+    private external fun genId(): String
     private external fun getTempId(id: String): String
 }
