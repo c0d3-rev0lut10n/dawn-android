@@ -69,9 +69,15 @@ object LibraryConnector {
         return Json.decodeFromString(libraryResponseJSON)
     }
 
+    fun mGetCustomTempId(id: String, modifier: String): TempId {
+        val libraryResponseJSON = getCustomTempId(id, modifier)
+        return Json.decodeFromString(libraryResponseJSON)
+    }
+
     private external fun initCrypto(): String
     private external fun signKeygen(): String
     private external fun symKeygen(): String
     private external fun genId(): String
     private external fun getTempId(id: String): String
+    private external fun getCustomTempId(id: String, modifier: String): String
 }
