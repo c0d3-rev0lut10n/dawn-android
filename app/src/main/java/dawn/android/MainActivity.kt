@@ -19,6 +19,7 @@
 package dawn.android
 
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
@@ -27,6 +28,7 @@ import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.ActionBarDrawerToggle
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
@@ -36,7 +38,9 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import dawn.android.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -83,12 +87,31 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        val navigationIcon = AppCompatResources.getDrawable(this, R.drawable.ic_baseline_menu_24)
+        val color = Color.parseColor("#0000FF")
+        if (navigationIcon != null) {
+            DrawableCompat.setTint(navigationIcon, color)
+        }
+
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(navigationIcon)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
+    override fun onResume() {
+        if(binding.drawerLayout.isDrawerOpen(binding.navView))
+            binding.drawerLayout.closeDrawers()
+        val navigationIcon = AppCompatResources.getDrawable(this, R.drawable.ic_baseline_menu_24)
+        val color = Color.parseColor("#0000FF")
+        if (navigationIcon != null) {
+            DrawableCompat.setTint(navigationIcon, color)
+        }
+
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(navigationIcon)
+        super.onResume()
     }
 
     override fun onSupportNavigateUp(): Boolean {
