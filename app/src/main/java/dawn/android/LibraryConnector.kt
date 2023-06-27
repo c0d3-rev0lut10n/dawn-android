@@ -44,6 +44,12 @@ data class NextId(
     val id: String? = null
 )
 
+@Serializable
+data class SecurityNumber(
+    val status: String,
+    val number: String? = null
+)
+
 object LibraryConnector {
 
     init {
@@ -85,6 +91,11 @@ object LibraryConnector {
         return Json.decodeFromString(libraryResponseJSON)
     }
 
+    fun mDeriveSecurityNumber(key_a: String, key_b: String): SecurityNumber {
+        val libraryResponseJSON = deriveSecurityNumber(key_a, key_b)
+        return Json.decodeFromString(libraryResponseJSON)
+    }
+
     private external fun initCrypto(): String
     private external fun signKeygen(): String
     private external fun symKeygen(): String
@@ -92,4 +103,5 @@ object LibraryConnector {
     private external fun getTempId(id: String): String
     private external fun getCustomTempId(id: String, modifier: String): String
     private external fun getNextId(id: String): String
+    private external fun deriveSecurityNumber(key_a: String, key_b: String): String
 }
