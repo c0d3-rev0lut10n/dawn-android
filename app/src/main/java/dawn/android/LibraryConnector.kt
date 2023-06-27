@@ -6,7 +6,11 @@ import kotlinx.serialization.json.Json
 @Serializable
 data class InitCrypto(
     val status: String,
-    val id: String? = null
+    val id: String? = null,
+    val own_pubkey_kyber: String? = null,
+    val own_seckey_kyber: String? = null,
+    val own_pubkey_curve: String? = null,
+    val own_seckey_curve: String? = null
 )
 
 @Serializable
@@ -31,11 +35,7 @@ data class GenId(
 @Serializable
 data class TempId(
     val status: String,
-    val id: String? = null,
-    val own_pubkey_kyber: String? = null,
-    val own_seckey_kyber: String? = null,
-    val own_pubkey_curve: String? = null,
-    val own_seckey_curve: String? = null
+    val id: String? = null
 )
 
 object LibraryConnector {
