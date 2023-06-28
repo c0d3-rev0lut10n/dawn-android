@@ -50,6 +50,14 @@ data class SecurityNumber(
     val number: String? = null
 )
 
+@Serializable
+data class SendMessage(
+    val status: String,
+    val new_pfs_key: String? = null,
+    val mdc: String? = null,
+    val ciphertext: String? = null
+)
+
 object LibraryConnector {
 
     init {
@@ -96,6 +104,11 @@ object LibraryConnector {
         return Json.decodeFromString(libraryResponseJSON)
     }
 
+    fun mSendMsg(msg_type: Short, msg_string: String, msg_bytes: ByteArray, remote_pubkey_kyber: String, own_pubkey_sig: String, pfs_key: String): SendMessage {
+        val libraryResponseJSON = sendMsg(msg_type, msg_string, msg_bytes, remote_pubkey_kyber, own_pubkey_sig, pfs_key)
+        return Json.decodeFromString(libraryResponseJSON)
+    }
+
     private external fun initCrypto(): String
     private external fun signKeygen(): String
     private external fun symKeygen(): String
@@ -104,4 +117,5 @@ object LibraryConnector {
     private external fun getCustomTempId(id: String, modifier: String): String
     private external fun getNextId(id: String): String
     private external fun deriveSecurityNumber(key_a: String, key_b: String): String
+    private external fun sendMsg(msg_type: Short, msg_string: String, msg_bytes: ByteArray, remote_pubkey_kyber: String, own_seckey_sig: String, pfs_key: String): String
 }
