@@ -41,13 +41,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
+import dawn.android.data.Theme
 import dawn.android.databinding.ActivityMainBinding
+import dawn.android.util.ThemeLoader
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var mLibraryConnector: LibraryConnector
+    private lateinit var mTheme: Theme
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -60,16 +63,19 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.appBarMain.toolbar)
 
+        // load theme
+        val mThemeLoader = ThemeLoader(this)
+        mTheme = mThemeLoader.loadDarkTheme()
+
         val actionBar = binding.appBarMain.toolbar
-        val actionBarTextColor = ContextCompat.getColor(this, R.color.white)
+        val actionBarTextColor = mTheme.primaryTextColor
         val actionBarString = "Dawn"
         val actionBarText = SpannableString(actionBarString)
         actionBarText.setSpan(ForegroundColorSpan(actionBarTextColor), 0, actionBarString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         actionBar.title = actionBarText
         //actionBar.setBackgroundDrawable(ColorDrawable(actionBarTextColor))
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            actionBar.setBackgroundColor(getColor(R.color.black))
-        }
+
+        actionBar.setBackgroundColor(mTheme.primaryBackgroundColor)
 
         binding.appBarMain.fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -87,30 +93,15 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
-        val navigationIcon = AppCompatResources.getDrawable(this, R.drawable.ic_baseline_menu_24)
-        val color = Color.parseColor("#0000FF")
-        if (navigationIcon != null) {
-            DrawableCompat.setTint(navigationIcon, color)
-        }
-
-        supportActionBar?.setHomeButtonEnabled(true)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(navigationIcon)
     }
 
     override fun onResume() {
         if(binding.drawerLayout.isDrawerOpen(binding.navView))
             binding.drawerLayout.closeDrawers()
-        val navigationIcon = AppCompatResources.getDrawable(this, R.drawable.ic_baseline_menu_24)
-        val color = Color.parseColor("#0000FF")
-        if (navigationIcon != null) {
-            DrawableCompat.setTint(navigationIcon, color)
-        }
 
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(navigationIcon)
+        supportActionBar?.setHomeAsUpIndicator(mTheme.navigationIcon)
         super.onResume()
     }
 
