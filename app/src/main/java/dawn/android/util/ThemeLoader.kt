@@ -34,7 +34,7 @@ class ThemeLoader(private val context: Context) {
         val navigationIcon = ContextCompat.getDrawable(context, R.drawable.ic_baseline_menu_24)
 
         if(navigationIcon == null) {
-            throw Exception("unable to load navigation icon")
+            return Theme(primaryForegroundColor, primaryBackgroundColor, primaryTextColor, null)
         }
 
         DrawableCompat.setTint(navigationIcon, primaryTextColor)
