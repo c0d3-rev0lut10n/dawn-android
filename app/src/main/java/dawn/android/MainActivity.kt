@@ -67,6 +67,8 @@ class MainActivity : AppCompatActivity() {
         val mThemeLoader = ThemeLoader(this)
         mTheme = mThemeLoader.loadDarkTheme()
 
+        window.statusBarColor = mTheme.primaryBackgroundColor
+
         val actionBar = binding.appBarMain.toolbar
         val actionBarTextColor = mTheme.primaryTextColor
         val actionBarString = "Dawn"
