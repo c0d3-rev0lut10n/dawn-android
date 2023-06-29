@@ -10,4 +10,19 @@
     <!-- actual colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- colors for dark mode -->
+    <color name="dark_primary">#3150ff</color>
+    <color name="dark_secondary">#192b83</color>
+
+    <!-- colors for extra dark mode (aka Stargazer mode) -->
+    <color name="x_dark_primary">#7f2408</color>
+    <color name="x_dark_secondary">#340f03</color>
+
+    <!-- colors for light mode (some people actually want a light mode ;) ) -->
+    <color name="orange">#ffb114</color>
+    <color name="orange_variant">#cc8d10</color>
+    <color name="dark_orange">#dc7004</color>
+    <color name="yellow">#ffd013</color>
+
 </resources>
