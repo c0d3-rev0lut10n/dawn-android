@@ -17,12 +17,6 @@
         android:label="@string/menu_gallery"
         tools:layout="@layout/fragment_gallery" />-->
 
-    <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="dawn.android.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
-
     <activity
         android:id="@+id/settings"
         android:name="dawn.android.SettingsActivity"

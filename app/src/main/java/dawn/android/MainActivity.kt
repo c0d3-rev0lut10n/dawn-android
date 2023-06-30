@@ -47,7 +47,6 @@ import dawn.android.util.ThemeLoader
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var mLibraryConnector: LibraryConnector
     private lateinit var mTheme: Theme
@@ -79,32 +78,36 @@ class MainActivity : AppCompatActivity() {
 
         actionBar.setBackgroundColor(mTheme.primaryBackgroundColor)
 
-        val drawerLayout: DrawerLayout = binding.drawerLayout
-        val navView: NavigationView = binding.navView
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_home, R.id.settings
-            ), drawerLayout
-        )
-
-        navView.setupWithNavController(navController)
+        binding.navView.setNavigationItemSelectedListener { navigate(it) }
     }
 
     override fun onResume() {
         if(binding.drawerLayout.isDrawerOpen(binding.navView))
-            binding.drawerLayout.closeDrawers()
+            binding.drawerLayout.closeDrawer(binding.navView)
 
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(mTheme.navigationIcon)
+        binding.navView.setCheckedItem(R.id.nav_home)
         super.onResume()
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+        if(binding.drawerLayout.isDrawerOpen(binding.navView))
+            binding.drawerLayout.closeDrawer(binding.navView)
+        else {
+            binding.drawerLayout.openDrawer(binding.navView)
+        }
+        return super.onSupportNavigateUp()
+    }
+
+    private fun navigate(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.settings -> {
+                val intent = Intent(this, SettingsActivity::class.java)
+                startActivity(intent)
+            }
+        }
+        return true
     }
 }
