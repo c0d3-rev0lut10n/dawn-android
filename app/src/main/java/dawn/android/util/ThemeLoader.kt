@@ -33,11 +33,7 @@ class ThemeLoader(private val context: Context) {
         val primaryTextColor = ContextCompat.getColor(context, R.color.white)
         val navigationIcon = ContextCompat.getDrawable(context, R.drawable.ic_baseline_menu_24)
 
-        if(navigationIcon == null) {
-            return Theme(primaryForegroundColor, primaryBackgroundColor, primaryTextColor, null)
-        }
-
-        DrawableCompat.setTint(navigationIcon, primaryTextColor)
+        if(navigationIcon != null) DrawableCompat.setTint(navigationIcon, primaryTextColor)
 
         return Theme(primaryForegroundColor, primaryBackgroundColor, primaryTextColor, navigationIcon)
     }
