@@ -50,6 +50,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var mLibraryConnector: LibraryConnector
     private lateinit var mTheme: Theme
+    private lateinit var actionBarText: SpannableString
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -70,10 +71,9 @@ class MainActivity : AppCompatActivity() {
 
         val actionBar = binding.appBarMain.toolbar
         val actionBarTextColor = mTheme.primaryTextColor
-        val actionBarString = "Dawn"
-        val actionBarText = SpannableString(actionBarString)
+        val actionBarString = getString(R.string.app_name)
+        actionBarText = SpannableString(actionBarString)
         actionBarText.setSpan(ForegroundColorSpan(actionBarTextColor), 0, actionBarString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        actionBar.title = actionBarText
         //actionBar.setBackgroundDrawable(ColorDrawable(actionBarTextColor))
 
         actionBar.setBackgroundColor(mTheme.primaryBackgroundColor)
@@ -89,6 +89,8 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(mTheme.navigationIcon)
         binding.navView.setCheckedItem(R.id.nav_home)
+
+        binding.appBarMain.toolbar.title = actionBarText
         super.onResume()
     }
 
