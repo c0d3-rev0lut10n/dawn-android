@@ -31,13 +31,18 @@ class ThemeLoader(private val context: Context) {
         val primaryForegroundColor = ContextCompat.getColor(context, R.color.dark_primary)
         val primaryBackgroundColor = ContextCompat.getColor(context, R.color.dark_secondary)
         val primaryTextColor = ContextCompat.getColor(context, R.color.white)
+
+        val gradientStartColor = ContextCompat.getColor(context, R.color.dark_secondary)
+        val gradientCenterColor = ContextCompat.getColor(context, R.color.dark_gradient_center)
+        val gradientEndColor = ContextCompat.getColor(context, R.color.dark_gradient_end)
+
         val navigationIcon = ContextCompat.getDrawable(context, R.drawable.ic_baseline_menu_24)
         val backButtonIcon = ContextCompat.getDrawable(context, R.drawable.ic_baseline_arrow_back_24)
 
         if(navigationIcon != null) DrawableCompat.setTint(navigationIcon, primaryTextColor)
         if(backButtonIcon != null) DrawableCompat.setTint(backButtonIcon, primaryTextColor)
 
-        return Theme(primaryForegroundColor, primaryBackgroundColor, primaryTextColor, navigationIcon, backButtonIcon)
+        return Theme(primaryForegroundColor, primaryBackgroundColor, primaryTextColor, gradientStartColor, gradientCenterColor, gradientEndColor, navigationIcon, backButtonIcon)
     }
 
 }

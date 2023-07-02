@@ -24,6 +24,11 @@ data class Theme(
     val primaryForegroundColor: Int,
     val primaryBackgroundColor: Int,
     val primaryTextColor: Int,
+
+    val gradientStartColor: Int,
+    val gradientCenterColor: Int,
+    val gradientEndColor: Int,
+
     val navigationIcon: Drawable?,
     val backButtonIcon: Drawable?
 )

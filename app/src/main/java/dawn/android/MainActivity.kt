@@ -21,6 +21,7 @@ package dawn.android
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
@@ -79,6 +80,17 @@ class MainActivity : AppCompatActivity() {
         actionBar.setBackgroundColor(mTheme.primaryBackgroundColor)
 
         binding.navView.setNavigationItemSelectedListener { navigate(it) }
+
+        val navHeader = binding.navView.getHeaderView(0)
+
+        val gradientColors = intArrayOf(
+            mTheme.gradientStartColor,
+            mTheme.gradientCenterColor,
+            mTheme.gradientEndColor
+        )
+
+        val navHeaderBackground = GradientDrawable(GradientDrawable.Orientation.TL_BR, gradientColors)
+        navHeader.background = navHeaderBackground
     }
 
     override fun onResume() {
