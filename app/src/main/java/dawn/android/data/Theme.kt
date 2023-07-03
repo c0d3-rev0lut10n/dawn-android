@@ -22,8 +22,10 @@ import android.graphics.drawable.Drawable
 
 data class Theme(
     val primaryForegroundColor: Int,
+    val primaryUIColor: Int,
     val primaryBackgroundColor: Int,
     val primaryTextColor: Int,
+    val secondaryTextColor: Int,
 
     val gradientStartColor: Int,
     val gradientCenterColor: Int,

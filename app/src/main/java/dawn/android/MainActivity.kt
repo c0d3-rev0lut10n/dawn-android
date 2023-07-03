@@ -20,12 +20,19 @@ package dawn.android
 
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
+import android.view.WindowInsets
+import android.view.WindowInsetsController
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivityMainBinding
 import dawn.android.util.ThemeLoader
@@ -49,19 +56,40 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.appBarMain.toolbar)
 
         // load theme
+        val themeId = Preferences.THEME_DARK
         val mThemeLoader = ThemeLoader(this)
-        mTheme = mThemeLoader.loadDarkTheme()
+        when(themeId) {
+            Preferences.THEME_DARK -> {
+                mTheme = mThemeLoader.loadDarkTheme()
+            }
+            Preferences.THEME_EXTRADARK -> {
+                mTheme = mThemeLoader.loadExtraDarkTheme()
 
-        window.statusBarColor = mTheme.primaryBackgroundColor
+                // hide status bar and navigation bar
+                if(Build.VERSION.SDK_INT < 30) {
+                    // effect may not work on even older API levels
+                    WindowInsetsControllerCompat(window, window.decorView).hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+                    WindowInsetsControllerCompat(window, window.decorView).systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                }
+                else {
+                    window.decorView.windowInsetsController?.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+                    window.decorView.windowInsetsController?.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                }
+            }
+        }
+
+        window.statusBarColor = mTheme.primaryUIColor
+        window.navigationBarColor = mTheme.primaryBackgroundColor
+        binding.drawerLayout.setBackgroundColor(mTheme.primaryBackgroundColor)
 
         val actionBar = binding.appBarMain.toolbar
-        val actionBarTextColor = mTheme.primaryTextColor
+        val actionBarTextColor = mTheme.secondaryTextColor
         val actionBarString = getString(R.string.app_name)
         actionBarText = SpannableString(actionBarString)
         actionBarText.setSpan(ForegroundColorSpan(actionBarTextColor), 0, actionBarString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         //actionBar.setBackgroundDrawable(ColorDrawable(actionBarTextColor))
 
-        actionBar.setBackgroundColor(mTheme.primaryBackgroundColor)
+        actionBar.setBackgroundColor(mTheme.primaryUIColor)
 
         binding.navView.setNavigationItemSelectedListener { navigate(it) }
 
@@ -75,6 +103,9 @@ class MainActivity : AppCompatActivity() {
 
         val navHeaderBackground = GradientDrawable(GradientDrawable.Orientation.TL_BR, gradientColors)
         navHeader.background = navHeaderBackground
+
+        val navHeaderTitle = navHeader.findViewById<TextView>(R.id.nav_header_title)
+        navHeaderTitle.setTextColor(mTheme.primaryTextColor)
     }
 
     override fun onResume() {

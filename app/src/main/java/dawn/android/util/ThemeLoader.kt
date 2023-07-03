@@ -29,8 +29,10 @@ class ThemeLoader(private val context: Context) {
     fun loadDarkTheme(): Theme {
 
         val primaryForegroundColor = ContextCompat.getColor(context, R.color.dark_primary)
-        val primaryBackgroundColor = ContextCompat.getColor(context, R.color.dark_secondary)
+        val primaryUIColor = ContextCompat.getColor(context, R.color.dark_secondary)
+        val primaryBackgroundColor = ContextCompat.getColor(context, R.color.dark_background)
         val primaryTextColor = ContextCompat.getColor(context, R.color.white)
+        val secondaryTextColor = ContextCompat.getColor(context, R.color.white)
 
         val gradientStartColor = ContextCompat.getColor(context, R.color.dark_secondary)
         val gradientCenterColor = ContextCompat.getColor(context, R.color.dark_gradient_center)
@@ -42,7 +44,27 @@ class ThemeLoader(private val context: Context) {
         if(navigationIcon != null) DrawableCompat.setTint(navigationIcon, primaryTextColor)
         if(backButtonIcon != null) DrawableCompat.setTint(backButtonIcon, primaryTextColor)
 
-        return Theme(primaryForegroundColor, primaryBackgroundColor, primaryTextColor, gradientStartColor, gradientCenterColor, gradientEndColor, navigationIcon, backButtonIcon)
+        return Theme(primaryForegroundColor, primaryUIColor, primaryBackgroundColor, primaryTextColor, secondaryTextColor, gradientStartColor, gradientCenterColor, gradientEndColor, navigationIcon, backButtonIcon)
+    }
+
+    fun loadExtraDarkTheme(): Theme {
+        val primaryForegroundColor = ContextCompat.getColor(context, R.color.x_dark_primary)
+        val primaryUIColor = ContextCompat.getColor(context, R.color.x_dark_secondary)
+        val primaryBackgroundColor = ContextCompat.getColor(context, R.color.black)
+        val primaryTextColor = ContextCompat.getColor(context, R.color.x_dark_primary)
+        val secondaryTextColor = ContextCompat.getColor(context, R.color.black)
+
+        val gradientStartColor = ContextCompat.getColor(context, R.color.x_dark_secondary)
+        val gradientCenterColor = ContextCompat.getColor(context, R.color.x_dark_gradient_center)
+        val gradientEndColor = ContextCompat.getColor(context, R.color.x_dark_gradient_end)
+
+        val navigationIcon = ContextCompat.getDrawable(context, R.drawable.ic_baseline_menu_24)
+        val backButtonIcon = ContextCompat.getDrawable(context, R.drawable.ic_baseline_arrow_back_24)
+
+        if(navigationIcon != null) DrawableCompat.setTint(navigationIcon, secondaryTextColor)
+        if(backButtonIcon != null) DrawableCompat.setTint(backButtonIcon, secondaryTextColor)
+
+        return Theme(primaryForegroundColor, primaryUIColor, primaryBackgroundColor, primaryTextColor, secondaryTextColor, gradientStartColor, gradientCenterColor, gradientEndColor, navigationIcon, backButtonIcon)
     }
 
 }
