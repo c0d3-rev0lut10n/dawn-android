@@ -19,7 +19,11 @@
 package dawn.android.util
 
 import android.content.Context
+import android.content.res.ColorStateList
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.StateListDrawable
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
 import dawn.android.R
 import dawn.android.data.Theme
@@ -44,7 +48,20 @@ class ThemeLoader(private val context: Context) {
         if(navigationIcon != null) DrawableCompat.setTint(navigationIcon, primaryTextColor)
         if(backButtonIcon != null) DrawableCompat.setTint(backButtonIcon, primaryTextColor)
 
-        return Theme(primaryForegroundColor, primaryUIColor, primaryBackgroundColor, primaryTextColor, secondaryTextColor, gradientStartColor, gradientCenterColor, gradientEndColor, navigationIcon, backButtonIcon)
+        val itemStates = arrayOf(
+            intArrayOf(android.R.attr.state_checked),
+            intArrayOf()
+        )
+        val itemColors = intArrayOf(
+            primaryTextColor,
+            secondaryTextColor
+        )
+        val itemColorStateList = ColorStateList(itemStates, itemColors)
+
+        val navHighlightStateListDrawable = StateListDrawable()
+        navHighlightStateListDrawable.addState(itemStates[0], ColorDrawable(ColorUtils.setAlphaComponent(primaryUIColor, 100)))
+
+        return Theme(primaryForegroundColor, primaryUIColor, primaryBackgroundColor, primaryTextColor, secondaryTextColor, gradientStartColor, gradientCenterColor, gradientEndColor, navigationIcon, backButtonIcon, itemColorStateList, navHighlightStateListDrawable)
     }
 
     fun loadExtraDarkTheme(): Theme {
@@ -64,7 +81,20 @@ class ThemeLoader(private val context: Context) {
         if(navigationIcon != null) DrawableCompat.setTint(navigationIcon, secondaryTextColor)
         if(backButtonIcon != null) DrawableCompat.setTint(backButtonIcon, secondaryTextColor)
 
-        return Theme(primaryForegroundColor, primaryUIColor, primaryBackgroundColor, primaryTextColor, secondaryTextColor, gradientStartColor, gradientCenterColor, gradientEndColor, navigationIcon, backButtonIcon)
+        val itemStates = arrayOf(
+            intArrayOf(android.R.attr.state_checked),
+            intArrayOf()
+        )
+        val itemColors = intArrayOf(
+            primaryTextColor,
+            secondaryTextColor
+        )
+        val itemColorStateList = ColorStateList(itemStates, itemColors)
+
+        val navHighlightStateListDrawable = StateListDrawable()
+        navHighlightStateListDrawable.addState(itemStates[0], ColorDrawable(ColorUtils.setAlphaComponent(primaryUIColor, 100)))
+
+        return Theme(primaryForegroundColor, primaryUIColor, primaryBackgroundColor, primaryTextColor, secondaryTextColor, gradientStartColor, gradientCenterColor, gradientEndColor, navigationIcon, backButtonIcon, itemColorStateList, navHighlightStateListDrawable)
     }
 
 }

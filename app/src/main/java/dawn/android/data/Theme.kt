@@ -18,6 +18,7 @@
 
 package dawn.android.data
 
+import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 
 data class Theme(
@@ -32,5 +33,8 @@ data class Theme(
     val gradientEndColor: Int,
 
     val navigationIcon: Drawable?,
-    val backButtonIcon: Drawable?
+    val backButtonIcon: Drawable?,
+
+    val navItemColorStateList: ColorStateList,
+    val navHighlightStateListDrawable: Drawable
 )

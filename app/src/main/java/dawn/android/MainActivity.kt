@@ -20,6 +20,7 @@ package dawn.android
 
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.StateListDrawable
 import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
@@ -103,6 +104,10 @@ class MainActivity : AppCompatActivity() {
 
         val navHeaderBackground = GradientDrawable(GradientDrawable.Orientation.TL_BR, gradientColors)
         navHeader.background = navHeaderBackground
+
+        binding.navView.itemTextColor = mTheme.navItemColorStateList
+        binding.navView.itemIconTintList = mTheme.navItemColorStateList
+        binding.navView.itemBackground = mTheme.navHighlightStateListDrawable
 
         val navHeaderTitle = navHeader.findViewById<TextView>(R.id.nav_header_title)
         navHeaderTitle.setTextColor(mTheme.primaryTextColor)
