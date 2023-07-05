@@ -129,9 +129,9 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         if(binding.drawerLayout.isDrawerOpen(binding.navView))
             binding.drawerLayout.closeDrawer(binding.navView)
-        else {
+        else
             binding.drawerLayout.openDrawer(binding.navView)
-        }
+
         return super.onSupportNavigateUp()
     }
 
