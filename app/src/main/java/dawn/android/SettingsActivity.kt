@@ -30,7 +30,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val actionBar = binding.toolbar
         val actionBarTextColor = mTheme.primaryTextColor
-        val actionBarString = "Settings"
+        val actionBarString = getString(R.string.settings)
         actionBarText = SpannableString(actionBarString)
         actionBarText.setSpan(ForegroundColorSpan(actionBarTextColor), 0, actionBarString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
