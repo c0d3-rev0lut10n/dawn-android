@@ -14,5 +14,15 @@
     <!-- Titles for activities -->
     <string name="main">Dawn</string>
     <string name="settings">Settings</string>
+    
+    <!-- Generic button labels -->
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Texts for MainActivity -->
+    <string name="title_password_dialog">Authentication required</string>
+    <string name="text_enter_password">Please unlock the app by entering your password:</string>
+    <string name="text_no_password_provided">Your password is empty. Please try again!</string>
+    <string name="text_wrong_password">Your password is wrong. Please try again!</string>
 
 </resources>

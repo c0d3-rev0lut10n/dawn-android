@@ -18,9 +18,9 @@
 
 package dawn.android
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.drawable.GradientDrawable
-import android.graphics.drawable.StateListDrawable
 import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
@@ -29,19 +29,23 @@ import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivityMainBinding
+import dawn.android.util.DataManager
 import dawn.android.util.ThemeLoader
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var mLibraryConnector: LibraryConnector
+    private lateinit var mDataManager: DataManager
     private lateinit var mTheme: Theme
     private lateinit var actionBarText: SpannableString
 
@@ -111,6 +115,12 @@ class MainActivity : AppCompatActivity() {
 
         val navHeaderTitle = navHeader.findViewById<TextView>(R.id.nav_header_title)
         navHeaderTitle.setTextColor(mTheme.primaryTextColor)
+
+        mDataManager = DataManager
+
+        if(!mDataManager.isInitialized()) {
+            askForPassword()
+        }
     }
 
     override fun onResume() {
@@ -143,5 +153,35 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return true
+    }
+
+    private fun askForPassword() {
+        val passwordField = EditText(this)
+        val passwordDialog = AlertDialog.Builder(this)
+
+        passwordDialog.setMessage(R.string.text_enter_password)
+        passwordDialog.setTitle(R.string.title_password_dialog)
+        passwordDialog.setCancelable(false)
+        passwordDialog.setView(passwordField)
+        passwordDialog.setPositiveButton(R.string.ok) {_: DialogInterface, _: Int -> validatePasswordInput(passwordField.text.toString())}
+        passwordDialog.setNegativeButton(R.string.cancel) {_: DialogInterface, _: Int -> finish() }
+        passwordDialog.create().show()
+    }
+
+    private fun validatePasswordInput(password: String) {
+        if(password == "") {
+            val emptyPasswordDialog = AlertDialog.Builder(this)
+
+            emptyPasswordDialog.setTitle(R.string.title_password_dialog)
+            emptyPasswordDialog.setMessage(R.string.text_no_password_provided)
+            emptyPasswordDialog.setCancelable(false)
+            emptyPasswordDialog.setPositiveButton(R.string.ok) {_: DialogInterface, _: Int -> askForPassword()}
+            emptyPasswordDialog.create().show()
+        }
+        unlockDataManager(password)
+    }
+
+    private fun unlockDataManager(password: String) {
+        mDataManager.init(this, password)
     }
 }
