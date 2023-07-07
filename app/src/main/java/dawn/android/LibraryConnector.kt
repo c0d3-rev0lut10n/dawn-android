@@ -111,8 +111,8 @@ object LibraryConnector {
         return Json.decodeFromString(libraryResponseJSON)
     }
 
-    fun mGetNextId(id: String): NextId {
-        val libraryResponseJSON = getNextId(id)
+    fun mGetNextId(id: String, salt: String): NextId {
+        val libraryResponseJSON = getNextId(id, salt)
         return Json.decodeFromString(libraryResponseJSON)
     }
 
@@ -142,7 +142,7 @@ object LibraryConnector {
     private external fun genId(): String
     private external fun getTempId(id: String): String
     private external fun getCustomTempId(id: String, modifier: String): String
-    private external fun getNextId(id: String): String
+    private external fun getNextId(id: String, salt: String): String
     private external fun deriveSecurityNumber(key_a: String, key_b: String): String
     private external fun sendMsg(msg_type: Short, msg_string: String, msg_bytes: ByteArray, remote_pubkey_kyber: String, own_seckey_sig: String, pfs_key: String): String
     private external fun parseMsg(msg_ciphertext: ByteArray, own_seckey_kyber: String, remote_pubkey_sig: String, pfs_key: String): String
