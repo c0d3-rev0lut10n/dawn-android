@@ -79,6 +79,12 @@ data class EncryptFile(
     val ciphertext: String? = null
 )
 
+@Serializable
+data class DecryptFile(
+    val status: String,
+    val file: String
+)
+
 object LibraryConnector {
 
     init {
@@ -140,6 +146,11 @@ object LibraryConnector {
         return Json.decodeFromString(libraryResponseJSON)
     }
 
+    fun mDecryptFile(ciphertext: ByteArray, key: String): DecryptFile {
+        val libraryResponseJSON = decryptFile(ciphertext, key)
+        return Json.decodeFromString(libraryResponseJSON)
+    }
+
     private external fun initCrypto(): String
     private external fun signKeygen(): String
     private external fun symKeygen(): String
@@ -151,4 +162,5 @@ object LibraryConnector {
     private external fun sendMsg(msg_type: Short, msg_string: String, msg_bytes: ByteArray, remote_pubkey_kyber: String, own_seckey_sig: String, pfs_key: String): String
     private external fun parseMsg(msg_ciphertext: ByteArray, own_seckey_kyber: String, remote_pubkey_sig: String, pfs_key: String): String
     private external fun encryptFile(file: ByteArray): String
+    private external fun decryptFile(ciphertext: ByteArray, key: String): String
 }
