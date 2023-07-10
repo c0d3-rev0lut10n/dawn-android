@@ -10,7 +10,11 @@ data class InitCrypto(
     val own_pubkey_kyber: String? = null,
     val own_seckey_kyber: String? = null,
     val own_pubkey_curve: String? = null,
-    val own_seckey_curve: String? = null
+    val own_seckey_curve: String? = null,
+    val own_pubkey_kyber_for_salt: String? = null,
+    val own_seckey_kyber_for_salt: String? = null,
+    val own_pubkey_curve_for_salt: String? = null,
+    val own_seckey_curve_for_salt: String? = null
 )
 
 @Serializable
