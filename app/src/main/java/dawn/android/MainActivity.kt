@@ -23,8 +23,10 @@ import android.content.Intent
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
+import android.text.InputType
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.method.PasswordTransformationMethod
 import android.text.style.ForegroundColorSpan
 import android.view.MenuItem
 import android.view.WindowInsets
@@ -157,6 +159,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun askForPassword() {
         val passwordField = EditText(this)
+        passwordField.inputType = InputType.TYPE_CLASS_TEXT
+        passwordField.transformationMethod = PasswordTransformationMethod.getInstance()
         val passwordDialog = AlertDialog.Builder(this)
 
         passwordDialog.setMessage(R.string.text_enter_password)
