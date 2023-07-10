@@ -101,6 +101,21 @@ data class ParseHandle(
     val name: String? = null
 )
 
+@Serializable
+data class GenInitRequest(
+    val status: String,
+    val own_pubkey_kyber: String? = null,
+    val own_seckey_kyber: String? = null,
+    val own_pubkey_curve: String? = null,
+    val own_seckey_curve: String? = null,
+    val pfs_key: String? = null,
+    val pfs_salt: String?= null,
+    val id: String? = null,
+    val id_salt: String? = null,
+    val mdc: String? = null,
+    val ciphertext: String? = null
+)
+
 object LibraryConnector {
 
     init {
@@ -177,6 +192,11 @@ object LibraryConnector {
         return Json.decodeFromString(libraryResponseJSON)
     }
 
+    fun mGenInitRequest(remote_pubkey_kyber: String, remote_pubkey_kyber_for_salt: String, remote_pubkey_curve: String, remote_pubkey_curve_for_salt: String, own_pubkey_sig: String, own_seckey_sig: String, name: String, comment: String): GenInitRequest {
+        val libraryResponseJSON = genInitRequest(remote_pubkey_kyber, remote_pubkey_kyber_for_salt, remote_pubkey_curve, remote_pubkey_curve_for_salt, own_pubkey_sig, own_seckey_sig, name, comment)
+        return Json.decodeFromString(libraryResponseJSON)
+    }
+
     private external fun initCrypto(): String
     private external fun signKeygen(): String
     private external fun symKeygen(): String
@@ -191,4 +211,5 @@ object LibraryConnector {
     private external fun decryptFile(ciphertext: ByteArray, key: String): String
     private external fun genHandle(init_pubkey_kyber: String, init_pubkey_curve: String, init_pubkey_kyber_for_salt: String, init_pubkey_curve_for_salt: String, name: String): String
     private external fun parseHandle(handle: ByteArray): String
+    private external fun genInitRequest(remote_pubkey_kyber: String, remote_pubkey_kyber_for_salt: String, remote_pubkey_curve: String, remote_pubkey_curve_for_salt: String, own_pubkey_sig: String, own_seckey_sig: String, name: String, comment: String): String
 }
