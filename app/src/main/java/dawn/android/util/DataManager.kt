@@ -8,7 +8,6 @@ import java.io.FileOutputStream
 import java.security.SecureRandom
 import javax.crypto.spec.SecretKeySpec
 import android.util.Base64
-import javax.crypto.Cipher
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 
@@ -23,8 +22,11 @@ object DataManager {
     private lateinit var dataDirectory: File
     private lateinit var messagesDirectory: File
     private var initialized = false
+    private var initializing = false
 
     fun init(context: Context, password: String) {
+        if(initializing) return
+        else initializing = true
         mContext = context.applicationContext
         dataDirectory = mContext.filesDir
         messagesDirectory = File(dataDirectory, "messages")
