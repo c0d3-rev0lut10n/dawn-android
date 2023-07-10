@@ -178,7 +178,9 @@ class MainActivity : AppCompatActivity() {
             emptyPasswordDialog.setPositiveButton(R.string.ok) {_: DialogInterface, _: Int -> askForPassword()}
             emptyPasswordDialog.create().show()
         }
-        unlockDataManager(password)
+        else {
+            unlockDataManager(password)
+        }
     }
 
     private fun unlockDataManager(password: String) {
