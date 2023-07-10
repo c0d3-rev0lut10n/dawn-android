@@ -91,6 +91,16 @@ data class GenHandle(
     val handle: String? = null
 )
 
+@Serializable
+data class ParseHandle(
+    val status: String,
+    val init_pk_kyber: String? = null,
+    val init_pk_curve: String? = null,
+    val init_pk_kyber_for_salt: String? = null,
+    val init_pk_curve_for_salt: String? = null,
+    val name: String? = null
+)
+
 object LibraryConnector {
 
     init {
@@ -162,6 +172,11 @@ object LibraryConnector {
         return Json.decodeFromString(libraryResponseJSON)
     }
 
+    fun mParseHandle(handle: ByteArray): ParseHandle {
+        val libraryResponseJSON = parseHandle(handle)
+        return Json.decodeFromString(libraryResponseJSON)
+    }
+
     private external fun initCrypto(): String
     private external fun signKeygen(): String
     private external fun symKeygen(): String
@@ -175,4 +190,5 @@ object LibraryConnector {
     private external fun encryptFile(file: ByteArray): String
     private external fun decryptFile(ciphertext: ByteArray, key: String): String
     private external fun genHandle(init_pubkey_kyber: String, init_pubkey_curve: String, init_pubkey_kyber_for_salt: String, init_pubkey_curve_for_salt: String, name: String): String
+    private external fun parseHandle(handle: ByteArray): String
 }
