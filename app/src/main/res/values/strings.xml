@@ -19,6 +19,9 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
 
+    <!-- Notification-related strings -->
+    <string name="notification_channel_bg">Background service is running</string>
+
     <!-- Texts for MainActivity -->
     <string name="title_password_dialog">Authentication required</string>
     <string name="text_enter_password">Please unlock the app by entering your password:</string>

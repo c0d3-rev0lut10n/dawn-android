@@ -123,6 +123,14 @@ class MainActivity : AppCompatActivity() {
         if(!mDataManager.isInitialized()) {
             askForPassword()
         }
+
+        val startServiceIntent = Intent(this, ReceiveMessagesService::class.java)
+        if(Build.VERSION.SDK_INT >= 26) {
+            startForegroundService(startServiceIntent)
+        }
+        else {
+            startService(startServiceIntent)
+        }
     }
 
     override fun onResume() {
