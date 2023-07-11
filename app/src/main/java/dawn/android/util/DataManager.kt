@@ -48,7 +48,7 @@ object DataManager {
 
         val passwordChars = password.toCharArray()
         println(java.time.LocalTime.now())
-        val pbeKeySpec = PBEKeySpec(passwordChars, salt, 30000, 256)
+        val pbeKeySpec = PBEKeySpec(passwordChars, salt, 100000, 256)
         val secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
         val key = secretKeyFactory.generateSecret(pbeKeySpec).encoded
         println(java.time.LocalTime.now())
