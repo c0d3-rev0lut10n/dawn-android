@@ -13,12 +13,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Dawn"
         tools:targetApi="31">
+        <service
+            android:name=".ReceiveMessagesService"
+            android:enabled="true"
+            android:exported="true"></service>
+
         <activity
             android:name=".SettingsActivity"
             android:exported="false"
-            android:theme="@style/Theme.Dawn.NoActionBar"
             android:parentActivityName=".MainActivity"
-            />
+            android:theme="@style/Theme.Dawn.NoActionBar" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
