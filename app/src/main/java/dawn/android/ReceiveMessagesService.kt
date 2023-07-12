@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import dawn.android.util.DataManager
 
 class ReceiveMessagesService : Service() {
@@ -26,8 +27,12 @@ class ReceiveMessagesService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if(isRunning) return super.onStartCommand(intent, flags, startId)
+        if(isRunning) {
+            Log.w(packageName,"ReceiveMessagesService was requested to start, but is already running")
+            stopSelf()
+        }
         else isRunning = true
+
         setupForegroundServiceWithNotification()
         return super.onStartCommand(intent, flags, startId)
     }
