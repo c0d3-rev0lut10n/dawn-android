@@ -26,6 +26,8 @@ class ReceiveMessagesService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if(isRunning) return super.onStartCommand(intent, flags, startId)
+        else isRunning = true
         setupForegroundServiceWithNotification()
         return super.onStartCommand(intent, flags, startId)
     }
