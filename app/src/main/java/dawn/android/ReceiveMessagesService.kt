@@ -26,6 +26,15 @@ class ReceiveMessagesService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        setupForegroundServiceWithNotification()
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+    override fun onBind(intent: Intent): IBinder {
+        return bindInterface
+    }
+
+    private fun setupForegroundServiceWithNotification() {
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val notificationSettingsIntent = Intent()
@@ -61,10 +70,5 @@ class ReceiveMessagesService : Service() {
                 .build()
             startForeground(1, notification)
         }
-        return super.onStartCommand(intent, flags, startId)
-    }
-
-    override fun onBind(intent: Intent): IBinder {
-        return bindInterface
     }
 }
