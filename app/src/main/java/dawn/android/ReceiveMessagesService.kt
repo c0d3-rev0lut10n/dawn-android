@@ -1,15 +1,19 @@
 package dawn.android
 
 import android.app.*
-import android.content.Context
-import android.content.Intent
+import android.content.*
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import android.widget.Toast
 import dawn.android.util.DataManager
+import dawn.android.util.TorReceiver
+import org.torproject.jni.TorService
+import org.torproject.jni.TorService.LocalBinder
 
-class ReceiveMessagesService : Service() {
+
+class ReceiveMessagesService: Service() {
 
     private val bindInterface : IBinder = BindInterface()
     private val mLibraryConnector = LibraryConnector
@@ -34,6 +38,9 @@ class ReceiveMessagesService : Service() {
         else isRunning = true
 
         setupForegroundServiceWithNotification()
+
+        startTor()
+
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -77,5 +84,30 @@ class ReceiveMessagesService : Service() {
                 .build()
             startForeground(1, notification)
         }
+    }
+
+    private fun startTor() {
+        registerReceiver(TorReceiver, IntentFilter(TorService.ACTION_STATUS))
+
+        bindService(Intent(this, TorService::class.java), object: ServiceConnection {
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                val torService = (service as LocalBinder).service
+
+                while (torService.torControlConnection == null) {
+                    try {
+                        Thread.sleep(500)
+                    }
+                    catch (e: InterruptedException) {
+                        e.printStackTrace()
+                    }
+                }
+
+                Log.i(packageName, "Tor control connection created!")
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {
+
+            }
+        }, BIND_AUTO_CREATE)
     }
 }
