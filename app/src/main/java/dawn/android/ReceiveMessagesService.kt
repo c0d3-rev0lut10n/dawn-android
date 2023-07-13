@@ -6,7 +6,6 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import android.widget.Toast
 import dawn.android.util.DataManager
 import dawn.android.util.TorReceiver
 import org.torproject.jni.TorService
