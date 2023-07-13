@@ -18,6 +18,7 @@ class ReceiveMessagesService: Service() {
     private val bindInterface : IBinder = BindInterface()
     private val mLibraryConnector = LibraryConnector
     private val mDataManager = DataManager
+    private val mTorReceiver = TorReceiver
     private lateinit var notificationManager: NotificationManager
 
     companion object {
@@ -87,7 +88,7 @@ class ReceiveMessagesService: Service() {
     }
 
     private fun startTor() {
-        registerReceiver(TorReceiver, IntentFilter(TorService.ACTION_STATUS))
+        registerReceiver(mTorReceiver, IntentFilter(TorService.ACTION_STATUS))
 
         bindService(Intent(this, TorService::class.java), object: ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
