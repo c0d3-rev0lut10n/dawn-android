@@ -18,11 +18,14 @@
 
 package dawn.android
 
+import android.content.ComponentName
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.ServiceConnection
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.text.InputType
 import android.text.Spannable
 import android.text.SpannableString
@@ -50,6 +53,22 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mDataManager: DataManager
     private lateinit var mTheme: Theme
     private lateinit var actionBarText: SpannableString
+
+    private lateinit var mService: ReceiveMessagesService
+    private var mBound: Boolean = false
+
+    private val connection = object : ServiceConnection {
+
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            val binder = service as ReceiveMessagesService.BindInterface
+            mService = binder.getService()
+            mBound = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            mBound = false
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -131,6 +150,7 @@ class MainActivity : AppCompatActivity() {
         else {
             startService(startServiceIntent)
         }
+        bindService(Intent(this, ReceiveMessagesService::class.java), connection, BIND_AUTO_CREATE)
     }
 
     override fun onResume() {
@@ -153,6 +173,11 @@ class MainActivity : AppCompatActivity() {
             binding.drawerLayout.openDrawer(binding.navView)
 
         return super.onSupportNavigateUp()
+    }
+
+    override fun onDestroy() {
+        unbindService(connection)
+        super.onDestroy()
     }
 
     private fun navigate(item: MenuItem): Boolean {
