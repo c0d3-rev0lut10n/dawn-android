@@ -18,7 +18,6 @@ object DataManager {
     private lateinit var mContext: Context
     private lateinit var mSecretKeySpec: SecretKeySpec
     private lateinit var salt: ByteArray
-    private val mSecureRandom = SecureRandom()
     private lateinit var dataDirectory: File
     private lateinit var messagesDirectory: File
     private var initialized = false
@@ -34,7 +33,7 @@ object DataManager {
         val saltFile = File(dataDirectory, "salt")
         if(!saltFile.isFile) {
             salt = ByteArray(256)
-            mSecureRandom.nextBytes(salt)
+            SecureRandom().nextBytes(salt)
             val mFileOutputStream = FileOutputStream(saltFile, false)
             mFileOutputStream.write(salt)
             mFileOutputStream.close()
