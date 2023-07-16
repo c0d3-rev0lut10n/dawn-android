@@ -103,6 +103,7 @@ class ReceiveMessagesService: Service() {
                 }
 
                 Log.i(packageName, "Tor control connection created!")
+                torService.torControlConnection.setConf("SOCKSPort","19050")
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {

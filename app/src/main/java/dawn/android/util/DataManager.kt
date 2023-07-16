@@ -2,12 +2,12 @@ package dawn.android.util
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Base64
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
+import java.io.*
+import java.security.MessageDigest
 import java.security.SecureRandom
+import javax.crypto.Cipher
 import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 
@@ -70,11 +70,12 @@ object DataManager {
 
     fun initializeStorage(context: Context, password: String, force: Boolean): Boolean {
         dataDirectory = context.filesDir
+        val keyFile = File(dataDirectory, "key")
         val saltFile = File(dataDirectory, "salt")
         val testFile = File(dataDirectory, "check")
 
         // if files exist and force option is not present, return, if force is set to true, cleanly initialize the directory once again
-        if(saltFile.isFile || testFile.isFile) {
+        if(keyFile.isFile || saltFile.isFile || testFile.isFile) {
             if(force) {
                 deleteRecursive(dataDirectory)
             }
@@ -89,7 +90,70 @@ object DataManager {
         mFileOutputStream.write(salt)
         mFileOutputStream.close()
 
+        val passwordChars = password.toCharArray()
+        val pbeKeySpec = PBEKeySpec(passwordChars, salt, 100000, 256)
+        val secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+        val passwordDerivedKey = secretKeyFactory.generateSecret(pbeKeySpec).encoded
+        val passwordDerivedKeySpec = SecretKeySpec(passwordDerivedKey, "AES")
 
+        val testFileIv = ByteArray(16)
+        SecureRandom().nextBytes(testFileIv)
+        val testFileIvSpec = IvParameterSpec(testFileIv)
+
+        // generate a random AES encryption key
+        val encryptionKey = ByteArray(64)
+        SecureRandom().nextBytes(encryptionKey)
+        val encryptionKeySpec = SecretKeySpec(encryptionKey, "AES")
+
+        // generate an IV for the key file
+        val keyFileIv = ByteArray(16)
+        SecureRandom().nextBytes(keyFileIv)
+        val keyFileIvSpec = IvParameterSpec(keyFileIv)
+
+        // encrypt the key using the password-derived key and save it
+        val keyCipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
+        keyCipher.init(Cipher.ENCRYPT_MODE, passwordDerivedKeySpec, keyFileIvSpec)
+        val encryptedKey = keyCipher.doFinal(encryptionKey)
+        val keyHashMap = HashMap<String, ByteArray>()
+        keyHashMap["iv"] = keyFileIv
+        keyHashMap["encryptedKey"] = encryptedKey
+        val keyFileOutputStream = FileOutputStream(keyFile, false)
+        val keyObjectOutputStream = ObjectOutputStream(keyFileOutputStream)
+        keyObjectOutputStream.writeObject(keyHashMap)
+        keyObjectOutputStream.close()
+        keyFileOutputStream.close()
+
+        val testData = ByteArray(64)
+        SecureRandom().nextBytes(testData)
+
+        val digest = MessageDigest.getInstance("SHA-256")
+        val encodedHash = digest.digest(testData)
+
+        val testDataHashMap = HashMap<String, ByteArray>()
+        testDataHashMap["data"] = testData
+        testDataHashMap["hash"] = encodedHash
+
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        val objectOutputStream = ObjectOutputStream(byteArrayOutputStream)
+        objectOutputStream.writeObject(testDataHashMap)
+        val dataToEncrypt = byteArrayOutputStream.toByteArray()
+        objectOutputStream.close()
+        byteArrayOutputStream.close()
+
+        val cipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
+        cipher.init(Cipher.ENCRYPT_MODE, encryptionKeySpec, testFileIvSpec)
+
+        val encrypted = cipher.doFinal(dataToEncrypt)
+
+        val encryptedDataHashMap = HashMap<String, ByteArray>()
+        encryptedDataHashMap["iv"] = testFileIv
+        encryptedDataHashMap["encrypted"] = encrypted
+
+        val mEncryptedFileOutputStream = FileOutputStream(testFile, false)
+        val mObjectOutputStream = ObjectOutputStream(mEncryptedFileOutputStream)
+        mObjectOutputStream.writeObject(encryptedDataHashMap)
+        mObjectOutputStream.close()
+        mEncryptedFileOutputStream.close()
 
         return true
     }
