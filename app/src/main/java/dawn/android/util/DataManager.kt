@@ -26,6 +26,7 @@ object DataManager {
     fun init(context: Context, password: String): Boolean {
         if(initializing) return false
         else initializing = true
+        if(initialized) return true
         mContext = context.applicationContext
         dataDirectory = mContext.filesDir
         messagesDirectory = File(dataDirectory, "messages")
