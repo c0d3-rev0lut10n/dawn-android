@@ -63,9 +63,10 @@ object DataManager {
     fun isStorageInitialized(context: Context): Boolean {
         dataDirectory = context.filesDir
         // check if salt and test file exist
+        val keyFile = File(dataDirectory, "key")
         val saltFile = File(dataDirectory, "salt")
         val testFile = File(dataDirectory, "check")
-        return saltFile.isFile && testFile.isFile
+        return keyFile.isFile && saltFile.isFile && testFile.isFile
     }
 
     fun initializeStorage(context: Context, password: String, force: Boolean): Boolean {
