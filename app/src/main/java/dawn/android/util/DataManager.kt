@@ -31,6 +31,7 @@ object DataManager {
         dataDirectory = mContext.filesDir
         messagesDirectory = File(dataDirectory, "messages")
 
+        val keyFile = File(dataDirectory, "key")
         val saltFile = File(dataDirectory, "salt")
         val testFile = File(dataDirectory, "check")
 
@@ -46,11 +47,27 @@ object DataManager {
         println(java.time.LocalTime.now())
         val pbeKeySpec = PBEKeySpec(passwordChars, salt, 100000, 256)
         val secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-        val key = secretKeyFactory.generateSecret(pbeKeySpec).encoded
+        val passwordDerivedKey = secretKeyFactory.generateSecret(pbeKeySpec).encoded
         println(java.time.LocalTime.now())
-        mSecretKeySpec = SecretKeySpec(key, "AES")
+        val passwordDerivedKeySpec = SecretKeySpec(passwordDerivedKey, "AES")
 
-        // test whether the key actually works
+        val keyFileInputStream = FileInputStream(keyFile)
+        val keyBytesInputStream = BufferedInputStream(keyFileInputStream)
+        val keyFileBytes = keyBytesInputStream.readBytes()
+        keyBytesInputStream.close()
+        keyFileInputStream.close()
+
+        if(keyFileBytes.size <= 16) return false
+
+        val keyFileIv = keyFileBytes.copyOfRange(0, 16)
+        val encryptedKey = keyFileBytes.copyOfRange(16, keyFileBytes.size)
+
+        val keyDecryptionCipher = Cipher.getInstance("PBKDF2WithHmacSHA256")
+        val keyFileIvSpec = IvParameterSpec(keyFileIv)
+        keyDecryptionCipher.init(Cipher.DECRYPT_MODE, passwordDerivedKeySpec, keyFileIvSpec)
+        val key = keyDecryptionCipher.doFinal(encryptedKey)
+
+        // check the key
 
 
         initialized = true
@@ -116,13 +133,9 @@ object DataManager {
         val keyCipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
         keyCipher.init(Cipher.ENCRYPT_MODE, passwordDerivedKeySpec, keyFileIvSpec)
         val encryptedKey = keyCipher.doFinal(encryptionKey)
-        val keyHashMap = HashMap<String, ByteArray>()
-        keyHashMap["iv"] = keyFileIv
-        keyHashMap["encryptedKey"] = encryptedKey
+        val keyFileContent = keyFileIv + encryptedKey
         val keyFileOutputStream = FileOutputStream(keyFile, false)
-        val keyObjectOutputStream = ObjectOutputStream(keyFileOutputStream)
-        keyObjectOutputStream.writeObject(keyHashMap)
-        keyObjectOutputStream.close()
+        keyFileOutputStream.write(keyFileContent)
         keyFileOutputStream.close()
 
         val testData = ByteArray(64)
@@ -131,30 +144,17 @@ object DataManager {
         val digest = MessageDigest.getInstance("SHA-256")
         val encodedHash = digest.digest(testData)
 
-        val testDataHashMap = HashMap<String, ByteArray>()
-        testDataHashMap["data"] = testData
-        testDataHashMap["hash"] = encodedHash
-
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        val objectOutputStream = ObjectOutputStream(byteArrayOutputStream)
-        objectOutputStream.writeObject(testDataHashMap)
-        val dataToEncrypt = byteArrayOutputStream.toByteArray()
-        objectOutputStream.close()
-        byteArrayOutputStream.close()
+        val testDataContentToEncrypt = testData + encodedHash
 
         val cipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
         cipher.init(Cipher.ENCRYPT_MODE, encryptionKeySpec, testFileIvSpec)
 
-        val encrypted = cipher.doFinal(dataToEncrypt)
+        val encrypted = cipher.doFinal(testDataContentToEncrypt)
 
-        val encryptedDataHashMap = HashMap<String, ByteArray>()
-        encryptedDataHashMap["iv"] = testFileIv
-        encryptedDataHashMap["encrypted"] = encrypted
+        val encryptedTestFileContent = testFileIv + encrypted
 
         val mEncryptedFileOutputStream = FileOutputStream(testFile, false)
-        val mObjectOutputStream = ObjectOutputStream(mEncryptedFileOutputStream)
-        mObjectOutputStream.writeObject(encryptedDataHashMap)
-        mObjectOutputStream.close()
+        mEncryptedFileOutputStream.write(encryptedTestFileContent)
         mEncryptedFileOutputStream.close()
 
         return true
