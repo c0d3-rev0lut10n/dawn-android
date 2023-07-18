@@ -35,7 +35,7 @@ object DataManager {
         val testFile = File(dataDirectory, "check")
 
         // check if files exist
-        if(!saltFile.isFile || !testFile.isFile) return false
+        if(!isStorageInitialized(context)) return false
         val mFileInputStream = FileInputStream(saltFile)
         salt = mFileInputStream.readBytes()
         mFileInputStream.close()
