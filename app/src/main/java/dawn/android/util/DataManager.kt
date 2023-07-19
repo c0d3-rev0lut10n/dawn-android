@@ -62,13 +62,38 @@ object DataManager {
         val keyFileIv = keyFileBytes.copyOfRange(0, 16)
         val encryptedKey = keyFileBytes.copyOfRange(16, keyFileBytes.size)
 
-        val keyDecryptionCipher = Cipher.getInstance("PBKDF2WithHmacSHA256")
+        val keyDecryptionCipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
         val keyFileIvSpec = IvParameterSpec(keyFileIv)
         keyDecryptionCipher.init(Cipher.DECRYPT_MODE, passwordDerivedKeySpec, keyFileIvSpec)
         val key = keyDecryptionCipher.doFinal(encryptedKey)
+        val encryptionKeySpec = SecretKeySpec(key, "AES")
 
-        // check the key
+        // check the key using the test file
+        val testFileInputStream = FileInputStream(testFile)
+        val testBytesInputStream = BufferedInputStream(testFileInputStream)
+        val testFileBytes = testBytesInputStream.readBytes()
+        testBytesInputStream.close()
+        testFileInputStream.close()
 
+        if(testFileBytes.size <= 16) return false
+
+        val testFileIv = testFileBytes.copyOfRange(0, 16)
+        val testFileEncryptedContent = testFileBytes.copyOfRange(16, testFileBytes.size)
+
+        val testFileDecryptionCipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
+        val testFileIvSpec = IvParameterSpec(testFileIv)
+        testFileDecryptionCipher.init(Cipher.DECRYPT_MODE, encryptionKeySpec, testFileIvSpec)
+        val testFileContent = testFileDecryptionCipher.doFinal(testFileEncryptedContent)
+
+        if(testFileContent.size <= 64) return false
+
+        val testData = testFileContent.copyOfRange(0, 64)
+        val encodedHash = testFileContent.copyOfRange(64, testFileContent.size)
+
+        val digest = MessageDigest.getInstance("SHA-256")
+        val derivedEncodedHash = digest.digest(testData)
+
+        if(!encodedHash.contentEquals(derivedEncodedHash)) return false
 
         initialized = true
         return true
