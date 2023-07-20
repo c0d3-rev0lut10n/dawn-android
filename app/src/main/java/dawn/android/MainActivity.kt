@@ -139,18 +139,30 @@ class MainActivity : AppCompatActivity() {
 
         mDataManager = DataManager
 
-        if(!mDataManager.isInitialized()) {
-            askForPassword()
+        if(!mDataManager.isStorageInitialized(this.applicationContext)) {
+            // start setup if necessary
+            val setupIntent = Intent(this, SetupActivity::class.java)
+            startActivity(setupIntent)
         }
 
-        val startServiceIntent = Intent(this, ReceiveMessagesService::class.java)
-        if(Build.VERSION.SDK_INT >= 26) {
-            startForegroundService(startServiceIntent)
-        }
         else {
-            startService(startServiceIntent)
+
+            if (!mDataManager.isInitialized()) {
+                askForPassword()
+            }
+
+            val startServiceIntent = Intent(this, ReceiveMessagesService::class.java)
+            if (Build.VERSION.SDK_INT >= 26) {
+                startForegroundService(startServiceIntent)
+            } else {
+                startService(startServiceIntent)
+            }
+            bindService(
+                Intent(this, ReceiveMessagesService::class.java),
+                connection,
+                BIND_AUTO_CREATE
+            )
         }
-        bindService(Intent(this, ReceiveMessagesService::class.java), connection, BIND_AUTO_CREATE)
     }
 
     override fun onResume() {

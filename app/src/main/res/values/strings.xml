@@ -14,7 +14,7 @@
     <!-- Titles for activities -->
     <string name="main">Dawn</string>
     <string name="settings">Settings</string>
-    
+
     <!-- Generic button labels -->
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
