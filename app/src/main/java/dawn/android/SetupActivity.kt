@@ -18,11 +18,16 @@
 
 package dawn.android
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.TypedValue
+import android.view.KeyEvent
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcher
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivitySetupBinding
 import dawn.android.util.ThemeLoader
@@ -32,6 +37,7 @@ class SetupActivity : AppCompatActivity() {
     private lateinit var mTheme: Theme
     private lateinit var actionBarText: SpannableString
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -47,15 +53,20 @@ class SetupActivity : AppCompatActivity() {
 
         val actionBar = binding.toolbar
         val actionBarTextColor = mTheme.primaryTextColor
-        val actionBarString = getString(R.string.settings)
+        val actionBarString = getString(R.string.setup)
         actionBarText = SpannableString(actionBarString)
         actionBarText.setSpan(ForegroundColorSpan(actionBarTextColor), 0, actionBarString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
         actionBar.setBackgroundColor(mTheme.primaryBackgroundColor)
 
-        supportActionBar?.setHomeButtonEnabled(true)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.setHomeAsUpIndicator(mTheme.backButtonIcon)
+        binding.setupTextView.setText(R.string.text_welcome)
+        binding.setupTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30.0F)
+
+        onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // disable the back button action to prevent the user from exiting setup preliminary
+            }
+        })
     }
 
     override fun onResume() {
