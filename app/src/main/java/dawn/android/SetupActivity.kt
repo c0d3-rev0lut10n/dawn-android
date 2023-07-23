@@ -59,8 +59,8 @@ class SetupActivity : AppCompatActivity() {
 
         actionBar.setBackgroundColor(mTheme.primaryBackgroundColor)
 
-        binding.setupTextView.setText(R.string.text_welcome)
-        binding.setupTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30.0F)
+        binding.tvWelcome.setText(R.string.text_welcome)
+        binding.tvWelcome.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30.0F)
 
         onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
