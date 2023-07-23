@@ -59,8 +59,6 @@ class SetupActivity : AppCompatActivity() {
 
         actionBar.setBackgroundColor(mTheme.primaryBackgroundColor)
 
-        binding.tvWelcome.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30.0F)
-
         onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 // disable the back button action to prevent the user from exiting setup preliminary
