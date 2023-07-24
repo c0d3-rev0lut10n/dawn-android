@@ -17,6 +17,7 @@
     <color name="dark_background">#141414</color>
     <color name="dark_gradient_center">#111f5b</color>
     <color name="dark_gradient_end">#0b1439</color>
+    <color name="dark_hint_color">#444444</color>
 
     <!-- colors for extra dark mode (aka Stargazer mode) -->
     <color name="x_dark_primary">#600000</color>

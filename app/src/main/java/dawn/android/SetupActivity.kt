@@ -19,6 +19,9 @@
 package dawn.android
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
+import android.graphics.drawable.shapes.Shape
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Spannable
@@ -64,6 +67,13 @@ class SetupActivity : AppCompatActivity() {
                 // disable the back button action to prevent the user from exiting setup preliminary
             }
         })
+
+        binding.contentLayout.setBackgroundColor(mTheme.primaryBackgroundColor)
+        binding.tvWelcome.setTextColor(mTheme.primaryTextColor)
+        binding.tvServerAddress.setTextColor(mTheme.primaryTextColor)
+        binding.etServerAddress.boxStrokeColor = mTheme.primaryUIColor
+        binding.etServerAddress.defaultHintTextColor = mTheme.navItemColorStateList
+        binding.etServerAddress.editText?.setTextColor(mTheme.primaryTextColor)
     }
 
     override fun onResume() {
