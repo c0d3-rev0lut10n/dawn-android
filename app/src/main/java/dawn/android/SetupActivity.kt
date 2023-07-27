@@ -20,6 +20,7 @@ package dawn.android
 
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
+import android.content.res.Resources
 import android.graphics.drawable.shapes.Shape
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
@@ -43,6 +44,8 @@ class SetupActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        theme.applyStyle(R.style.Theme_Dawn_Dark, true)
 
         binding = ActivitySetupBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -71,9 +74,6 @@ class SetupActivity : AppCompatActivity() {
         binding.contentLayout.setBackgroundColor(mTheme.primaryBackgroundColor)
         binding.tvWelcome.setTextColor(mTheme.primaryTextColor)
         binding.tvServerAddress.setTextColor(mTheme.primaryTextColor)
-        binding.etServerAddress.boxStrokeColor = mTheme.primaryUIColor
-        binding.etServerAddress.defaultHintTextColor = mTheme.navItemColorStateList
-        binding.etServerAddress.editText?.setTextColor(mTheme.primaryTextColor)
     }
 
     override fun onResume() {
