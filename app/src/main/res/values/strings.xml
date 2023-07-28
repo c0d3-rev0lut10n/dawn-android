@@ -35,6 +35,16 @@
 
     <!-- Texts for SetupActivity -->
     <string name="text_welcome">Welcome to Dawn!</string>
+    <string name="heading_server">Select a server (optional)</string>
     <string name="text_server_address">If you want to connect to a custom server, please enter the address below. If you don\'t know what you are doing, just leave the box blank to use the default server.</string>
+    <string name="heading_profile">Customize your profile</string>
+    <string name="text_profile_name">Freely choose a name for your profile and enter it below:</string>
+    <string name="hint_profile_name">Profile name</string>
+    <string name="text_profile_bio">If you want, you can add a short text about you to your profile:</string>
+    <string name="hint_profile_bio">Some words that describe you</string>
+    <string name="heading_password">Set a password for the app</string>
+    <string name="text_password">Enter a secure password below to encrypt the data of this app!\nCaution: Store this password somewhere safe or remember it well! Without your password it is impossible to read your chats or use the key that authenticates your messages in chats.</string>
+    <string name="hint_password">Your secure password</string>
+    <string name="hint_password_repeat">Your secure password (repeat)</string>
 
 </resources>

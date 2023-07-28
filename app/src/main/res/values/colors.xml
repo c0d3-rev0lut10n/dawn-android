@@ -18,12 +18,14 @@
     <color name="dark_gradient_center">#111f5b</color>
     <color name="dark_gradient_end">#0b1439</color>
     <color name="dark_hint_color">#444444</color>
+    <color name="dark_background_contrast">#202020</color>
 
     <!-- colors for extra dark mode (aka Stargazer mode) -->
     <color name="x_dark_primary">#600000</color>
     <color name="x_dark_secondary">#250000</color>
     <color name="x_dark_gradient_center">#120000</color>
     <color name="x_dark_gradient_end">@color/black</color>
+    <color name="x_dark_background_contrast">#100000</color>
 
     <!-- colors for light mode (some people actually want a light mode ;) ) -->
     <color name="orange">#ffb114</color>

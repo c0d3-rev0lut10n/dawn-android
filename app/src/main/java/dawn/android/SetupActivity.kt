@@ -87,6 +87,10 @@ class SetupActivity : AppCompatActivity() {
 
         binding.contentLayout.setBackgroundColor(mTheme.primaryBackgroundColor)
         binding.etServerAddress.editText?.setTextColor(mTheme.primaryTextColor)
+        binding.etProfileName.editText?.setTextColor(mTheme.primaryTextColor)
+        binding.etProfileBio.editText?.setTextColor(mTheme.primaryTextColor)
+        binding.etPassword.editText?.setTextColor(mTheme.primaryTextColor)
+        binding.etPasswordConfirm.editText?.setTextColor(mTheme.primaryTextColor)
     }
 
     override fun onResume() {

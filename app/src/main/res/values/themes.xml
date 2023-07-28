@@ -26,6 +26,7 @@
         <item name="colorOnPrimary">@color/black</item>
         <item name="actionBarColor">@color/dark_primary</item>
         <item name="hintTextColor">@color/white</item>
+        <item name="textFieldBackgroundColor">@color/dark_background_contrast</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_200</item>
@@ -41,14 +42,16 @@
         <item name="backgroundColor">@color/black</item>
         <item name="actionBarColor">@color/black</item>
         <item name="hintTextColor">@color/x_dark_primary</item>
+        <item name="textFieldBackgroundColor">@color/x_dark_background_contrast</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_200</item>
         <item name="colorOnSecondary">@color/black</item>
     </style>
 
-    <style name="Theme.Dawn.TextField" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+    <style name="Theme.Dawn.TextField" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
         <item name="boxStrokeColor">?attr/hintTextColor</item>
         <item name="android:textColorHint">?attr/hintTextColor</item>
+        <item name="boxBackgroundColor">?attr/textFieldBackgroundColor</item>
     </style>
 </resources>
