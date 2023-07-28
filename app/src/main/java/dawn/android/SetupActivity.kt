@@ -19,23 +19,15 @@
 package dawn.android
 
 import android.annotation.SuppressLint
-import android.content.res.ColorStateList
-import android.content.res.Resources
-import android.graphics.drawable.shapes.Shape
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.util.TypedValue
-import android.view.KeyEvent
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.OnBackPressedDispatcher
-import androidx.core.content.ContextCompat
-import androidx.core.graphics.toColor
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import dawn.android.data.Preferences
@@ -82,7 +74,6 @@ class SetupActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-        val actionBar = binding.toolbar
         val actionBarTextColor = mTheme.primaryTextColor
         val actionBarString = getString(R.string.setup)
         actionBarText = SpannableString(actionBarString)
