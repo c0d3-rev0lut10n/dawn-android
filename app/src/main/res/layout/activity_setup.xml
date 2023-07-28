@@ -5,7 +5,8 @@
     android:id="@+id/wrapping_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:background="?attr/backgroundColor">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/top_layout"
@@ -29,7 +30,8 @@
         </com.google.android.material.appbar.AppBarLayout>
 
         <ScrollView android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:scrollbarThumbVertical="?attr/colorPrimary">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -207,7 +209,9 @@
                 android:inputType="text"
                 android:minHeight="48dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvPasswordInfo">
+                app:layout_constraintTop_toBottomOf="@id/tvPasswordInfo"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="?attr/colorPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
@@ -230,7 +234,9 @@
                 android:inputType="text"
                 android:minHeight="48dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/etPassword">
+                app:layout_constraintTop_toBottomOf="@id/etPassword"
+                app:passwordToggleEnabled="true"
+                app:passwordToggleTint="?attr/colorPrimary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
