@@ -23,7 +23,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
+                android:background="?attr/actionBarColor"
                 app:popupTheme="@style/Theme.Dawn.PopupOverlay" />
 
         </com.google.android.material.appbar.AppBarLayout>
@@ -58,6 +58,8 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/etServerAddress"
+                style="@style/Theme.Dawn.TextField"
+                android:theme="@style/Theme.Dawn.TextField"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
@@ -73,6 +75,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textColor="?attr/colorPrimary"
                     />
 
             </com.google.android.material.textfield.TextInputLayout>

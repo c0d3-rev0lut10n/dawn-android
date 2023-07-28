@@ -30,8 +30,15 @@ import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.TypedValue
 import android.view.KeyEvent
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColor
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivitySetupBinding
 import dawn.android.util.ThemeLoader
@@ -45,25 +52,41 @@ class SetupActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        theme.applyStyle(R.style.Theme_Dawn_Dark, true)
+        val mThemeLoader = ThemeLoader(this)
+        val themeSwitch = Preferences.THEME_EXTRADARK
+        when(themeSwitch) {
+            Preferences.THEME_DARK -> {
+                theme.applyStyle(R.style.Theme_Dawn_Dark, true)
+                mTheme = mThemeLoader.loadDarkTheme()
+
+            }
+            Preferences.THEME_EXTRADARK -> {
+                theme.applyStyle(R.style.Theme_Dawn_ExtraDark, true)
+                mTheme = mThemeLoader.loadExtraDarkTheme()
+                // hide status bar and navigation bar
+                if(Build.VERSION.SDK_INT < 30) {
+                    // effect may not work on even older API levels
+                    WindowInsetsControllerCompat(window, window.decorView).hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+                    WindowInsetsControllerCompat(window, window.decorView).systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                }
+                else {
+                    window.decorView.windowInsetsController?.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+                    window.decorView.windowInsetsController?.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                }
+
+            }
+        }
 
         binding = ActivitySetupBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
 
-        val mThemeLoader = ThemeLoader(this)
-        mTheme = mThemeLoader.loadDarkTheme()
-
-        window.statusBarColor = mTheme.primaryBackgroundColor
-
         val actionBar = binding.toolbar
         val actionBarTextColor = mTheme.primaryTextColor
         val actionBarString = getString(R.string.setup)
         actionBarText = SpannableString(actionBarString)
         actionBarText.setSpan(ForegroundColorSpan(actionBarTextColor), 0, actionBarString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-
-        actionBar.setBackgroundColor(mTheme.primaryBackgroundColor)
 
         onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -72,8 +95,7 @@ class SetupActivity : AppCompatActivity() {
         })
 
         binding.contentLayout.setBackgroundColor(mTheme.primaryBackgroundColor)
-        binding.tvWelcome.setTextColor(mTheme.primaryTextColor)
-        binding.tvServerAddress.setTextColor(mTheme.primaryTextColor)
+        binding.etServerAddress.editText?.setTextColor(mTheme.primaryTextColor)
     }
 
     override fun onResume() {
