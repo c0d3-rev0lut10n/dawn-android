@@ -84,13 +84,6 @@ class SetupActivity : AppCompatActivity() {
                 // disable the back button action to prevent the user from exiting setup preliminary
             }
         })
-
-        binding.contentLayout.setBackgroundColor(mTheme.primaryBackgroundColor)
-        binding.etServerAddress.editText?.setTextColor(mTheme.primaryTextColor)
-        binding.etProfileName.editText?.setTextColor(mTheme.primaryTextColor)
-        binding.etProfileBio.editText?.setTextColor(mTheme.primaryTextColor)
-        binding.etPassword.editText?.setTextColor(mTheme.primaryTextColor)
-        binding.etPasswordConfirm.editText?.setTextColor(mTheme.primaryTextColor)
     }
 
     override fun onResume() {
