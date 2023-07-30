@@ -48,5 +48,7 @@
     <string name="hint_password_repeat">Your secure password (repeat)</string>
     <string name="error_passwords_not_matching">Your passwords do not match!</string>
     <string name="finish_setup">Finish Setup</string>
+    <string name="title_passwords_not_matching_dialog">Passwords do not match!</string>
+    <string name="text_passwords_not_matching_dialog">Your provided passwords were not identical! Please try again.</string>
 
 </resources>

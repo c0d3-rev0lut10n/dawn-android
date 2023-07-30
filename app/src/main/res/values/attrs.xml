@@ -2,4 +2,5 @@
 <resources>
     <attr name="actionBarColor" format="color" />
     <attr name="textFieldBackgroundColor" format="color" />
+    <attr name="mainColor" format="color" />
 </resources>

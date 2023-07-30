@@ -22,6 +22,7 @@
     <style name="Theme.Dawn.Dark" parent="Theme.Dawn">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/dark_primary</item>
+        <item name="mainColor">@color/dark_primary</item>
         <item name="colorPrimaryVariant">@color/dark_secondary</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="android:textColor">@color/white</item>
@@ -38,6 +39,7 @@
     <style name="Theme.Dawn.ExtraDark" parent="Theme.Dawn">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/x_dark_primary</item>
+        <item name="mainColor">@color/x_dark_primary</item>
         <item name="colorPrimaryVariant">@color/x_dark_secondary</item>
         <item name="colorOnPrimary">@color/black</item>
         <item name="android:textColor">@color/x_dark_primary</item>
@@ -55,5 +57,12 @@
         <item name="boxStrokeColor">?attr/hintTextColor</item>
         <item name="android:textColorHint">?attr/hintTextColor</item>
         <item name="boxBackgroundColor">?attr/textFieldBackgroundColor</item>
+    </style>
+
+    <style name="Theme.Dawn.Dialog" parent="Theme.Material3.Dark.Dialog.Alert">
+        <item name="android:background">?attr/backgroundColor</item>
+        <item name="android:textColorPrimary">?android:attr/textColor</item>
+        <item name="colorPrimary">?attr/mainColor</item>
+        <item name="backgroundTint">?attr/backgroundColor</item>
     </style>
 </resources>

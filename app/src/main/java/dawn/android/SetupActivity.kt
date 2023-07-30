@@ -19,6 +19,7 @@
 package dawn.android
 
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -28,6 +29,7 @@ import android.text.style.ForegroundColorSpan
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.widget.addTextChangedListener
@@ -39,6 +41,7 @@ import dawn.android.util.ThemeLoader
 class SetupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySetupBinding
     private lateinit var mTheme: Theme
+    private var androidTheme: Int = 0
     private lateinit var actionBarText: SpannableString
 
     @SuppressLint("SetTextI18n")
@@ -51,11 +54,13 @@ class SetupActivity : AppCompatActivity() {
             Preferences.THEME_DARK -> {
                 theme.applyStyle(R.style.Theme_Dawn_Dark, true)
                 mTheme = mThemeLoader.loadDarkTheme()
-
+                androidTheme = R.style.Theme_Dawn_Dark
             }
+
             Preferences.THEME_EXTRADARK -> {
                 theme.applyStyle(R.style.Theme_Dawn_ExtraDark, true)
                 mTheme = mThemeLoader.loadExtraDarkTheme()
+                androidTheme = R.style.Theme_Dawn_ExtraDark
                 // hide status bar and navigation bar
                 if(Build.VERSION.SDK_INT < 30) {
                     // effect may not work on even older API levels
@@ -66,7 +71,6 @@ class SetupActivity : AppCompatActivity() {
                     window.decorView.windowInsetsController?.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
                     window.decorView.windowInsetsController?.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
                 }
-
             }
         }
 
@@ -92,6 +96,9 @@ class SetupActivity : AppCompatActivity() {
         binding.etPasswordConfirm.editText?.addTextChangedListener {
             checkPasswordsMatching()
         }
+        binding.btnFinishSetup.setOnClickListener {
+            completeSetup()
+        }
     }
 
     private fun checkPasswordsMatching(): Boolean {
@@ -103,6 +110,33 @@ class SetupActivity : AppCompatActivity() {
             binding.etPasswordConfirm.error = null
             return true
         }
+    }
+
+    private fun completeSetup() {
+        val password = binding.etPassword.editText?.text.toString()
+
+        if(password == "") {
+            val emptyPasswordDialog = AlertDialog.Builder(this, R.style.Theme_Dawn_Dialog)
+
+            emptyPasswordDialog.setTitle(R.string.title_password_dialog)
+            emptyPasswordDialog.setMessage(R.string.text_no_password_provided)
+            emptyPasswordDialog.setCancelable(false)
+            emptyPasswordDialog.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> }
+            emptyPasswordDialog.create().show()
+            return
+        }
+
+        if(!checkPasswordsMatching()) {
+            val emptyPasswordDialog = AlertDialog.Builder(this, R.style.Theme_Dawn_Dialog)
+
+            emptyPasswordDialog.setTitle(R.string.title_passwords_not_matching_dialog)
+            emptyPasswordDialog.setMessage(R.string.text_passwords_not_matching_dialog)
+            emptyPasswordDialog.setCancelable(false)
+            emptyPasswordDialog.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> }
+            emptyPasswordDialog.create().show()
+            return
+        }
+
     }
 
     override fun onResume() {
