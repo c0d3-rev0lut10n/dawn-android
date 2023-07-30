@@ -240,8 +240,9 @@
                 android:minHeight="48dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/etPassword"
-                app:passwordToggleEnabled="true"
-                app:passwordToggleTint="?attr/colorPrimary">
+                app:errorEnabled="true"
+                app:errorIconTint="?attr/colorPrimary"
+                app:errorTextColor="?android:attr/textColor">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"

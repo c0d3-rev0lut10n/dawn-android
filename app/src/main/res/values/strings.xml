@@ -46,6 +46,7 @@
     <string name="text_password">Enter a secure password below to encrypt the data of this app!\nCaution: Store this password somewhere safe or remember it well! Without your password it is impossible to read your chats or use the key that authenticates your messages in chats.</string>
     <string name="hint_password">Your secure password</string>
     <string name="hint_password_repeat">Your secure password (repeat)</string>
+    <string name="error_passwords_not_matching">Your passwords do not match!</string>
     <string name="finish_setup">Finish Setup</string>
 
 </resources>

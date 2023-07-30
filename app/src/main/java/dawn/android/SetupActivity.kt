@@ -30,6 +30,7 @@ import android.view.WindowInsetsController
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.widget.addTextChangedListener
 import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivitySetupBinding
@@ -84,6 +85,24 @@ class SetupActivity : AppCompatActivity() {
                 // disable the back button action to prevent the user from exiting setup preliminary
             }
         })
+
+        binding.etPassword.editText?.addTextChangedListener {
+            checkPasswordsMatching()
+        }
+        binding.etPasswordConfirm.editText?.addTextChangedListener {
+            checkPasswordsMatching()
+        }
+    }
+
+    private fun checkPasswordsMatching(): Boolean {
+        if(binding.etPassword.editText?.text.toString() != binding.etPasswordConfirm.editText?.text.toString()) {
+            binding.etPasswordConfirm.error = getString(R.string.error_passwords_not_matching)
+            return false
+        }
+        else {
+            binding.etPasswordConfirm.error = null
+            return true
+        }
     }
 
     override fun onResume() {
