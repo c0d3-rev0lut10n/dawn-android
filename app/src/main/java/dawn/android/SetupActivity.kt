@@ -137,6 +137,8 @@ class SetupActivity : AppCompatActivity() {
             return
         }
 
+        val serverAddressInput = binding.etServerAddress.editText?.text.toString()
+        val serverAddress = if(serverAddressInput == "") getString(R.string.default_server_address) else serverAddressInput
     }
 
     override fun onResume() {
