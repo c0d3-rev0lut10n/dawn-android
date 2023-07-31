@@ -163,7 +163,7 @@ object DataManager {
         val testFileIvSpec = IvParameterSpec(testFileIv)
 
         // generate a random AES encryption key
-        val encryptionKey = ByteArray(64)
+        val encryptionKey = ByteArray(32)
         SecureRandom().nextBytes(encryptionKey)
         val encryptionKeySpec = SecretKeySpec(encryptionKey, "AES")
 
