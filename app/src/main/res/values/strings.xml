@@ -50,5 +50,7 @@
     <string name="finish_setup">Finish Setup</string>
     <string name="title_passwords_not_matching_dialog">Passwords do not match!</string>
     <string name="text_passwords_not_matching_dialog">Your provided passwords were not identical! Please try again.</string>
+    <string name="title_no_profile_name_dialog">Empty profile name!</string>
+    <string name="text_no_profile_name_dialog">You need to enter a name for your profile! This doesn\'t need to be your real name, feel free to use any nickname you like.</string>
 
 </resources>

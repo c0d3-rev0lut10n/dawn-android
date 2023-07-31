@@ -137,6 +137,18 @@ class SetupActivity : AppCompatActivity() {
             return
         }
 
+        val profileName = binding.etProfileName.editText?.text.toString()
+        if(profileName == "") {
+            val emptyProfileNameDialog = AlertDialog.Builder(this, R.style.Theme_Dawn_Dialog)
+
+            emptyProfileNameDialog.setTitle(R.string.title_no_profile_name_dialog)
+            emptyProfileNameDialog.setMessage(R.string.text_no_profile_name_dialog)
+            emptyProfileNameDialog.setCancelable(false)
+            emptyProfileNameDialog.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> }
+            emptyProfileNameDialog.create().show()
+            return
+        }
+
         val serverAddressInput = binding.etServerAddress.editText?.text.toString()
         val serverAddress = if(serverAddressInput == "") getString(R.string.default_server_address) else serverAddressInput
     }
