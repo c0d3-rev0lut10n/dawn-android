@@ -212,9 +212,9 @@ class SetupActivity : AppCompatActivity() {
         val profileBioStringPrePadding = DataManager.generateStringPadding()
         val profileBioStringPostPadding = DataManager.generateStringPadding()
 
-        val serverString = serverStringPrePadding.toString() + serverAddress + serverStringPostPadding.toString()
-        val profileNameString = profileNameStringPrePadding.toString() + profileName + profileNameStringPostPadding.toString()
-        val profileBioString = profileBioStringPrePadding.toString() + profileBio + profileBioStringPostPadding.toString()
+        val serverString = serverStringPrePadding.toString() + "\n" + serverAddress + "\n" + serverStringPostPadding.toString()
+        val profileNameString = profileNameStringPrePadding.toString() + "\n" + profileName + "\n" + profileNameStringPostPadding.toString()
+        val profileBioString = profileBioStringPrePadding.toString() + "\n" + profileBio + "\n" + profileBioStringPostPadding.toString()
 
         DataManager.writeFile("server", filesDir, serverString.toByteArray(Charsets.UTF_8), false)
         DataManager.writeFile("profileName", filesDir, profileNameString.toByteArray(Charsets.UTF_8), false)
