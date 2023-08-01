@@ -52,5 +52,7 @@
     <string name="text_passwords_not_matching_dialog">Your provided passwords were not identical! Please try again.</string>
     <string name="title_no_profile_name_dialog">Empty profile name!</string>
     <string name="text_no_profile_name_dialog">You need to enter a name for your profile! This doesn\'t need to be your real name, feel free to use any nickname you like.</string>
+    <string name="title_failed_data_init_dialog">FATAL: data storage initialization failed!</string>
+    <string name="text_failed_data_init_dialog">The app\'s storage was not initialized successfully. This might happen when a crash occurred during a previous initialization procedure. To mitigate this, you can try forcing the initialization and DELETING ALL PREVIOUSLY STORED DATA. If you already used the app and this happened, DO NOT PROCEED, but report a bug providing some information on how this happened. To proceed with wiping the app\'s storage, enter \"OK JUST DELETE ALL THE DATA\" in the box below. Otherwise, just cancel or enter anything else and hit OK.</string>
 
 </resources>

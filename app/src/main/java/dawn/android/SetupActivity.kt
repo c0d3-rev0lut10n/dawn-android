@@ -21,21 +21,27 @@ package dawn.android
 import android.annotation.SuppressLint
 import android.content.DialogInterface
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Log
+import android.util.TypedValue
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.widget.addTextChangedListener
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivitySetupBinding
+import dawn.android.util.DataManager
 import dawn.android.util.ThemeLoader
 
 class SetupActivity : AppCompatActivity() {
@@ -153,6 +159,66 @@ class SetupActivity : AppCompatActivity() {
 
         val serverAddressInput = binding.etServerAddress.editText?.text.toString()
         val serverAddress = if(serverAddressInput == "") getString(R.string.default_server_address) else serverAddressInput
+
+        //val dataInitResult = DataManager.initializeStorage(this.applicationContext, password, false)
+        val dataInitResult = false
+        if(!dataInitResult) {
+            // create a correctly themed dialog notifying about the failed data storage initialization and what to do about it
+            val failedDataInitDialog = AlertDialog.Builder(this, R.style.Theme_Dawn_Dialog)
+            val failedDataInitDialogResponse = EditText(this)
+            val textColorTypedValue = TypedValue()
+            theme.resolveAttribute(android.R.attr.textColor, textColorTypedValue, true)
+            @ColorInt val textColor = textColorTypedValue.data
+            failedDataInitDialogResponse.setTextColor(textColor)
+            val backgroundColorTypedValue = TypedValue()
+            theme.resolveAttribute(R.attr.textFieldBackgroundColor, backgroundColorTypedValue, true)
+            @ColorInt val backgroundColor = backgroundColorTypedValue.data
+            failedDataInitDialogResponse.setTextColor(textColor)
+            failedDataInitDialogResponse.setBackgroundColor(backgroundColor)
+            if(Build.VERSION.SDK_INT >= 29) {
+                val cursor = failedDataInitDialogResponse.textCursorDrawable
+                cursor?.setTint(textColor)
+                failedDataInitDialogResponse.textCursorDrawable = cursor
+            }
+
+            val materialAlertDialogTest = MaterialAlertDialogBuilder(this, R.style.Theme_Dawn_Dialog)
+            materialAlertDialogTest.setTitle(R.string.title_failed_data_init_dialog)
+            materialAlertDialogTest.setMessage(R.string.text_failed_data_init_dialog)
+            materialAlertDialogTest.setView(failedDataInitDialogResponse)
+            materialAlertDialogTest.setCancelable(true)
+            materialAlertDialogTest.setNegativeButton(R.string.cancel, null)
+            materialAlertDialogTest.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> if(failedDataInitDialogResponse.text.toString() == "OK JUST DELETE ALL THE DATA") tryForcingDataInit(password, serverAddress, profileName, profileBio) }
+            materialAlertDialogTest.create().show()
+            return
+        }
+        else {
+            saveProfileData(password, serverAddress, profileName, profileBio)
+        }
+    }
+
+    private fun tryForcingDataInit(password: String, serverAddress: String, profileName: String, profileBio: String) {
+        Log.w(application.packageName, "FORCING DATA STORAGE INIT")
+        DataManager.initializeStorage(this.applicationContext, password, true)
+        saveProfileData(password, serverAddress, profileName, profileBio)
+    }
+
+    private fun saveProfileData(password: String, serverAddress: String, profileName: String, profileBio: String) {
+        DataManager.init(this.applicationContext, password)
+        // add some padding in front and at the end of the string to make it less vulnerable to any potential known-plaintext-attacks
+        val serverStringPrePadding = DataManager.generateStringPadding()
+        val serverStringPostPadding = DataManager.generateStringPadding()
+        val profileNameStringPrePadding = DataManager.generateStringPadding()
+        val profileNameStringPostPadding = DataManager.generateStringPadding()
+        val profileBioStringPrePadding = DataManager.generateStringPadding()
+        val profileBioStringPostPadding = DataManager.generateStringPadding()
+
+        val serverString = serverStringPrePadding.toString() + serverAddress + serverStringPostPadding.toString()
+        val profileNameString = profileNameStringPrePadding.toString() + profileName + profileNameStringPostPadding.toString()
+        val profileBioString = profileBioStringPrePadding.toString() + profileBio + profileBioStringPostPadding.toString()
+
+        DataManager.writeFile("server", filesDir, serverString.toByteArray(Charsets.UTF_8), false)
+        DataManager.writeFile("profileName", filesDir, profileNameString.toByteArray(Charsets.UTF_8), false)
+        DataManager.writeFile("profileBio", filesDir, profileBioString.toByteArray(Charsets.UTF_8), false)
     }
 
     override fun onResume() {
