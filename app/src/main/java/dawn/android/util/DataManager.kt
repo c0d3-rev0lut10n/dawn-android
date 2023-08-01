@@ -34,7 +34,7 @@ import javax.crypto.spec.SecretKeySpec
 object DataManager {
 
     private lateinit var mContext: Context
-    private lateinit var mSecretKeySpec: SecretKeySpec
+    private lateinit var encryptionKeySpec: SecretKeySpec
     private lateinit var salt: ByteArray
     private lateinit var dataDirectory: File
     private lateinit var messagesDirectory: File
@@ -84,7 +84,7 @@ object DataManager {
         val keyFileIvSpec = IvParameterSpec(keyFileIv)
         keyDecryptionCipher.init(Cipher.DECRYPT_MODE, passwordDerivedKeySpec, keyFileIvSpec)
         val key = keyDecryptionCipher.doFinal(encryptedKey)
-        val encryptionKeySpec = SecretKeySpec(key, "AES")
+        encryptionKeySpec = SecretKeySpec(key, "AES")
 
         // check the key using the test file
         val testFileInputStream = FileInputStream(testFile)
@@ -119,6 +119,38 @@ object DataManager {
 
     fun isInitialized(): Boolean {
         return initialized
+    }
+
+    fun writeFile(name: String, path: File, content: ByteArray, overwrite: Boolean): Boolean {
+        if(!initialized) return false
+        if(!path.isDirectory) return false
+        val file = File(path, name)
+        if(file.isFile && !overwrite) return false
+
+        val fileIv = ByteArray(16)
+        SecureRandom().nextBytes(fileIv)
+        val fileIvSpec = IvParameterSpec(fileIv)
+
+        val cipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
+        cipher.init(Cipher.ENCRYPT_MODE, encryptionKeySpec, fileIvSpec)
+        val encryptedContent = cipher.doFinal(content)
+        val fileContent = fileIv + encryptedContent
+        val fileOutputStream = FileOutputStream(file, false)
+        fileOutputStream.write(fileContent)
+        fileOutputStream.close()
+
+        return true
+    }
+
+    fun generateStringPadding(): CharArray {
+        val availablePaddingCharacters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!§$%&/()=?+-*.,;:<>|"
+        val paddingLength = SecureRandom().nextInt(200)
+        val padding = CharArray(paddingLength)
+        val stringGenerationRng = SecureRandom()
+        for(i in 0 until paddingLength-1) {
+            padding[i] = availablePaddingCharacters[stringGenerationRng.nextInt(availablePaddingCharacters.length)]
+        }
+        return padding
     }
 
     fun isStorageInitialized(context: Context): Boolean {
