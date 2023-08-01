@@ -144,7 +144,7 @@ object DataManager {
 
     fun generateStringPadding(): CharArray {
         val availablePaddingCharacters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!§$%&/()=?+-*.,;:<>|"
-        val paddingLength = SecureRandom().nextInt(200)
+        val paddingLength = SecureRandom().nextInt(150) + 50
         val padding = CharArray(paddingLength)
         val stringGenerationRng = SecureRandom()
         for(i in 0 until paddingLength-1) {
