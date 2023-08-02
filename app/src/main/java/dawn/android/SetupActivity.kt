@@ -217,6 +217,7 @@ class SetupActivity : AppCompatActivity() {
         DataManager.writeFile("server", filesDir, serverString.toByteArray(Charsets.UTF_8), false)
         DataManager.writeFile("profileName", filesDir, profileNameString.toByteArray(Charsets.UTF_8), false)
         DataManager.writeFile("profileBio", filesDir, profileBioString.toByteArray(Charsets.UTF_8), false)
+        finish()
     }
 
     override fun onResume() {
