@@ -163,7 +163,6 @@ class SetupActivity : AppCompatActivity() {
         val dataInitResult = DataManager.initializeStorage(this.applicationContext, password, false)
         if(!dataInitResult) {
             // create a correctly themed dialog notifying about the failed data storage initialization and what to do about it
-            val failedDataInitDialog = AlertDialog.Builder(this, R.style.Theme_Dawn_Dialog)
             val failedDataInitDialogResponse = EditText(this)
             val textColorTypedValue = TypedValue()
             theme.resolveAttribute(android.R.attr.textColor, textColorTypedValue, true)
