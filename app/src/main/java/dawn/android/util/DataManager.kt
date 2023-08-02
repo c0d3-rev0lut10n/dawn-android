@@ -20,7 +20,9 @@ package dawn.android.util
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import java.io.*
+import java.lang.Exception
 import java.security.MessageDigest
 import java.security.SecureRandom
 import javax.crypto.Cipher
@@ -52,6 +54,8 @@ object DataManager {
         val keyFile = File(dataDirectory, "key")
         val saltFile = File(dataDirectory, "salt")
         val testFile = File(dataDirectory, "check")
+
+        try {
 
         // check if files exist
         if(!isStorageInitialized(context)) return false
@@ -115,6 +119,11 @@ object DataManager {
 
         initialized = true
         return true
+        }
+        catch (e: Exception) {
+            Log.e(context.packageName, "decryption of the app data failed!", e)
+            return false
+        }
     }
 
     fun isInitialized(): Boolean {
