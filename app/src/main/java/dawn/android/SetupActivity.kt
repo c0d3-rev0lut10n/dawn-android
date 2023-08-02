@@ -160,8 +160,7 @@ class SetupActivity : AppCompatActivity() {
         val serverAddressInput = binding.etServerAddress.editText?.text.toString()
         val serverAddress = if(serverAddressInput == "") getString(R.string.default_server_address) else serverAddressInput
 
-        //val dataInitResult = DataManager.initializeStorage(this.applicationContext, password, false)
-        val dataInitResult = false
+        val dataInitResult = DataManager.initializeStorage(this.applicationContext, password, false)
         if(!dataInitResult) {
             // create a correctly themed dialog notifying about the failed data storage initialization and what to do about it
             val failedDataInitDialog = AlertDialog.Builder(this, R.style.Theme_Dawn_Dialog)
