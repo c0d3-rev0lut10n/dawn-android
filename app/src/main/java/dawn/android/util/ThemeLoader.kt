@@ -20,12 +20,15 @@ package dawn.android.util
 
 import android.content.Context
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.StateListDrawable
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.preference.PreferenceManager.getDefaultSharedPreferences
 import dawn.android.R
+import dawn.android.data.Preferences
 import dawn.android.data.Theme
 
 class ThemeLoader(private val context: Context) {
@@ -95,6 +98,24 @@ class ThemeLoader(private val context: Context) {
         navHighlightStateListDrawable.addState(itemStates[0], ColorDrawable(ColorUtils.setAlphaComponent(primaryUIColor, 100)))
 
         return Theme(primaryForegroundColor, primaryUIColor, primaryBackgroundColor, primaryTextColor, secondaryTextColor, gradientStartColor, gradientCenterColor, gradientEndColor, navigationIcon, backButtonIcon, itemColorStateList, navHighlightStateListDrawable)
+    }
+
+    fun getThemeSetting(context: Context): Int {
+        val androidSettings = getDefaultSharedPreferences(context)
+        // find out if the user wants the theme to change depending on system night mode
+        val themeUseSystem = androidSettings.getInt("theme_use_system", Preferences.THEME_MANUAL)
+        if(themeUseSystem == Preferences.THEME_USE_SYSTEM) {
+            // change mode depending on system night mode
+            val currentNightMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+            if(currentNightMode == Configuration.UI_MODE_NIGHT_YES) {
+                return androidSettings.getInt("theme_system_dark", Preferences.THEME_DARK)
+            }
+            else if(currentNightMode == Configuration.UI_MODE_NIGHT_NO) {
+                // TODO: change default to light theme once the theme is complete
+                return androidSettings.getInt("theme_system_light", Preferences.THEME_DARK)
+            }
+        }
+        return androidSettings.getInt("default_theme", Preferences.THEME_DARK)
     }
 
 }
