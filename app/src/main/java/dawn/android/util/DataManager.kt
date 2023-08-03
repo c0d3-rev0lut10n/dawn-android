@@ -152,6 +152,29 @@ object DataManager {
         return true
     }
 
+    fun readFile(name: String, path: File): ByteArray? {
+        if (!initialized) return null
+        if (!path.isDirectory) return null
+        val file = File(path, name)
+        if (!file.isFile) return null
+
+        val fileInputStream = FileInputStream(file)
+        val fileBytesStream = BufferedInputStream(fileInputStream)
+        val fileBytes = fileBytesStream.readBytes()
+        fileBytesStream.close()
+        fileInputStream.close()
+        if (fileBytes.size <= 16) return null
+
+        val fileIv = fileBytes.copyOfRange(0, 16)
+        val fileEncryptedContent = fileBytes.copyOfRange(16, fileBytes.size)
+
+        val fileDecryptionCipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
+        val fileIvSpec = IvParameterSpec(fileIv)
+        fileDecryptionCipher.init(Cipher.DECRYPT_MODE, encryptionKeySpec, fileIvSpec)
+
+        return fileDecryptionCipher.doFinal(fileEncryptedContent)
+    }
+
     fun generateStringPadding(): CharArray {
         val availablePaddingCharacters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!§$%&/()=?+-*.,;:<>|"
         val paddingLength = SecureRandom().nextInt(150) + 50
