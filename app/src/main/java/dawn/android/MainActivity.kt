@@ -41,6 +41,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivityMainBinding
@@ -240,6 +241,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun unlockDataManager(password: String) {
-        mDataManager.init(this, password)
+        if(!mDataManager.init(this, password)) {
+            val wrongPasswordDialog = MaterialAlertDialogBuilder(this)
+
+            wrongPasswordDialog.setTitle(R.string.title_password_dialog)
+            wrongPasswordDialog.setMessage(R.string.text_wrong_password)
+            wrongPasswordDialog.setCancelable(false)
+            wrongPasswordDialog.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> askForPassword()}
+            wrongPasswordDialog.create().show()
+        }
     }
 }
