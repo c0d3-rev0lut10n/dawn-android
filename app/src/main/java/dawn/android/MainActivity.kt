@@ -170,7 +170,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         if(binding.drawerLayout.isDrawerOpen(binding.navView))
-            binding.drawerLayout.closeDrawer(binding.navView)
+            binding.drawerLayout.closeDrawer(binding.navView, false)
 
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
