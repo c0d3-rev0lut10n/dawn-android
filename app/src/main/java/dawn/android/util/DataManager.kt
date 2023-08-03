@@ -157,7 +157,7 @@ object DataManager {
         val paddingLength = SecureRandom().nextInt(150) + 50
         val padding = CharArray(paddingLength)
         val stringGenerationRng = SecureRandom()
-        for(i in 0 until paddingLength-1) {
+        for(i in 0 until paddingLength) {
             padding[i] = availablePaddingCharacters[stringGenerationRng.nextInt(availablePaddingCharacters.length)]
         }
         return padding
