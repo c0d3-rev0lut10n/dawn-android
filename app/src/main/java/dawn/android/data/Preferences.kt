@@ -21,9 +21,8 @@ package dawn.android.data
 object Preferences {
     // useful constants for other classes
     const val THEME_USE_SYSTEM = 0
-    const val THEME_DARK = 1
-    const val THEME_EXTRADARK = 2
-    const val THEME_LIGHT = 3
-    const val THEME_SYSTEM_USE_EXTRADARK = true
-    const val THEME_SYSTEM_USE_DARK= false
+    const val THEME_MANUAL = 1
+    const val THEME_DARK = 2
+    const val THEME_EXTRADARK = 3
+    const val THEME_LIGHT = 4
 }
