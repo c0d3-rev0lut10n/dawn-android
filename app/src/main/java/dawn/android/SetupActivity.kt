@@ -55,7 +55,7 @@ class SetupActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val mThemeLoader = ThemeLoader(this)
-        val themeSwitch = Preferences.THEME_EXTRADARK
+        val themeSwitch = mThemeLoader.getThemeSetting(this)
         when(themeSwitch) {
             Preferences.THEME_DARK -> {
                 theme.applyStyle(R.style.Theme_Dawn_Dark, true)
