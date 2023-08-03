@@ -122,6 +122,7 @@ object DataManager {
         }
         catch (e: Exception) {
             Log.e(context.packageName, "decryption of the app data failed!", e)
+            initializing = false
             return false
         }
     }
