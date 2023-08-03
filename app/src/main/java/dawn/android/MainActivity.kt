@@ -31,6 +31,7 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.method.PasswordTransformationMethod
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.MenuItem
 import android.view.WindowInsets
 import android.view.WindowInsetsController
@@ -45,6 +46,7 @@ import dawn.android.data.Theme
 import dawn.android.databinding.ActivityMainBinding
 import dawn.android.util.DataManager
 import dawn.android.util.ThemeLoader
+import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
@@ -188,7 +190,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        unbindService(connection)
+        try {
+            unbindService(connection)
+        }
+        catch (e: Exception) {
+            Log.w(packageName, "Service was not bound on onDestroy()", e)
+        }
         super.onDestroy()
     }
 
