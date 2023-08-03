@@ -27,7 +27,7 @@
         <item name="colorOnPrimary">@color/black</item>
         <item name="android:textColor">@color/white</item>
         <item name="backgroundColor">@color/dark_background</item>
-        <item name="actionBarColor">@color/dark_primary</item>
+        <item name="actionBarColor">@color/dark_secondary</item>
         <item name="hintTextColor">@color/white</item>
         <item name="textFieldBackgroundColor">@color/dark_background_contrast</item>
         <!-- Secondary brand color. -->
