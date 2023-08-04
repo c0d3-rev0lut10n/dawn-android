@@ -86,7 +86,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
-                    android:id="@+id/tvAccountBio"
+                    android:id="@+id/tvProfileBio"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="30dp"
@@ -109,12 +109,47 @@
                     android:inputType="text"
                     android:minHeight="48dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvAccountBio">
+                    app:layout_constraintTop_toBottomOf="@id/tvProfileBio">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:id="@+id/etProfileBio"
+                        android:textColor="?android:attr/textColor"
+                        tools:ignore="TextContrastCheck" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <TextView
+                    android:id="@+id/tvProfileHandle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="30dp"
+                    android:layout_marginEnd="30dp"
+                    android:text="@string/settings_text_profile_handle"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/etProfileBioWrapper" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/etProfileHandleWrapper"
+                    style="@style/Theme.Dawn.TextField"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginEnd="30dp"
+                    android:ems="10"
+                    android:hint="@string/settings_hint_profile_handle"
+                    android:inputType="text"
+                    android:minHeight="48dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvProfileHandle">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/etProfileHandle"
                         android:textColor="?android:attr/textColor"
                         tools:ignore="TextContrastCheck" />
 
