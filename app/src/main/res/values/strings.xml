@@ -55,7 +55,7 @@
     <string name="title_failed_data_init_dialog">FATAL: data storage initialization failed!</string>
     <string name="text_failed_data_init_dialog">The app\'s storage was not initialized successfully. This might happen when a crash occurred during a previous initialization procedure. To mitigate this, you can try forcing the initialization and DELETING ALL PREVIOUSLY STORED DATA. If you already used the app and this happened, DO NOT PROCEED, but report a bug providing some information on how this happened. To proceed with wiping the app\'s storage, enter \"OK JUST DELETE ALL THE DATA\" in the box below. Otherwise, just cancel or enter anything else and hit OK.</string>
 
-    <!-- Texts for SetupActivity -->
+    <!-- Texts for SettingsActivity -->
     <string name="settings_heading_profile">Profile</string>
     <string name="settings_text_profile_name">Change your profile name:</string>
     <string name="settings_text_profile_bio">Change your \"about me\" text:</string>
