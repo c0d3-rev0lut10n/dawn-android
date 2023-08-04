@@ -153,20 +153,7 @@ class MainActivity : AppCompatActivity() {
             if (!mDataManager.isInitialized()) {
                 askForPassword()
             }
-
-            if(!ReceiveMessagesService.isRunning) {
-                val startServiceIntent = Intent(this, ReceiveMessagesService::class.java)
-                if (Build.VERSION.SDK_INT >= 26) {
-                    startForegroundService(startServiceIntent)
-                } else {
-                    startService(startServiceIntent)
-                }
-            }
-            bindService(
-                Intent(this, ReceiveMessagesService::class.java),
-                connection,
-                BIND_AUTO_CREATE
-            )
+            else connectReceiveMessagesService()
         }
     }
 
@@ -252,5 +239,22 @@ class MainActivity : AppCompatActivity() {
             wrongPasswordDialog.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> askForPassword()}
             wrongPasswordDialog.create().show()
         }
+        else connectReceiveMessagesService()
+    }
+
+    private fun connectReceiveMessagesService() {
+        if(!ReceiveMessagesService.isRunning) {
+            val startServiceIntent = Intent(this, ReceiveMessagesService::class.java)
+            if (Build.VERSION.SDK_INT >= 26) {
+                startForegroundService(startServiceIntent)
+            } else {
+                startService(startServiceIntent)
+            }
+        }
+        bindService(
+            Intent(this, ReceiveMessagesService::class.java),
+            connection,
+            BIND_AUTO_CREATE
+        )
     }
 }
