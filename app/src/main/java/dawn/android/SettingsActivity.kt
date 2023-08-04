@@ -20,6 +20,7 @@ package dawn.android
 
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -32,6 +33,7 @@ import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivitySettingsBinding
 import dawn.android.databinding.ActivitySetupBinding
+import dawn.android.util.DataManager
 import dawn.android.util.ThemeLoader
 
 class SettingsActivity : AppCompatActivity() {
@@ -86,6 +88,14 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(mTheme.backButtonIcon)
+
+        val paddedProfileName = String(DataManager.readFile("profileName", filesDir)!!, Charsets.UTF_8)
+        val profileName = paddedProfileName.substringAfter("\n").substringBefore("\n")
+        val paddedProfileBio = String(DataManager.readFile("profileBio", filesDir)!!, Charsets.UTF_8)
+        val profileBio = paddedProfileBio.substringAfter("\n").substringBefore("\n")
+
+        binding.etProfileName.editText?.setText(profileName)
+        binding.etProfileBio.editText?.setText(profileBio)
     }
 
     override fun onResume() {
