@@ -154,11 +154,13 @@ class MainActivity : AppCompatActivity() {
                 askForPassword()
             }
 
-            val startServiceIntent = Intent(this, ReceiveMessagesService::class.java)
-            if (Build.VERSION.SDK_INT >= 26) {
-                startForegroundService(startServiceIntent)
-            } else {
-                startService(startServiceIntent)
+            if(!ReceiveMessagesService.isRunning) {
+                val startServiceIntent = Intent(this, ReceiveMessagesService::class.java)
+                if (Build.VERSION.SDK_INT >= 26) {
+                    startForegroundService(startServiceIntent)
+                } else {
+                    startService(startServiceIntent)
+                }
             }
             bindService(
                 Intent(this, ReceiveMessagesService::class.java),
