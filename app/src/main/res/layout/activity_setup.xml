@@ -144,7 +144,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
-                android:id="@+id/tvAccountBio"
+                android:id="@+id/tvProfileBio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="30dp"
@@ -167,7 +167,7 @@
                 android:inputType="text"
                 android:minHeight="48dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvAccountBio">
+                app:layout_constraintTop_toBottomOf="@id/tvProfileBio">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
