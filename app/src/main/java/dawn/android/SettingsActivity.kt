@@ -27,6 +27,7 @@ import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
@@ -168,5 +169,16 @@ class SettingsActivity : AppCompatActivity() {
             DataManager.writeFile("profileBio", filesDir, profileBioString.toByteArray(Charsets.UTF_8), true)
         }
         finish()
+    }
+
+    private fun checkHandle(handleInput: String): Boolean {
+        var handle = handleInput
+        if (handle.startsWith("@",false)) {
+            handle = handle.drop(1)
+        }
+        if (!handle.all { it.isLetterOrDigit() || it.toString() == "-" || it.toString() == "_" }) {
+            return false
+        }
+        return true
     }
 }
