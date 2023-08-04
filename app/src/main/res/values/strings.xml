@@ -61,8 +61,9 @@
     <string name="settings_heading_profile">Profile</string>
     <string name="settings_text_profile_name">Change your profile name:</string>
     <string name="settings_text_profile_bio">Change your \"about me\" text:</string>
-    <string name="settings_text_profile_handle">Set or change your handle name (this is needed in order to initiate a chat with you).\nHandles consist of a leading \"@\", alphanumeric characters (a-z, A-Z), dashes (-) and underscores (_).</string>
+    <string name="settings_text_profile_handle">Set or change your handle name (this is needed in order to initiate a chat with you).\nHandles consist of alphanumeric characters (a-z, A-Z), dashes (-) and underscores (_).</string>
     <string name="settings_hint_profile_handle">\@my_example_handle</string>
+    <string name="settings_error_handle_invalid">Handles can only contain a-z, A-Z, dashes and underscores!</string>
     <string name="settings_title_save_changes_dialog">Unsaved changes!</string>
     <string name="settings_text_save_changes_dialog">You have changed some settings. Do you want to save them?</string>
 

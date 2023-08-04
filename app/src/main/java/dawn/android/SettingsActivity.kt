@@ -27,7 +27,6 @@ import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowInsetsController
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
@@ -48,8 +47,10 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var actionBarText: SpannableString
     private lateinit var currentProfileName: String
     private lateinit var currentProfileBio: String
+    private lateinit var currentProfileHandle: String
     private var profileNameChanges = false
     private var profileBioChanges = false
+    private var profileHandleChanges = false
     private lateinit var logTag: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,9 +104,15 @@ class SettingsActivity : AppCompatActivity() {
         currentProfileName = paddedProfileName.substringAfter("\n").substringBefore("\n")
         val paddedProfileBio = String(DataManager.readFile("profileBio", filesDir)!!, Charsets.UTF_8)
         currentProfileBio = paddedProfileBio.substringAfter("\n").substringBefore("\n")
+        val handleFileContent = DataManager.readFile("profileHandle", filesDir)
+        currentProfileHandle = if(handleFileContent != null) {
+            val paddedProfileHandle = String(handleFileContent, Charsets.UTF_8)
+            paddedProfileHandle.substringAfter("\n").substringBefore("\n")
+        } else ""
 
         binding.etProfileName.setText(currentProfileName)
         binding.etProfileBio.setText(currentProfileBio)
+        binding.etProfileHandle.setText(currentProfileHandle)
 
         onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -119,6 +126,14 @@ class SettingsActivity : AppCompatActivity() {
         }
         binding.etProfileBio.addTextChangedListener {
             profileBioChanges = binding.etProfileBio.text.toString() != currentProfileBio
+        }
+        binding.etProfileHandle.addTextChangedListener {
+            if(!checkHandle(binding.etProfileHandle.text.toString()))
+                binding.etProfileHandleWrapper.error = getString(R.string.settings_error_handle_invalid)
+            else {
+                profileHandleChanges = binding.etProfileHandle.text.toString() != currentProfileHandle
+                binding.etProfileHandleWrapper.error = null
+            }
         }
     }
 
@@ -134,7 +149,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun checkForChanges() {
         Log.i(logTag, "Checking for changed settings...")
-        if(!(profileNameChanges || profileBioChanges)) {
+        if(!(profileNameChanges || profileBioChanges || profileHandleChanges)) {
             Log.i(logTag, "No changed settings found. Closing Settings.")
             finish()
             return
@@ -168,14 +183,19 @@ class SettingsActivity : AppCompatActivity() {
             val profileBioString = profileBioStringPrePadding.concatToString() + "\n" + binding.etProfileBio.text.toString() + "\n" + profileBioStringPostPadding.concatToString()
             DataManager.writeFile("profileBio", filesDir, profileBioString.toByteArray(Charsets.UTF_8), true)
         }
+
+        if(profileHandleChanges && checkHandle(binding.etProfileHandle.text.toString())) {
+            // TODO: set a handle on the server
+            val profileHandleStringPrePadding = DataManager.generateStringPadding()
+            val profileHandleStringPostPadding = DataManager.generateStringPadding()
+            val profileHandleString = profileHandleStringPrePadding.concatToString() + "\n" + binding.etProfileHandle.text.toString() + "\n" + profileHandleStringPostPadding.concatToString()
+            DataManager.writeFile("profileHandle", filesDir, profileHandleString.toByteArray(Charsets.UTF_8), true)
+        }
+
         finish()
     }
 
-    private fun checkHandle(handleInput: String): Boolean {
-        var handle = handleInput
-        if (handle.startsWith("@",false)) {
-            handle = handle.drop(1)
-        }
+    private fun checkHandle(handle: String): Boolean {
         if (!handle.all { it.isLetterOrDigit() || it.toString() == "-" || it.toString() == "_" }) {
             return false
         }

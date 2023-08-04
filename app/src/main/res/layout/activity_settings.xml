@@ -144,7 +144,11 @@
                     android:inputType="text"
                     android:minHeight="48dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/tvProfileHandle">
+                    app:layout_constraintTop_toBottomOf="@id/tvProfileHandle"
+                    app:errorEnabled="true"
+                    app:errorIconTint="?attr/colorPrimary"
+                    app:errorTextColor="?android:attr/textColor"
+                    app:prefixText="\@">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
