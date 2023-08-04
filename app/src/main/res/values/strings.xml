@@ -19,6 +19,8 @@
     <!-- Generic button labels -->
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="discard">Discard</string>
 
     <!-- Strings fur the entire app -->
     <string name="default_server_address">https://messageserver.dawn-privacy.org</string>
@@ -59,5 +61,7 @@
     <string name="settings_heading_profile">Profile</string>
     <string name="settings_text_profile_name">Change your profile name:</string>
     <string name="settings_text_profile_bio">Change your \"about me\" text:</string>
+    <string name="settings_title_save_changes_dialog">Unsaved changes!</string>
+    <string name="settings_text_save_changes_dialog">You have changed some settings. Do you want to save them?</string>
 
 </resources>

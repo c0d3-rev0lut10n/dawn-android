@@ -18,16 +18,21 @@
 
 package dawn.android
 
+import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.widget.addTextChangedListener
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivitySettingsBinding
@@ -40,9 +45,15 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var mTheme: Theme
     private var androidTheme: Int = 0
     private lateinit var actionBarText: SpannableString
+    private lateinit var currentProfileName: String
+    private lateinit var currentProfileBio: String
+    private var profileNameChanges = false
+    private var profileBioChanges = false
+    private lateinit var logTag: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        logTag = "$packageName.SettingsActivity"
 
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -88,16 +99,74 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(mTheme.backButtonIcon)
 
         val paddedProfileName = String(DataManager.readFile("profileName", filesDir)!!, Charsets.UTF_8)
-        val currentProfileName = paddedProfileName.substringAfter("\n").substringBefore("\n")
+        currentProfileName = paddedProfileName.substringAfter("\n").substringBefore("\n")
         val paddedProfileBio = String(DataManager.readFile("profileBio", filesDir)!!, Charsets.UTF_8)
-        val currentProfileBio = paddedProfileBio.substringAfter("\n").substringBefore("\n")
+        currentProfileBio = paddedProfileBio.substringAfter("\n").substringBefore("\n")
 
-        binding.etProfileName.editText?.setText(currentProfileName)
-        binding.etProfileBio.editText?.setText(currentProfileBio)
+        binding.etProfileName.setText(currentProfileName)
+        binding.etProfileBio.setText(currentProfileBio)
+
+        onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // check for changes and ask the user if they want to save them
+                checkForChanges()
+            }
+        })
+
+        binding.etProfileName.addTextChangedListener {
+            profileNameChanges = binding.etProfileName.text.toString() != currentProfileName
+        }
+        binding.etProfileBio.addTextChangedListener {
+            profileBioChanges = binding.etProfileBio.text.toString() != currentProfileBio
+        }
     }
 
     override fun onResume() {
         binding.toolbar.title = actionBarText
         super.onResume()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        checkForChanges()
+        return true
+    }
+
+    private fun checkForChanges() {
+        Log.i(logTag, "Checking for changed settings...")
+        if(!(profileNameChanges || profileBioChanges)) {
+            Log.i(logTag, "No changed settings found. Closing Settings.")
+            finish()
+            return
+        }
+        // ask if the changes should be saved
+        Log.i(logTag, "Changed settings detected. Asking if the user wants to save them.")
+        val saveSettingsDialog = MaterialAlertDialogBuilder(this, R.style.Theme_Dawn_Dialog)
+        saveSettingsDialog.setTitle(R.string.settings_title_save_changes_dialog)
+        saveSettingsDialog.setMessage(R.string.settings_text_save_changes_dialog)
+        saveSettingsDialog.setCancelable(true)
+        saveSettingsDialog.setNegativeButton(R.string.discard) {_: DialogInterface, _:Int -> finish() }
+        saveSettingsDialog.setNeutralButton(R.string.cancel, null)
+        saveSettingsDialog.setPositiveButton(R.string.save) { _: DialogInterface, _: Int -> saveChanges() }
+        saveSettingsDialog.create().show()
+    }
+
+    private fun saveChanges() {
+        // save the changes
+        Log.i(logTag, "Saving changes")
+
+        if(profileNameChanges) {
+            val profileNameStringPrePadding = DataManager.generateStringPadding()
+            val profileNameStringPostPadding = DataManager.generateStringPadding()
+            val profileNameString = profileNameStringPrePadding.concatToString() + "\n" + binding.etProfileName.text.toString() + "\n" + profileNameStringPostPadding.concatToString()
+            DataManager.writeFile("profileName", filesDir, profileNameString.toByteArray(Charsets.UTF_8), true)
+        }
+
+        if(profileBioChanges) {
+            val profileBioStringPrePadding = DataManager.generateStringPadding()
+            val profileBioStringPostPadding = DataManager.generateStringPadding()
+            val profileBioString = profileBioStringPrePadding.concatToString() + "\n" + binding.etProfileBio.text.toString() + "\n" + profileBioStringPostPadding.concatToString()
+            DataManager.writeFile("profileBio", filesDir, profileBioString.toByteArray(Charsets.UTF_8), true)
+        }
+        finish()
     }
 }

@@ -62,7 +62,7 @@
                     app:layout_constraintTop_toBottomOf="@id/tvProfileHeading" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/etProfileName"
+                    android:id="@+id/etProfileNameWrapper"
                     style="@style/Theme.Dawn.TextField"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -79,6 +79,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:id="@+id/etProfileName"
                         android:textColor="?android:attr/textColor"
                         tools:ignore="TextContrastCheck" />
 
@@ -93,10 +94,10 @@
                     android:layout_marginEnd="30dp"
                     android:text="@string/settings_text_profile_bio"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/etProfileName" />
+                    app:layout_constraintTop_toBottomOf="@id/etProfileNameWrapper" />
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/etProfileBio"
+                    android:id="@+id/etProfileBioWrapper"
                     style="@style/Theme.Dawn.TextField"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -113,6 +114,7 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:id="@+id/etProfileBio"
                         android:textColor="?android:attr/textColor"
                         tools:ignore="TextContrastCheck" />
 
