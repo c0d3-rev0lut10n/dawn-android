@@ -179,14 +179,14 @@ class SetupActivity : AppCompatActivity() {
                 failedDataInitDialogResponse.textCursorDrawable = cursor
             }
 
-            val materialAlertDialogTest = MaterialAlertDialogBuilder(this, R.style.Theme_Dawn_Dialog)
-            materialAlertDialogTest.setTitle(R.string.title_failed_data_init_dialog)
-            materialAlertDialogTest.setMessage(R.string.text_failed_data_init_dialog)
-            materialAlertDialogTest.setView(failedDataInitDialogResponse)
-            materialAlertDialogTest.setCancelable(true)
-            materialAlertDialogTest.setNegativeButton(R.string.cancel, null)
-            materialAlertDialogTest.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> if(failedDataInitDialogResponse.text.toString() == "OK JUST DELETE ALL THE DATA") tryForcingDataInit(password, serverAddress, profileName, profileBio) }
-            materialAlertDialogTest.create().show()
+            val failedDataInitDialog = MaterialAlertDialogBuilder(this, R.style.Theme_Dawn_Dialog)
+            failedDataInitDialog.setTitle(R.string.title_failed_data_init_dialog)
+            failedDataInitDialog.setMessage(R.string.text_failed_data_init_dialog)
+            failedDataInitDialog.setView(failedDataInitDialogResponse)
+            failedDataInitDialog.setCancelable(true)
+            failedDataInitDialog.setNegativeButton(R.string.cancel, null)
+            failedDataInitDialog.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> if(failedDataInitDialogResponse.text.toString() == "OK JUST DELETE ALL THE DATA") tryForcingDataInit(password, serverAddress, profileName, profileBio) }
+            failedDataInitDialog.create().show()
             return
         }
         else {
