@@ -15,8 +15,6 @@ import org.torproject.jni.TorService.LocalBinder
 class ReceiveMessagesService: Service() {
 
     private val bindInterface : IBinder = BindInterface()
-    private val mLibraryConnector = LibraryConnector
-    private val mDataManager = DataManager
     private val mTorReceiver = TorReceiver
     private lateinit var notificationManager: NotificationManager
 
