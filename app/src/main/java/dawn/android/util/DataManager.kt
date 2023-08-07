@@ -21,6 +21,9 @@ package dawn.android.util
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import dawn.android.LibraryConnector
+import dawn.android.data.Chat
+import dawn.android.data.StorableChat
 import java.io.*
 import java.lang.Exception
 import java.security.MessageDigest
@@ -30,6 +33,8 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
+import kotlinx.serialization.*
+import kotlinx.serialization.json.Json
 
 // since we use the application context, this is NOT a memory leak, so SHUT UP
 @SuppressLint("StaticFieldLeak")
@@ -266,6 +271,25 @@ object DataManager {
         mEncryptedFileOutputStream.close()
 
         return true
+    }
+
+    fun getAllChats(): ArrayList<Chat> {
+        if(!initialized) return ArrayList()
+        val chatsDir = File(mContext.filesDir, "chats")
+        if(!chatsDir.isDirectory) return ArrayList()
+        val chatDirs = chatsDir.listFiles()?: return ArrayList()
+        val chats = ArrayList<Chat>()
+        for(chatDir in chatDirs) {
+            // ignore any entries that are not directories
+            if(!chatDir.isDirectory) continue
+            val chatContent = readFile("chatId", chatDir)?: continue
+            val chatContentString = String(chatContent, Charsets.UTF_8)
+            val chatId = chatContentString.substringBefore("\n")
+            val chatIdStamp = chatContentString.substringAfter("\n")
+            val chatName = String(readFile("chatName", chatDir)?: continue, Charsets.UTF_8)
+            chats.add(Chat(chatDir.name, chatId, chatIdStamp, chatName))
+        }
+        return chats
     }
 
     private fun deleteRecursive(directory: File) {
