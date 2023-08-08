@@ -21,6 +21,7 @@ package dawn.android.util
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
+import dawn.android.GenId
 import dawn.android.LibraryConnector
 import dawn.android.data.Chat
 import dawn.android.data.StorableChat
@@ -290,6 +291,39 @@ object DataManager {
             chats.add(Chat(chatDir.name, chatId, chatIdStamp, chatName))
         }
         return chats
+    }
+
+    // save a new chat and return the associated internal data ID
+    fun saveNewChat(id: String, idStamp: String, name: String): String {
+        if(id.contains("\n", true)) return ""
+        if(idStamp.contains("\n", true)) return ""
+        if(name.contains("\n", true) || name == "") return ""
+        var dataId: GenId? = null // we have to initialize with null because the compiler will complain otherwise (even though dataId will be always initialized when the chatDir File gets constructed
+        val chatsDir = File(mContext.filesDir, "chats")
+        val chatDirs = chatsDir.listFiles()
+        if(chatDirs == null) {
+            // there are no chats, we can freely choose an ID
+            dataId = LibraryConnector.mGenId()
+            if(dataId.id == null) return ""
+        }
+        else {
+            val chatDirNames = ArrayList<String>()
+            for(chat in chatDirs) {
+                chatDirNames.add(chat.name)
+            }
+            for (i in 1..1000) {
+                // choose a random ID that is not used
+                dataId = LibraryConnector.mGenId()
+                if (dataId.id == null) return ""
+                if (dataId.id!! !in chatDirNames) break
+                if(i == 1000) return ""
+            }
+        }
+        val chatDir = File(chatsDir, dataId!!.id!!)
+        val idFileContent = id + "\n" + idStamp
+        if(!writeFile("chatId", chatDir, idFileContent.toByteArray(Charsets.UTF_8), false)) return ""
+        if(!writeFile("chatName", chatDir, name.toByteArray(Charsets.UTF_8), false)) return ""
+        return dataId.id!!
     }
 
     private fun deleteRecursive(directory: File) {
