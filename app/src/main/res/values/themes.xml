@@ -59,6 +59,12 @@
         <item name="boxBackgroundColor">?attr/textFieldBackgroundColor</item>
     </style>
 
+    <style name="Theme.Dawn.TextField.Dropdown" parent="Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu">
+        <item name="boxStrokeColor">?attr/hintTextColor</item>
+        <item name="android:textColorHint">?attr/hintTextColor</item>
+        <item name="boxBackgroundColor">?attr/textFieldBackgroundColor</item>
+    </style>
+
     <style name="Theme.Dawn.Dialog" parent="Theme.Material3.Dark.Dialog.Alert">
         <item name="android:background">?attr/backgroundColor</item>
         <item name="android:textColorPrimary">?android:attr/textColor</item>

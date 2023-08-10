@@ -27,6 +27,7 @@ import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
@@ -135,6 +136,32 @@ class SettingsActivity : AppCompatActivity() {
                 binding.etProfileHandleWrapper.error = null
             }
         }
+
+        val themeSelectorItems = listOf(getString(R.string.theme_dark), getString(R.string.theme_extradark), getString(R.string.theme_light))
+        val themeSelectorAdapter = ArrayAdapter(this, R.layout.dropdown_menu_item, themeSelectorItems)
+        val themeUseSystem = mThemeLoader.getThemeMode(this)
+
+        if(themeUseSystem == Preferences.THEME_USE_SYSTEM) {
+            binding.cbThemeUseSystem.isChecked = true
+            binding.etThemeManual.isEnabled = false
+        }
+        else {
+            binding.etThemeSystemLight.isEnabled = false
+            binding.etThemeSystemDark.isEnabled = false
+        }
+        binding.cbThemeUseSystem.setOnCheckedChangeListener { _, _ -> toggleThemeEditTexts() }
+
+        val manualThemeName = getThemeName(mThemeLoader.getThemeManualSetting(this))
+        binding.etThemeManual.setText(manualThemeName)
+        binding.etThemeManual.setAdapter(themeSelectorAdapter)
+
+        val systemLightThemeName = getThemeName(mThemeLoader.getThemeLightSetting(this))
+        binding.etThemeSystemLight.setText(systemLightThemeName)
+        binding.etThemeSystemLight.setAdapter(themeSelectorAdapter)
+
+        val systemDarkThemeName = getThemeName(mThemeLoader.getThemeDarkSetting(this))
+        binding.etThemeSystemDark.setText(systemDarkThemeName)
+        binding.etThemeSystemDark.setAdapter(themeSelectorAdapter)
     }
 
     override fun onResume() {
@@ -200,5 +227,25 @@ class SettingsActivity : AppCompatActivity() {
             return false
         }
         return true
+    }
+
+    private fun getThemeName(themeId: Int): String {
+        return when(themeId) {
+            Preferences.THEME_EXTRADARK -> {
+                getString(R.string.theme_extradark)
+            }
+            Preferences.THEME_LIGHT -> {
+                getString(R.string.theme_light)
+            }
+            else -> {
+                getString(R.string.theme_dark)
+            }
+        }
+    }
+
+    private fun toggleThemeEditTexts() {
+        binding.etThemeManual.isEnabled = !binding.etThemeManual.isEnabled
+        binding.etThemeSystemLight.isEnabled = !binding.etThemeSystemLight.isEnabled
+        binding.etThemeSystemDark.isEnabled = !binding.etThemeSystemDark.isEnabled
     }
 }

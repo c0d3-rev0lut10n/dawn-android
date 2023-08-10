@@ -24,6 +24,9 @@
 
     <!-- Strings fur the entire app -->
     <string name="default_server_address">https://messageserver.dawn-privacy.org</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_extradark">Extra Dark (Stargazer)</string>
+    <string name="theme_light">Light</string>
 
     <!-- Notification-related strings -->
     <string name="notification_channel_bg">Background service is running</string>
@@ -66,5 +69,10 @@
     <string name="settings_error_handle_invalid">Handles can only contain a-z, A-Z, dashes and underscores!</string>
     <string name="settings_title_save_changes_dialog">Unsaved changes!</string>
     <string name="settings_text_save_changes_dialog">You have changed some settings. Do you want to save them?</string>
+    <string name="settings_heading_theme">Theme</string>
+    <string name="settings_text_theme_use_system">Choose the theme based on Android theme</string>
+    <string name="settings_hint_theme_manual">Set the theme manually</string>
+    <string name="settings_text_theme_system_light">Set theme to be used when Android is in light mode</string>
+    <string name="settings_text_theme_system_dark">Set theme to be used when Android is in dark mode</string>
 
 </resources>
