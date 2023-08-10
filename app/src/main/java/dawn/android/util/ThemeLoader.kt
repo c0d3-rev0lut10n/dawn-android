@@ -118,4 +118,10 @@ class ThemeLoader(private val context: Context) {
         return androidSettings.getInt("default_theme", Preferences.THEME_DARK)
     }
 
+    fun getThemeMode(context: Context): Boolean {
+        val androidSettings = getDefaultSharedPreferences(context)
+        // find out if the user wants the theme to change depending on system night mode
+        return androidSettings.getBoolean("theme_use_system", Preferences.THEME_MANUAL)
+    }
+
 }
