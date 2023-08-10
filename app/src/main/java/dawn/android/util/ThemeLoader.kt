@@ -124,4 +124,20 @@ class ThemeLoader(private val context: Context) {
         return androidSettings.getBoolean("theme_use_system", Preferences.THEME_MANUAL)
     }
 
+    fun getThemeManualSetting(context: Context): Int {
+        val androidSettings = getDefaultSharedPreferences(context)
+        return androidSettings.getInt("default_theme", Preferences.THEME_DARK)
+    }
+
+    fun getThemeDarkSetting(context: Context): Int {
+        val androidSettings = getDefaultSharedPreferences(context)
+        return androidSettings.getInt("theme_system_dark", Preferences.THEME_DARK)
+    }
+
+    fun getThemeLightSetting(context: Context): Int {
+        val androidSettings = getDefaultSharedPreferences(context)
+        // TODO: change default to light theme once the theme is complete
+        return androidSettings.getInt("theme_system_light", Preferences.THEME_DARK)
+    }
+
 }
