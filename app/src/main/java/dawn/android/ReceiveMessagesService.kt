@@ -19,6 +19,8 @@ class ReceiveMessagesService: Service() {
     private val mTorReceiver = TorReceiver
     private lateinit var notificationManager: NotificationManager
     private lateinit var chats: ArrayList<Chat>
+    private var activeChat: Chat? = null
+    private val useTor = true
 
     companion object {
         var isRunning = false
@@ -55,6 +57,26 @@ class ReceiveMessagesService: Service() {
         }
         chats.add(chat)
         return true
+    }
+
+    fun setActiveChat(chat: Chat) {
+        activeChat = chat
+    }
+
+    private fun pollChats() {
+        for(chat in chats) {
+            if(chat.dataId == activeChat?.dataId) continue // skip active chat as it gets polled separately
+            if(useTor) {
+
+            }
+            else {
+
+            }
+        }
+    }
+
+    private fun pollActiveChat() {
+
     }
 
     private fun setupForegroundServiceWithNotification() {
