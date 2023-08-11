@@ -49,6 +49,14 @@ class ReceiveMessagesService: Service() {
         return bindInterface
     }
 
+    fun addChat(chat: Chat): Boolean {
+        for(chatToCheck in chats) {
+            if(chatToCheck.dataId == chat.dataId || chatToCheck.id == chat.id) return false
+        }
+        chats.add(chat)
+        return true
+    }
+
     private fun setupForegroundServiceWithNotification() {
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
