@@ -6,6 +6,7 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import dawn.android.data.Chat
 import dawn.android.util.DataManager
 import dawn.android.util.TorReceiver
 import org.torproject.jni.TorService
@@ -17,6 +18,7 @@ class ReceiveMessagesService: Service() {
     private val bindInterface : IBinder = BindInterface()
     private val mTorReceiver = TorReceiver
     private lateinit var notificationManager: NotificationManager
+    private lateinit var chats: ArrayList<Chat>
 
     companion object {
         var isRunning = false
@@ -38,6 +40,7 @@ class ReceiveMessagesService: Service() {
         setupForegroundServiceWithNotification()
 
         startTor()
+        chats = DataManager.getAllChats()
 
         return super.onStartCommand(intent, flags, startId)
     }
