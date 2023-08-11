@@ -24,7 +24,6 @@ import android.util.Log
 import dawn.android.GenId
 import dawn.android.LibraryConnector
 import dawn.android.data.Chat
-import dawn.android.data.StorableChat
 import java.io.*
 import java.lang.Exception
 import java.security.MessageDigest
@@ -287,16 +286,18 @@ object DataManager {
             val chatContentString = String(chatContent, Charsets.UTF_8)
             val chatId = chatContentString.substringBefore("\n")
             val chatIdStamp = chatContentString.substringAfter("\n")
+            val chatIdSalt = String(readFile("chatIdSalt", chatDir)?: continue, Charsets.UTF_8)
             val chatName = String(readFile("chatName", chatDir)?: continue, Charsets.UTF_8)
-            chats.add(Chat(chatDir.name, chatId, chatIdStamp, chatName))
+            chats.add(Chat(chatDir.name, chatId, chatIdStamp, chatIdSalt, chatName))
         }
         return chats
     }
 
     // save a new chat and return the associated internal data ID
-    fun saveNewChat(id: String, idStamp: String, name: String): String {
+    fun saveNewChat(id: String, idStamp: String, idSalt: String, name: String): String {
         if(id.contains("\n", true)) return ""
         if(idStamp.contains("\n", true)) return ""
+        if(idSalt.contains("\n", true)) return ""
         if(name.contains("\n", true) || name == "") return ""
         var dataId: GenId? = null // we have to initialize with null because the compiler will complain otherwise (even though dataId will be always initialized when the chatDir File gets constructed
         val chatsDir = File(mContext.filesDir, "chats")
@@ -322,6 +323,7 @@ object DataManager {
         val chatDir = File(chatsDir, dataId!!.id!!)
         val idFileContent = id + "\n" + idStamp
         if(!writeFile("chatId", chatDir, idFileContent.toByteArray(Charsets.UTF_8), false)) return ""
+        if(!writeFile("chatIdSalt", chatDir, idSalt.toByteArray(Charsets.UTF_8), false)) return ""
         if(!writeFile("chatName", chatDir, name.toByteArray(Charsets.UTF_8), false)) return ""
         return dataId.id!!
     }
