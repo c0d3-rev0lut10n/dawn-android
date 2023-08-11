@@ -328,6 +328,18 @@ object DataManager {
         return dataId.id!!
     }
 
+    fun saveChatId(dataId: String, id: String, idStamp: String): Boolean {
+        val chatDir = File(File(mContext.filesDir, "chats"), dataId)
+        if(dataId.contains("\n", true) || dataId == "") return false
+        if(id.contains("\n", true) || id == "") return false
+        if(idStamp.contains("\n", true) || idStamp == "") return false
+        val idFileContent = id + "\n" + idStamp
+
+        if(!writeFile("chatId", chatDir, idFileContent.toByteArray(Charsets.UTF_8), false)) return false
+
+        return true
+    }
+
     private fun deleteRecursive(directory: File) {
         val files = directory.listFiles()
         if(files == null) return
