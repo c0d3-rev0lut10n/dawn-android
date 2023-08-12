@@ -25,7 +25,6 @@ import dawn.android.GenId
 import dawn.android.LibraryConnector
 import dawn.android.data.Chat
 import java.io.*
-import java.lang.Exception
 import java.security.MessageDigest
 import java.security.SecureRandom
 import javax.crypto.Cipher
@@ -33,8 +32,7 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
-import kotlinx.serialization.*
-import kotlinx.serialization.json.Json
+import kotlin.Exception
 
 // since we use the application context, this is NOT a memory leak, so SHUT UP
 @SuppressLint("StaticFieldLeak")
@@ -287,8 +285,19 @@ object DataManager {
             val chatId = chatContentString.substringBefore("\n")
             val chatIdStamp = chatContentString.substringAfter("\n")
             val chatIdSalt = String(readFile("chatIdSalt", chatDir)?: continue, Charsets.UTF_8)
+            val chatMessageId: UShort
+            try {
+                chatMessageId = String(
+                    readFile("chatMessageId", chatDir) ?: continue,
+                    Charsets.UTF_8
+                ).toUShort()
+            }
+            catch(e: Exception) {
+                Log.e(mContext.packageName, "Could not parse chatMessageId", e)
+                continue
+            }
             val chatName = String(readFile("chatName", chatDir)?: continue, Charsets.UTF_8)
-            chats.add(Chat(chatDir.name, chatId, chatIdStamp, chatIdSalt, chatName))
+            chats.add(Chat(chatDir.name, chatId, chatIdStamp, chatIdSalt, chatMessageId, chatName))
         }
         return chats
     }
@@ -324,6 +333,7 @@ object DataManager {
         val idFileContent = id + "\n" + idStamp
         if(!writeFile("chatId", chatDir, idFileContent.toByteArray(Charsets.UTF_8), false)) return ""
         if(!writeFile("chatIdSalt", chatDir, idSalt.toByteArray(Charsets.UTF_8), false)) return ""
+        if(!writeFile("chatMessageId", chatDir, "0".toByteArray(Charsets.UTF_8), false)) return ""
         if(!writeFile("chatName", chatDir, name.toByteArray(Charsets.UTF_8), false)) return ""
         return dataId.id!!
     }
@@ -336,6 +346,16 @@ object DataManager {
         val idFileContent = id + "\n" + idStamp
 
         if(!writeFile("chatId", chatDir, idFileContent.toByteArray(Charsets.UTF_8), false)) return false
+
+        return true
+    }
+
+    fun saveChatMessageId(dataId: String, messageId: UShort): Boolean {
+        val chatDir = File(File(mContext.filesDir, "chats"), dataId)
+        if(dataId.contains("\n", true) || dataId == "") return false
+        val messageIdFileContent = messageId.toString()
+
+        if(!writeFile("chatMessageId", chatDir, messageIdFileContent.toByteArray(Charsets.UTF_8), true)) return false
 
         return true
     }

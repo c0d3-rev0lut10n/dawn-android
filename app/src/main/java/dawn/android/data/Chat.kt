@@ -5,5 +5,6 @@ data class Chat(
     var id: String,
     var idStamp: String,
     var idSalt: String,
+    var lastMessageId: UShort,
     var name: String
 )
