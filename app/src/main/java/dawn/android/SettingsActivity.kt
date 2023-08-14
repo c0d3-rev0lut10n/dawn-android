@@ -49,9 +49,17 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var currentProfileName: String
     private lateinit var currentProfileBio: String
     private lateinit var currentProfileHandle: String
+    private lateinit var currentManualThemeName: String
+    private lateinit var currentSystemDarkThemeName: String
+    private lateinit var currentSystemLightThemeName: String
     private var profileNameChanges = false
     private var profileBioChanges = false
     private var profileHandleChanges = false
+    private var themeModeChanges = false
+    private var manualThemeChanges = false
+    private var systemDarkThemeChanges = false
+    private var systemLightThemeChanges = false
+    private var themeUseSystem = false
     private lateinit var logTag: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -139,7 +147,7 @@ class SettingsActivity : AppCompatActivity() {
 
         val themeSelectorItems = listOf(getString(R.string.theme_dark), getString(R.string.theme_extradark), getString(R.string.theme_light))
         val themeSelectorAdapter = ArrayAdapter(this, R.layout.dropdown_menu_item, themeSelectorItems)
-        val themeUseSystem = mThemeLoader.getThemeMode(this)
+        themeUseSystem = mThemeLoader.getThemeMode(this)
 
         if(themeUseSystem == Preferences.THEME_USE_SYSTEM) {
             binding.cbThemeUseSystem.isChecked = true
@@ -149,19 +157,31 @@ class SettingsActivity : AppCompatActivity() {
             binding.etThemeSystemLight.isEnabled = false
             binding.etThemeSystemDark.isEnabled = false
         }
-        binding.cbThemeUseSystem.setOnCheckedChangeListener { _, _ -> toggleThemeEditTexts() }
+        binding.cbThemeUseSystem.setOnCheckedChangeListener {
+                _, _ -> toggleThemeEditTexts()
+            themeModeChanges = binding.cbThemeUseSystem.isChecked xor themeUseSystem
+        }
 
-        val manualThemeName = getThemeName(mThemeLoader.getThemeManualSetting(this))
-        binding.etThemeManual.setText(manualThemeName)
+        currentManualThemeName = getThemeName(mThemeLoader.getThemeManualSetting(this))
+        binding.etThemeManual.setText(currentManualThemeName)
         binding.etThemeManual.setAdapter(themeSelectorAdapter)
+        binding.etThemeManual.addTextChangedListener {
+            manualThemeChanges = it.toString() != currentManualThemeName
+        }
 
-        val systemLightThemeName = getThemeName(mThemeLoader.getThemeLightSetting(this))
-        binding.etThemeSystemLight.setText(systemLightThemeName)
+        currentSystemLightThemeName = getThemeName(mThemeLoader.getThemeLightSetting(this))
+        binding.etThemeSystemLight.setText(currentSystemLightThemeName)
         binding.etThemeSystemLight.setAdapter(themeSelectorAdapter)
+        binding.etThemeSystemLight.addTextChangedListener {
+            systemLightThemeChanges = it.toString() != currentSystemLightThemeName
+        }
 
-        val systemDarkThemeName = getThemeName(mThemeLoader.getThemeDarkSetting(this))
-        binding.etThemeSystemDark.setText(systemDarkThemeName)
+        currentSystemDarkThemeName = getThemeName(mThemeLoader.getThemeDarkSetting(this))
+        binding.etThemeSystemDark.setText(currentSystemDarkThemeName)
         binding.etThemeSystemDark.setAdapter(themeSelectorAdapter)
+        binding.etThemeSystemDark.addTextChangedListener {
+            systemDarkThemeChanges = it.toString() != currentSystemDarkThemeName
+        }
     }
 
     override fun onResume() {
