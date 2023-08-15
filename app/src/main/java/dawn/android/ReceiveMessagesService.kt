@@ -1,16 +1,30 @@
 package dawn.android
 
-import android.app.*
-import android.content.*
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
 import android.util.Log
 import dawn.android.data.Chat
 import dawn.android.util.DataManager
+import dawn.android.util.RequestFactory
 import dawn.android.util.TorReceiver
+import okhttp3.OkHttpClient
 import org.torproject.jni.TorService
 import org.torproject.jni.TorService.LocalBinder
+import java.net.InetSocketAddress
+import java.net.Proxy
 
 
 class ReceiveMessagesService: Service() {
@@ -21,6 +35,9 @@ class ReceiveMessagesService: Service() {
     private lateinit var chats: ArrayList<Chat>
     private var activeChat: Chat? = null
     private val useTor = true
+    private lateinit var directHttpClient: OkHttpClient
+    private lateinit var torProxy: Proxy
+    private lateinit var torHttpClient: OkHttpClient
 
     companion object {
         var isRunning = false
@@ -38,6 +55,14 @@ class ReceiveMessagesService: Service() {
             stopSelf()
         }
         else isRunning = true
+
+        // we need this to create the okhttp client. Requests are made asynchronously anyway, so whatever
+        val policy = ThreadPolicy.Builder().permitAll().build()
+        StrictMode.setThreadPolicy(policy)
+
+        directHttpClient = OkHttpClient.Builder().proxy(null).build()
+        torProxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress("localhost", 19050)) // planned to be configurable
+        torHttpClient = OkHttpClient.Builder().proxy(torProxy).build()
 
         setupForegroundServiceWithNotification()
 
@@ -66,6 +91,9 @@ class ReceiveMessagesService: Service() {
     private fun pollChats() {
         for(chat in chats) {
             if(chat.dataId == activeChat?.dataId) continue // skip active chat as it gets polled separately
+            if(chat.idStamp != LibraryConnector.mGetCurrentTimestamp().timestamp) {
+                // this chat was not received with the current tempId, therefore we need to search for old messages
+            }
             if(useTor) {
 
             }
