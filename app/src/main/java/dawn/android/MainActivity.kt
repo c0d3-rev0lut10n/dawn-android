@@ -85,8 +85,8 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.appBarMain.toolbar)
 
         // load theme
-        val themeId = Preferences.THEME_DARK
         val mThemeLoader = ThemeLoader(this)
+        val themeId = mThemeLoader.getThemeSetting(this)
         when(themeId) {
             Preferences.THEME_DARK -> {
                 mTheme = mThemeLoader.loadDarkTheme()
