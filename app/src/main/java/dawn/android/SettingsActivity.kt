@@ -61,7 +61,7 @@ class SettingsActivity : AppCompatActivity() {
     private var systemLightThemeChanges = false
     private var themeUseSystem = false
     private lateinit var logTag: String
-
+    private lateinit var mThemeLoader: ThemeLoader
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         logTag = "$packageName.SettingsActivity"
@@ -71,7 +71,7 @@ class SettingsActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
 
-        val mThemeLoader = ThemeLoader(this)
+        mThemeLoader = ThemeLoader(this)
         val themeSwitch = mThemeLoader.getThemeSetting(this)
         when(themeSwitch) {
             Preferences.THEME_DARK -> {
@@ -196,7 +196,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun checkForChanges() {
         Log.i(logTag, "Checking for changed settings...")
-        if(!(profileNameChanges || profileBioChanges || profileHandleChanges)) {
+        if(!(profileNameChanges || profileBioChanges || profileHandleChanges || themeModeChanges || manualThemeChanges || systemDarkThemeChanges || systemLightThemeChanges)) {
             Log.i(logTag, "No changed settings found. Closing Settings.")
             finish()
             return
@@ -237,6 +237,52 @@ class SettingsActivity : AppCompatActivity() {
             val profileHandleStringPostPadding = DataManager.generateStringPadding()
             val profileHandleString = profileHandleStringPrePadding.concatToString() + "\n" + binding.etProfileHandle.text.toString() + "\n" + profileHandleStringPostPadding.concatToString()
             DataManager.writeFile("profileHandle", filesDir, profileHandleString.toByteArray(Charsets.UTF_8), true)
+        }
+
+        if(themeModeChanges) {
+            mThemeLoader.setThemeMode(this, binding.cbThemeUseSystem.isChecked)
+        }
+
+        if(manualThemeChanges) {
+            when(binding.etThemeManual.text.toString()) {
+                getString(R.string.theme_dark) -> {
+                    mThemeLoader.setThemeManualSetting(this, Preferences.THEME_DARK)
+                }
+                getString(R.string.theme_extradark) -> {
+                    mThemeLoader.setThemeManualSetting(this, Preferences.THEME_EXTRADARK)
+                }
+                getString(R.string.theme_light) -> {
+                    mThemeLoader.setThemeManualSetting(this, Preferences.THEME_LIGHT)
+                }
+            }
+        }
+
+        if(systemDarkThemeChanges) {
+            when(binding.etThemeSystemDark.text.toString()) {
+                getString(R.string.theme_dark) -> {
+                    mThemeLoader.setThemeDarkSetting(this, Preferences.THEME_DARK)
+                }
+                getString(R.string.theme_extradark) -> {
+                    mThemeLoader.setThemeDarkSetting(this, Preferences.THEME_EXTRADARK)
+                }
+                getString(R.string.theme_light) -> {
+                    mThemeLoader.setThemeDarkSetting(this, Preferences.THEME_LIGHT)
+                }
+            }
+        }
+
+        if(systemLightThemeChanges) {
+            when(binding.etThemeSystemLight.text.toString()) {
+                getString(R.string.theme_dark) -> {
+                    mThemeLoader.setThemeLightSetting(this, Preferences.THEME_DARK)
+                }
+                getString(R.string.theme_extradark) -> {
+                    mThemeLoader.setThemeLightSetting(this, Preferences.THEME_EXTRADARK)
+                }
+                getString(R.string.theme_light) -> {
+                    mThemeLoader.setThemeLightSetting(this, Preferences.THEME_LIGHT)
+                }
+            }
         }
 
         finish()
