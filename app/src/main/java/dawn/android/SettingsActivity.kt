@@ -19,6 +19,7 @@
 package dawn.android
 
 import android.content.DialogInterface
+import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
@@ -30,9 +31,11 @@ import android.view.WindowInsetsController
 import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.widget.addTextChangedListener
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dawn.android.data.Preferences
 import dawn.android.data.Theme
@@ -163,12 +166,17 @@ class SettingsActivity : AppCompatActivity() {
             themeModeChanges = binding.cbThemeUseSystem.isChecked xor themeUseSystem
         }
 
+        val editTextColor = MaterialColors.getColor(this, android.R.attr.textColor, ContextCompat.getColor(this, R.color.white))
+        val endIconTintList = ColorStateList(arrayOf(intArrayOf()), intArrayOf(editTextColor))
+
         currentManualThemeName = getThemeName(mThemeLoader.getThemeManualSetting(this))
         binding.etThemeManual.setText(currentManualThemeName)
         binding.etThemeManual.setAdapter(themeSelectorAdapter)
         binding.etThemeManual.addTextChangedListener {
             manualThemeChanges = it.toString() != currentManualThemeName
         }
+        binding.etThemeManual.setTextColor(editTextColor)
+        binding.etThemeManualWrapper.setEndIconTintList(endIconTintList)
 
         currentSystemLightThemeName = getThemeName(mThemeLoader.getThemeLightSetting(this))
         binding.etThemeSystemLight.setText(currentSystemLightThemeName)
@@ -176,6 +184,8 @@ class SettingsActivity : AppCompatActivity() {
         binding.etThemeSystemLight.addTextChangedListener {
             systemLightThemeChanges = it.toString() != currentSystemLightThemeName
         }
+        binding.etThemeSystemLight.setTextColor(editTextColor)
+        binding.etThemeSystemLightWrapper.setEndIconTintList(endIconTintList)
 
         currentSystemDarkThemeName = getThemeName(mThemeLoader.getThemeDarkSetting(this))
         binding.etThemeSystemDark.setText(currentSystemDarkThemeName)
@@ -183,6 +193,8 @@ class SettingsActivity : AppCompatActivity() {
         binding.etThemeSystemDark.addTextChangedListener {
             systemDarkThemeChanges = it.toString() != currentSystemDarkThemeName
         }
+        binding.etThemeSystemDark.setTextColor(editTextColor)
+        binding.etThemeSystemDarkWrapper.setEndIconTintList(endIconTintList)
     }
 
     override fun onResume() {
