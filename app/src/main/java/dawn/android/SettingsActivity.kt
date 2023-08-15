@@ -64,24 +64,18 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var mThemeLoader: ThemeLoader
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        logTag = "$packageName.SettingsActivity"
-
-        binding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        setSupportActionBar(binding.toolbar)
 
         mThemeLoader = ThemeLoader(this)
         val themeSwitch = mThemeLoader.getThemeSetting(this)
         when(themeSwitch) {
             Preferences.THEME_DARK -> {
-                theme.applyStyle(R.style.Theme_Dawn_Dark, true)
+                setTheme(R.style.Theme_Dawn_Dark)
                 mTheme = mThemeLoader.loadDarkTheme()
                 androidTheme = R.style.Theme_Dawn_Dark
             }
 
             Preferences.THEME_EXTRADARK -> {
-                theme.applyStyle(R.style.Theme_Dawn_ExtraDark, true)
+                setTheme(R.style.Theme_Dawn_ExtraDark)
                 mTheme = mThemeLoader.loadExtraDarkTheme()
                 androidTheme = R.style.Theme_Dawn_ExtraDark
                 // hide status bar and navigation bar
@@ -96,6 +90,13 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
+
+        logTag = "$packageName.SettingsActivity"
+
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setSupportActionBar(binding.toolbar)
 
         window.statusBarColor = mTheme.primaryUIColor
         window.navigationBarColor = mTheme.primaryBackgroundColor
