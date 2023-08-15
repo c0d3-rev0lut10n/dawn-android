@@ -26,6 +26,7 @@
     <color name="x_dark_gradient_center">#120000</color>
     <color name="x_dark_gradient_end">@color/black</color>
     <color name="x_dark_background_contrast">#100000</color>
+    <color name="x_dark_primary_emphasized">#a00000</color>
 
     <!-- colors for light mode (some people actually want a light mode ;) ) -->
     <color name="orange">#ffb114</color>
