@@ -5,9 +5,10 @@
     android:id="@+id/wrapping_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:background="?attr/backgroundColor">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/top_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
