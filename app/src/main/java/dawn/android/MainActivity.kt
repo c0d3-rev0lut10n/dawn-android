@@ -32,11 +32,13 @@ import android.text.SpannableString
 import android.text.method.PasswordTransformationMethod
 import android.text.style.ForegroundColorSpan
 import android.util.Log
+import android.util.TypedValue
 import android.view.MenuItem
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.widget.EditText
 import android.widget.TextView
+import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
@@ -79,20 +81,17 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        setSupportActionBar(binding.appBarMain.toolbar)
-
         // load theme
         val mThemeLoader = ThemeLoader(this)
         val themeId = mThemeLoader.getThemeSetting(this)
         when(themeId) {
             Preferences.THEME_DARK -> {
                 mTheme = mThemeLoader.loadDarkTheme()
+                setTheme(R.style.Theme_Dawn_Dark)
             }
             Preferences.THEME_EXTRADARK -> {
                 mTheme = mThemeLoader.loadExtraDarkTheme()
+                setTheme(R.style.Theme_Dawn_ExtraDark)
 
                 // hide status bar and navigation bar
                 if(Build.VERSION.SDK_INT < 30) {
@@ -106,6 +105,11 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setSupportActionBar(binding.appBarMain.toolbar)
 
         window.statusBarColor = mTheme.primaryUIColor
         window.navigationBarColor = mTheme.primaryBackgroundColor
@@ -203,7 +207,22 @@ class MainActivity : AppCompatActivity() {
         val passwordField = EditText(this)
         passwordField.inputType = InputType.TYPE_CLASS_TEXT
         passwordField.transformationMethod = PasswordTransformationMethod.getInstance()
-        val passwordDialog = AlertDialog.Builder(this)
+        val textColorTypedValue = TypedValue()
+        theme.resolveAttribute(android.R.attr.textColor, textColorTypedValue, true)
+        @ColorInt val textColor = textColorTypedValue.data
+        passwordField.setTextColor(textColor)
+        val backgroundColorTypedValue = TypedValue()
+        theme.resolveAttribute(R.attr.textFieldBackgroundColor, backgroundColorTypedValue, true)
+        @ColorInt val backgroundColor = backgroundColorTypedValue.data
+        passwordField.setTextColor(textColor)
+        passwordField.setBackgroundColor(backgroundColor)
+        if(Build.VERSION.SDK_INT >= 29) {
+            val cursor = passwordField.textCursorDrawable
+            cursor?.setTint(textColor)
+            passwordField.textCursorDrawable = cursor
+        }
+
+        val passwordDialog = MaterialAlertDialogBuilder(this, R.style.Theme_Dawn_Dialog)
 
         passwordDialog.setMessage(R.string.text_enter_password)
         passwordDialog.setTitle(R.string.title_password_dialog)
