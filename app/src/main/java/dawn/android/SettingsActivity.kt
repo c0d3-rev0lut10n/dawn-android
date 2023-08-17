@@ -104,7 +104,7 @@ class SettingsActivity : AppCompatActivity() {
         window.statusBarColor = mTheme.primaryUIColor
         window.navigationBarColor = mTheme.primaryBackgroundColor
 
-        val actionBarTextColor = mTheme.primaryTextColor
+        val actionBarTextColor = mTheme.secondaryTextColor
         val actionBarString = getString(R.string.settings)
         actionBarText = SpannableString(actionBarString)
         actionBarText.setSpan(ForegroundColorSpan(actionBarTextColor), 0, actionBarString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
