@@ -26,17 +26,17 @@ import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.Log
-import android.util.TypedValue
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.widget.EditText
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.widget.addTextChangedListener
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dawn.android.data.Preferences
 import dawn.android.data.Theme
@@ -164,13 +164,9 @@ class SetupActivity : AppCompatActivity() {
         if(!dataInitResult) {
             // create a correctly themed dialog notifying about the failed data storage initialization and what to do about it
             val failedDataInitDialogResponse = EditText(this)
-            val textColorTypedValue = TypedValue()
-            theme.resolveAttribute(android.R.attr.textColor, textColorTypedValue, true)
-            @ColorInt val textColor = textColorTypedValue.data
+            val textColor = MaterialColors.getColor(this, android.R.attr.textColor, ContextCompat.getColor(this, R.color.white))
             failedDataInitDialogResponse.setTextColor(textColor)
-            val backgroundColorTypedValue = TypedValue()
-            theme.resolveAttribute(R.attr.textFieldBackgroundColor, backgroundColorTypedValue, true)
-            @ColorInt val backgroundColor = backgroundColorTypedValue.data
+            val backgroundColor = MaterialColors.getColor(this, R.attr.textFieldBackgroundColor, ContextCompat.getColor(this, R.color.black))
             failedDataInitDialogResponse.setTextColor(textColor)
             failedDataInitDialogResponse.setBackgroundColor(backgroundColor)
             if(Build.VERSION.SDK_INT >= 29) {
