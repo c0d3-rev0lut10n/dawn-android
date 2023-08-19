@@ -33,7 +33,9 @@ import android.text.method.PasswordTransformationMethod
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.MenuItem
+import android.view.ViewGroup.LayoutParams
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.widget.EditText
@@ -41,6 +43,7 @@ import android.widget.TextView
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -49,7 +52,6 @@ import dawn.android.data.Theme
 import dawn.android.databinding.ActivityMainBinding
 import dawn.android.util.DataManager
 import dawn.android.util.ThemeLoader
-import java.lang.Exception
 
 class MainActivity : AppCompatActivity() {
 
@@ -58,6 +60,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mDataManager: DataManager
     private lateinit var mTheme: Theme
     private lateinit var actionBarText: SpannableString
+    private val sizeFactor = 3 // this will be configurable
+    private lateinit var chatPreviewLayoutParams: ConstraintLayout.LayoutParams
 
     private lateinit var mService: ReceiveMessagesService
     private var mBound: Boolean = false
@@ -159,6 +163,11 @@ class MainActivity : AppCompatActivity() {
             }
             else connectReceiveMessagesService()
         }
+
+        chatPreviewLayoutParams = ConstraintLayout.LayoutParams(LayoutParams.MATCH_PARENT, sizeFactor * 32)
+        chatPreviewLayoutParams.setMargins(30, 30, 30, 0)
+
+        makeChatlist()
     }
 
     override fun onResume() {
@@ -275,5 +284,23 @@ class MainActivity : AppCompatActivity() {
             connection,
             BIND_AUTO_CREATE
         )
+    }
+
+    private fun makeChatlist() {
+        binding.appBarMain.content.contentLayout.removeAllViews()
+        val chats = DataManager.getAllChats()
+        if(chats.isEmpty()) {
+            // no chats yet, show a notice about that instead
+            val noChatsYetTextView = TextView(this)
+            val layoutParams = chatPreviewLayoutParams
+            layoutParams.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID
+            layoutParams.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID
+            layoutParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
+            noChatsYetTextView.layoutParams = layoutParams
+            noChatsYetTextView.text = getString(R.string.main_text_no_chats_yet)
+            noChatsYetTextView.textSize = (sizeFactor * 6.5).toFloat()
+            noChatsYetTextView.gravity = Gravity.CENTER
+            binding.appBarMain.content.contentLayout.addView(noChatsYetTextView)
+        }
     }
 }
