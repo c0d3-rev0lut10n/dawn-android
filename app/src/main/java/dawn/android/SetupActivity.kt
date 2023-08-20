@@ -207,14 +207,20 @@ class SetupActivity : AppCompatActivity() {
         val profileNameStringPostPadding = DataManager.generateStringPadding()
         val profileBioStringPrePadding = DataManager.generateStringPadding()
         val profileBioStringPostPadding = DataManager.generateStringPadding()
+        val initIdPrePadding = DataManager.generateStringPadding()
+        val initIdPostPadding = DataManager.generateStringPadding()
+
+        val initId = LibraryConnector.mGenId().id?: ""
 
         val serverString = serverStringPrePadding.concatToString() + "\n" + serverAddress + "\n" + serverStringPostPadding.concatToString()
         val profileNameString = profileNameStringPrePadding.concatToString() + "\n" + profileName + "\n" + profileNameStringPostPadding.concatToString()
         val profileBioString = profileBioStringPrePadding.concatToString() + "\n" + profileBio + "\n" + profileBioStringPostPadding.concatToString()
+        val initIdString = initIdPrePadding.concatToString() + "\n" + initId + "\n" + initIdPostPadding.concatToString()
 
         DataManager.writeFile("server", filesDir, serverString.toByteArray(Charsets.UTF_8), false)
         DataManager.writeFile("profileName", filesDir, profileNameString.toByteArray(Charsets.UTF_8), false)
         DataManager.writeFile("profileBio", filesDir, profileBioString.toByteArray(Charsets.UTF_8), false)
+        DataManager.writeFile("initId", filesDir, initIdString.toByteArray(Charsets.UTF_8), false)
         finish()
     }
 
