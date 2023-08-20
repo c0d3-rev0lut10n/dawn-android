@@ -58,12 +58,14 @@ class SetupActivity : AppCompatActivity() {
         val themeSwitch = mThemeLoader.getThemeSetting(this)
         when(themeSwitch) {
             Preferences.THEME_DARK -> {
+                setTheme(R.style.Theme_Dawn_Dark)
                 theme.applyStyle(R.style.Theme_Dawn_Dark, true)
                 mTheme = mThemeLoader.loadDarkTheme()
                 androidTheme = R.style.Theme_Dawn_Dark
             }
 
             Preferences.THEME_EXTRADARK -> {
+                setTheme(R.style.Theme_Dawn_ExtraDark)
                 theme.applyStyle(R.style.Theme_Dawn_ExtraDark, true)
                 mTheme = mThemeLoader.loadExtraDarkTheme()
                 androidTheme = R.style.Theme_Dawn_ExtraDark
