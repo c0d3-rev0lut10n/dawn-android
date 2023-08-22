@@ -98,6 +98,12 @@ data class Timestamp(
 )
 
 @Serializable
+data class MultiTimestamp(
+    val status: String,
+    val timestamps: Array<String>? = null
+)
+
+@Serializable
 data class GenHandle(
     val status: String,
     val handle: String? = null
@@ -224,6 +230,11 @@ object LibraryConnector {
         return Json.decodeFromString(libraryResponseJSON)
     }
 
+    fun mGetAllTimestampsSince(timestamp: String): MultiTimestamp {
+        val libraryResponseJSON = getAllTimestampsSince(timestamp)
+        return Json.decodeFromString(libraryResponseJSON)
+    }
+
     fun mGenHandle(init_pubkey_kyber: String, init_pubkey_curve: String, init_pubkey_kyber_for_salt: String, init_pubkey_curve_for_salt: String, name: String): GenHandle {
         val libraryResponseJSON = genHandle(init_pubkey_kyber, init_pubkey_curve, init_pubkey_kyber_for_salt, init_pubkey_curve_for_salt, name)
         return Json.decodeFromString(libraryResponseJSON)
@@ -259,6 +270,7 @@ object LibraryConnector {
     private external fun encryptFile(file: ByteArray): String
     private external fun decryptFile(ciphertext: ByteArray, key: String): String
     private external fun getCurrentTimestamp(): String
+    private external fun getAllTimestampsSince(timestamp: String): String
     private external fun genHandle(init_pubkey_kyber: String, init_pubkey_curve: String, init_pubkey_kyber_for_salt: String, init_pubkey_curve_for_salt: String, name: String): String
     private external fun parseHandle(handle: ByteArray): String
     private external fun genInitRequest(remote_pubkey_kyber: String, remote_pubkey_kyber_for_salt: String, remote_pubkey_curve: String, remote_pubkey_curve_for_salt: String, own_pubkey_sig: String, own_seckey_sig: String, name: String, comment: String): String
