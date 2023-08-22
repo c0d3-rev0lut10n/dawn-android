@@ -56,6 +56,7 @@ class ReceiveMessagesService: Service() {
     private lateinit var directHttpClient: OkHttpClient
     private lateinit var torProxy: Proxy
     private lateinit var torHttpClient: OkHttpClient
+    private lateinit var logTag: String
 
     companion object {
         var isRunning = false
@@ -77,6 +78,8 @@ class ReceiveMessagesService: Service() {
         // we need this to create the okhttp client. Requests are made asynchronously anyway, so whatever
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
+
+        logTag = "$packageName.ReceiveMessagesService"
 
         directHttpClient = OkHttpClient.Builder().proxy(null).build()
         torProxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress("localhost", 19050)) // planned to be configurable
@@ -107,16 +110,47 @@ class ReceiveMessagesService: Service() {
     }
 
     private fun pollChats() {
+        val client = if(useTor) {
+            torHttpClient
+        } else {
+            directHttpClient
+        }
         for(chat in chats) {
             if(chat.dataId == activeChat?.dataId) continue // skip active chat as it gets polled separately
-            if(chat.idStamp != LibraryConnector.mGetCurrentTimestamp().timestamp) {
-                // this chat was not received with the current tempId, therefore we need to search for old messages
-            }
-            if(useTor) {
 
+            val timestampsToCheck = LibraryConnector.mGetAllTimestampsSince(chat.idStamp)
+            if(timestampsToCheck.status != "ok") {
+                Log.e(logTag, "Deriving timestamps failed: ${timestampsToCheck.status}")
+                return
             }
-            else {
-
+            for(timestamp in timestampsToCheck.timestamps!!) {
+                val temporaryId = LibraryConnector.mGetCustomTempId(chat.id, timestamp)
+                if(temporaryId.status != "ok") {
+                    Log.e(logTag, "Getting temporary ID failed: ${temporaryId.status}")
+                    return
+                }
+                while(chat.lastMessageId < 60000U) {
+                    val request = RequestFactory.buildRcvRequest(temporaryId.id!!, chat.lastMessageId)
+                    val response = client.newCall(request).execute()
+                    if(!response.isSuccessful) {
+                        Log.w(logTag, "Request $request failed, response: ${response.code}")
+                        return
+                    }
+                    if (response.code == 204) break // there are no messages left to receive for this ID. Use the next one!
+                    // save the message and increment messageId
+                    // TODO: save the message and build notification
+                    chat.lastMessageId++
+                    DataManager.saveChatMessageId(chat.dataId, chat.lastMessageId)
+                }
+                if (chat.idStamp == LibraryConnector.mGetCurrentTimestamp().timestamp) continue// if the checked ID is the currently used one, we do not need to derive a new one. Therefore, we continue
+                // we are done with this ID, derive and save the new one
+                val nextId = LibraryConnector.mGetNextId(chat.id, chat.idSalt)
+                if(nextId.status != "ok") {
+                    Log.e(logTag, "Deriving next ID for chat $chat failed: ${nextId.status}")
+                }
+                chat.id = nextId.id!!
+                DataManager.saveChatMessageId(chat.dataId, 0U)
+                DataManager.saveChatId(chat.dataId, chat.id, timestamp)
             }
         }
     }
