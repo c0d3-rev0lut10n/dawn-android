@@ -302,6 +302,32 @@ object DataManager {
         return chats
     }
 
+    // get a chat by data ID
+    fun getChat(dataId: String): Chat? {
+        if(!initialized) return null
+        val chatsDir = File(mContext.filesDir, "chats")
+        val chatDir = File(chatsDir, dataId)
+        if(!chatDir.isDirectory) return null
+        val chatContent = readFile("chatId", chatDir)?: return null
+        val chatContentString = String(chatContent, Charsets.UTF_8)
+        val chatId = chatContentString.substringBefore("\n")
+        val chatIdStamp = chatContentString.substringAfter("\n")
+        val chatIdSalt = String(readFile("chatIdSalt", chatDir)?: return null, Charsets.UTF_8)
+        val chatMessageId: UShort
+        try {
+            chatMessageId = String(
+                readFile("chatMessageId", chatDir) ?: return null,
+                Charsets.UTF_8
+            ).toUShort()
+        }
+        catch(e: Exception) {
+            Log.e(mContext.packageName, "Could not parse chatMessageId", e)
+            return null
+        }
+        val chatName = String(readFile("chatName", chatDir)?: return null, Charsets.UTF_8)
+        return Chat(dataId, chatId, chatIdStamp, chatIdSalt, chatMessageId, chatName)
+    }
+
     // save a new chat and return the associated internal data ID
     fun saveNewChat(id: String, idStamp: String, idSalt: String, name: String): String {
         if(id.contains("\n", true)) return ""
