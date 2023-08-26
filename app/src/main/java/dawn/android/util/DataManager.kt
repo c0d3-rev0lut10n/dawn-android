@@ -336,6 +336,10 @@ object DataManager {
         if(name.contains("\n", true) || name == "") return ""
         var dataId: GenId? = null // we have to initialize with null because the compiler will complain otherwise (even though dataId will be always initialized when the chatDir File gets constructed
         val chatsDir = File(mContext.filesDir, "chats")
+        if(!chatsDir.isDirectory) {
+            // this is the first chat, create the directory
+            chatsDir.mkdir()
+        }
         val chatDirs = chatsDir.listFiles()
         if(chatDirs == null) {
             // there are no chats, we can freely choose an ID
