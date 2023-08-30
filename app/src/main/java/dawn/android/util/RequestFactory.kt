@@ -40,14 +40,15 @@ object RequestFactory {
         return request.build()
     }
 
-    fun buildSndRequest(id: String, messageCiphertext: ByteArray) {
+    fun buildSndRequest(id: String, messageCiphertext: ByteArray, mdc: String): Request {
         val request = Request
             .Builder()
-            .url("$serverBaseAddress/snd/$id")
+            .url("$serverBaseAddress/snd/$id?mdc=$mdc")
             .post(
                 messageCiphertext.toRequestBody(
                     "application/octet-stream".toMediaTypeOrNull()
                 )
             )
+        return request.build()
     }
 }
