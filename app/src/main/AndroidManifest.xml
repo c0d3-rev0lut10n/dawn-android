@@ -17,25 +17,25 @@
         android:theme="@style/Theme.Dawn.Dark"
         tools:targetApi="31">
         <activity
+            android:name=".ShowChatActivity"
+            android:exported="false" />
+        <activity
             android:name=".SetupActivity"
-            android:exported="false"
-        />
+            android:exported="false" />
 
         <service
             android:name=".ReceiveMessagesService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
 
         <activity
             android:name=".SettingsActivity"
             android:exported="false"
-            android:parentActivityName=".MainActivity"
-            />
+            android:parentActivityName=".MainActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
-            >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
