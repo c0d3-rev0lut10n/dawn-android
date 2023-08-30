@@ -18,7 +18,9 @@
 
 package dawn.android.util
 
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 
 object RequestFactory {
 
@@ -36,5 +38,16 @@ object RequestFactory {
     fun buildDetailRequest(id: String, messageNumber: UShort, mdc: String): Request {
         val request = Request.Builder().url("$serverBaseAddress/d/$id/$messageNumber?mdc=$mdc")
         return request.build()
+    }
+
+    fun buildSndRequest(id: String, messageCiphertext: ByteArray) {
+        val request = Request
+            .Builder()
+            .url("$serverBaseAddress/snd/$id")
+            .post(
+                messageCiphertext.toRequestBody(
+                    "application/octet-stream".toMediaTypeOrNull()
+                )
+            )
     }
 }
