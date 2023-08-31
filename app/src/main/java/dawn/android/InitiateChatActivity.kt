@@ -30,12 +30,12 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import dawn.android.data.Preferences
 import dawn.android.data.Theme
-import dawn.android.databinding.ActivityShowChatBinding
+import dawn.android.databinding.ActivityInitiateChatBinding
 import dawn.android.util.ThemeLoader
 
 class InitiateChatActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityShowChatBinding
+    private lateinit var binding: ActivityInitiateChatBinding
     private lateinit var mTheme: Theme
     private var androidTheme: Int = 0
     private lateinit var actionBarText: SpannableString
@@ -72,7 +72,7 @@ class InitiateChatActivity : AppCompatActivity() {
 
         logTag = "$packageName.InitiateChatActivity"
 
-        binding = ActivityShowChatBinding.inflate(layoutInflater)
+        binding = ActivityInitiateChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
