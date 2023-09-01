@@ -208,6 +208,10 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this, SettingsActivity::class.java)
                 startActivity(intent)
             }
+            R.id.nav_new_chat -> {
+                val intent = Intent(this, InitiateChatActivity::class.java)
+                startActivity(intent)
+            }
         }
         return true
     }
