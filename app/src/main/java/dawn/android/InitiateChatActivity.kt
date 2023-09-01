@@ -89,4 +89,9 @@ class InitiateChatActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(mTheme.backButtonIcon)
     }
+
+    override fun onResume() {
+        binding.toolbar.title = actionBarText
+        super.onResume()
+    }
 }
