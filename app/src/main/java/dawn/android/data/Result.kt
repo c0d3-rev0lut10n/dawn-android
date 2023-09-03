@@ -18,7 +18,7 @@
 
 package dawn.android.data
 
-private class Result<T, E>(val ok: T?, val err: E?) {
+private class Result<T, E>(private val ok: T?, private val err: E?) {
 
     companion object {
         fun <T, E> ok(res: T): Result<T, E> {
