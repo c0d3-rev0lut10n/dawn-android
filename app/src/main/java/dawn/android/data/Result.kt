@@ -35,6 +35,11 @@ private class Result<T, E>(val ok: T?, val err: E?) {
         return this.ok
     }
 
+    fun unwrapErr(): E {
+        if(this.err == null) throw Exception("Called unwrapErr() on an Ok value!")
+        return this.err
+    }
+
     fun isErr(): Boolean {
         return this.ok == null
     }
