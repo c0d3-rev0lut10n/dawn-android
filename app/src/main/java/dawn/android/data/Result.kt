@@ -31,7 +31,7 @@ private class Result<T, E>(val ok: T?, val err: E?) {
     }
 
     fun unwrap(): T {
-        if(this.ok == null) throw Exception()
+        if(this.ok == null) throw Exception("Called unwrap() on an Err value!")
         return this.ok
     }
 
