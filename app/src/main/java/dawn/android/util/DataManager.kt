@@ -24,6 +24,9 @@ import android.util.Log
 import dawn.android.GenId
 import dawn.android.LibraryConnector
 import dawn.android.data.Chat
+import dawn.android.data.Result
+import dawn.android.data.Result.Companion.err
+import dawn.android.data.Result.Companion.ok
 import java.io.*
 import java.security.MessageDigest
 import java.security.SecureRandom
@@ -388,6 +391,13 @@ object DataManager {
         if(!writeFile("chatMessageId", chatDir, messageIdFileContent.toByteArray(Charsets.UTF_8), true)) return false
 
         return true
+    }
+
+    fun getOwnProfileName(): Result<String, String> {
+        val profileFileContent = readFile("profileName", mContext.filesDir) ?: return err("Could not read file")
+        val paddedProfileName = String(profileFileContent, Charsets.UTF_8)
+        val profileName = paddedProfileName.substringAfter("\n").substringBefore("\n")
+        return ok(profileName)
     }
 
     private fun deleteRecursive(directory: File) {
