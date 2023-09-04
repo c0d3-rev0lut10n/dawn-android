@@ -88,10 +88,19 @@ class InitiateChatActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(mTheme.backButtonIcon)
+
+        binding.btnSearchHandle.setOnClickListener {
+            searchHandleAndInit()
+        }
     }
 
     override fun onResume() {
         binding.toolbar.title = actionBarText
         super.onResume()
+    }
+
+    private fun searchHandleAndInit() {
+        val handleToSearch = binding.etHandleName.text.toString()
+
     }
 }

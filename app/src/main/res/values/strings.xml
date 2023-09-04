@@ -80,6 +80,7 @@
     <string name="initiate_app_bar">New Chat</string>
     <string name="initiate_heading_search">Search for a handle:</string>
     <string name="initiate_hint_profile_handle">\@my_example_handle</string>
+    <string name="initiate_hint_profile_handle_secret">init secret</string>
     <string name="initiate_search_handle">Search handle and initiate chat</string>
 
 </resources>
