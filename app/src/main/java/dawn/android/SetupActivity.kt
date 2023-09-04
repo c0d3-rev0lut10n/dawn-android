@@ -217,10 +217,18 @@ class SetupActivity : AppCompatActivity() {
         val profileBioString = profileBioStringPrePadding.concatToString() + "\n" + profileBio + "\n" + profileBioStringPostPadding.concatToString()
         val initIdString = initIdPrePadding.concatToString() + "\n" + initId + "\n" + initIdPostPadding.concatToString()
 
+        val signatureKeypair = LibraryConnector.mSignKeygen()
+        if(signatureKeypair.status != "ok") {
+            // TODO: notify about the error
+            finish()
+        }
+
         DataManager.writeFile("server", filesDir, serverString.toByteArray(Charsets.UTF_8), false)
         DataManager.writeFile("profileName", filesDir, profileNameString.toByteArray(Charsets.UTF_8), false)
         DataManager.writeFile("profileBio", filesDir, profileBioString.toByteArray(Charsets.UTF_8), false)
         DataManager.writeFile("initId", filesDir, initIdString.toByteArray(Charsets.UTF_8), false)
+        DataManager.writeFile("pubkeySig", filesDir, signatureKeypair.own_pubkey_sig!!.toByteArray(Charsets.UTF_8), false)
+        DataManager.writeFile("seckeySig", filesDir, signatureKeypair.own_seckey_sig!!.toByteArray(Charsets.UTF_8), false)
         finish()
     }
 
