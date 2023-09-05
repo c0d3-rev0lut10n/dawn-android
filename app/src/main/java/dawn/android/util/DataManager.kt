@@ -24,6 +24,7 @@ import android.util.Log
 import dawn.android.GenId
 import dawn.android.LibraryConnector
 import dawn.android.data.Chat
+import dawn.android.data.Keypair
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
@@ -398,6 +399,21 @@ object DataManager {
         val paddedProfileName = String(profileFileContent, Charsets.UTF_8)
         val profileName = paddedProfileName.substringAfter("\n").substringBefore("\n")
         return ok(profileName)
+    }
+
+    fun getOwnProfileSignKeys(): Result<Keypair, String> {
+        val pubKey = readFile("pubkeySig", mContext.filesDir)
+        val secKey = readFile("seckeySig", mContext.filesDir)
+
+        if(pubKey == null || secKey == null) {
+            return err("could not read keys")
+        }
+
+        val keypair = Keypair(
+            publicKey = String(pubKey, Charsets.UTF_8),
+            privateKey = String(secKey, Charsets.UTF_8)
+        )
+        return ok(keypair)
     }
 
     private fun deleteRecursive(directory: File) {
