@@ -126,7 +126,8 @@ data class GenInitRequest(
     val own_seckey_kyber: String? = null,
     val own_pubkey_curve: String? = null,
     val own_seckey_curve: String? = null,
-    val pfs_key: String? = null,
+    val own_pfs_key: String? = null,
+    val remote_pfs_key: String? = null,
     val pfs_salt: String?= null,
     val id: String? = null,
     val id_salt: String? = null,
@@ -245,8 +246,8 @@ object LibraryConnector {
         return Json.decodeFromString(libraryResponseJSON)
     }
 
-    fun mGenInitRequest(remote_pubkey_kyber: String, remote_pubkey_kyber_for_salt: String, remote_pubkey_curve: String, remote_pubkey_curve_for_salt: String, own_pubkey_sig: String, own_seckey_sig: String, name: String, comment: String): GenInitRequest {
-        val libraryResponseJSON = genInitRequest(remote_pubkey_kyber, remote_pubkey_kyber_for_salt, remote_pubkey_curve, remote_pubkey_curve_for_salt, own_pubkey_sig, own_seckey_sig, name, comment)
+    fun mGenInitRequest(remote_pubkey_kyber: String, remote_pubkey_kyber_for_salt: String, remote_pubkey_curve: String, remote_pubkey_curve_pfs_2: String, remote_pubkey_curve_for_salt: String, own_pubkey_sig: String, own_seckey_sig: String, name: String, comment: String): GenInitRequest {
+        val libraryResponseJSON = genInitRequest(remote_pubkey_kyber, remote_pubkey_kyber_for_salt, remote_pubkey_curve, remote_pubkey_curve_pfs_2, remote_pubkey_curve_for_salt, own_pubkey_sig, own_seckey_sig, name, comment)
         return Json.decodeFromString(libraryResponseJSON)
     }
 
@@ -273,6 +274,6 @@ object LibraryConnector {
     private external fun getAllTimestampsSince(timestamp: String): String
     private external fun genHandle(init_pubkey_kyber: String, init_pubkey_curve: String, init_pubkey_kyber_for_salt: String, init_pubkey_curve_for_salt: String, name: String): String
     private external fun parseHandle(handle: ByteArray): String
-    private external fun genInitRequest(remote_pubkey_kyber: String, remote_pubkey_kyber_for_salt: String, remote_pubkey_curve: String, remote_pubkey_curve_for_salt: String, own_pubkey_sig: String, own_seckey_sig: String, name: String, comment: String): String
+    private external fun genInitRequest(remote_pubkey_kyber: String, remote_pubkey_kyber_for_salt: String, remote_pubkey_curve: String, remote_pubkey_curve_pfs_2: String, remote_pubkey_curve_for_salt: String, own_pubkey_sig: String, own_seckey_sig: String, name: String, comment: String): String
     private external fun parseInitRequest(ciphertext: ByteArray, own_seckey_kyber: String, own_seckey_curve: String, own_seckey_curve_pfs_2: String, own_seckey_kyber_for_salt: String, own_seckey_curve_for_salt: String): String
 }
