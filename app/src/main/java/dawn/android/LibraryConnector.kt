@@ -114,6 +114,7 @@ data class ParseHandle(
     val status: String,
     val init_pk_kyber: String? = null,
     val init_pk_curve: String? = null,
+    val init_pk_curve_pfs_2: String? = null,
     val init_pk_kyber_for_salt: String? = null,
     val init_pk_curve_for_salt: String? = null,
     val name: String? = null
