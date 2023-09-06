@@ -33,14 +33,22 @@ import android.os.Build
 import android.os.IBinder
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
+import android.util.Base64
 import android.util.Log
 import dawn.android.data.Chat
+import dawn.android.data.Result
+import dawn.android.data.Result.Companion.ok
+import dawn.android.data.Result.Companion.err
+import dawn.android.data.SentInitRequest
 import dawn.android.util.DataManager
 import dawn.android.util.RequestFactory
 import dawn.android.util.TorReceiver
 import okhttp3.OkHttpClient
 import org.torproject.jni.TorService
 import org.torproject.jni.TorService.LocalBinder
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.ObjectOutputStream
 import java.net.InetSocketAddress
 import java.net.Proxy
 
@@ -157,6 +165,85 @@ class ReceiveMessagesService: Service() {
 
     private fun pollActiveChat() {
 
+    }
+
+    private fun searchHandleAndInit(handle: String, initSecret: String, comment: String): Result<String, String> {
+        val client = if(useTor) {
+            torHttpClient
+        } else {
+            directHttpClient
+        }
+        val request = RequestFactory.buildWhoRequest(handle, initSecret)
+        val response = client.newCall(request).execute()
+        println(response.body)
+        if(!response.isSuccessful) {
+            Log.w(logTag, "Request $request failed, response: ${response.code}")
+            return err("Request $request failed, response: ${response.code}; ${response.body}")
+        }
+        if(response.code == 204) return err("handle not found")
+
+        if(response.code == 200) {
+            // parse received keys and ID
+            val id = response.headers["X-ID"]?: return err("no ID associated with handle")
+            val responseBody = response.body?: return err("Response $response to request $request did not have a request body")
+            val handleInfo = LibraryConnector.mParseHandle(responseBody.bytes())
+            if(handleInfo.status != "ok") {
+                return err("Could not parse handle: ${handleInfo.status}")
+            }
+
+            val ownSignKeypairResult = DataManager.getOwnProfileSignKeys()
+            if(ownSignKeypairResult.isErr()) return err("could not get signature keypair: ${ownSignKeypairResult.unwrapErr()}")
+
+            val ownSignKeypair = ownSignKeypairResult.unwrap()
+
+            val profileNameResult = DataManager.getOwnProfileName()
+            if(profileNameResult.isErr()) return err("could not get profile name: ${profileNameResult.unwrapErr()}")
+
+            val initRequest = LibraryConnector.mGenInitRequest(
+                handleInfo.init_pk_kyber!!,
+                handleInfo.init_pk_kyber_for_salt!!,
+                handleInfo.init_pk_curve!!,
+                handleInfo.init_pk_curve_pfs_2!!,
+                handleInfo.init_pk_curve_for_salt!!,
+                ownSignKeypair.publicKey,
+                ownSignKeypair.privateKey,
+                profileNameResult.unwrap(),
+                comment
+            )
+
+            if(initRequest.status != "ok") return err("could not generate init request: ${initRequest.status}")
+
+            val initRequestToSend = RequestFactory.buildSndRequest(id, Base64.decode(initRequest.ciphertext, Base64.NO_WRAP), initRequest.mdc!!)
+
+            val sentInitResponse = client.newCall(initRequestToSend).execute()
+
+            if(!sentInitResponse.isSuccessful) return err("could not send init request: ${sentInitResponse.code}; ${sentInitResponse.body}")
+
+            val sentInitRequest = SentInitRequest(
+                ownPubkeyKyber = initRequest.own_pubkey_kyber!!,
+                ownSeckeyKyber = initRequest.own_seckey_kyber!!,
+                ownPubkeyCurve = initRequest.own_pubkey_curve!!,
+                ownSeckeyCurve = initRequest.own_seckey_curve!!,
+                ownPFSKey = initRequest.own_pfs_key!!,
+                remotePFSKey = initRequest.remote_pfs_key!!,
+                pfsSalt = initRequest.pfs_salt!!,
+                id = initRequest.id!!,
+                idSalt = initRequest.id_salt!!,
+                mdc = initRequest.mdc,
+                ciphertext = initRequest.ciphertext!!
+            )
+
+            val initRequestDirectory = File(filesDir, "sentRequests")
+            if(!initRequestDirectory.isDirectory) initRequestDirectory.mkdir()
+
+            val sentInitRequestByteOutputStream = ByteArrayOutputStream()
+            val sentInitRequestObjectOutputStream = ObjectOutputStream(sentInitRequestByteOutputStream)
+            sentInitRequestObjectOutputStream.writeObject(sentInitRequest)
+            val requestBytes = sentInitRequestByteOutputStream.toByteArray()
+            if(!DataManager.writeFile(sentInitRequest.id, initRequestDirectory, requestBytes, false)) return err("could not write file")
+        }
+
+        return ok("success")
     }
 
     private fun setupForegroundServiceWithNotification() {
