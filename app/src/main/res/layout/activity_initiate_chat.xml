@@ -105,6 +105,30 @@
 
                     </com.google.android.material.textfield.TextInputLayout>
 
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/etInitCommentWrapper"
+                        style="@style/Theme.Dawn.TextField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="30dp"
+                        android:ems="10"
+                        android:hint="@string/initiate_hint_init_comment"
+                        android:inputType="text"
+                        android:minHeight="48dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/etHandleSecretWrapper">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etInitComment"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="?android:attr/textColor"
+                            tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
                     <Button
                         android:id="@+id/btnSearchHandle"
                         android:layout_width="wrap_content"
@@ -114,7 +138,7 @@
                         android:layout_marginEnd="30dp"
                         android:minHeight="48dp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/etHandleSecretWrapper"
+                        app:layout_constraintTop_toBottomOf="@id/etInitCommentWrapper"
                         android:text="@string/initiate_search_handle"
                         />
 
