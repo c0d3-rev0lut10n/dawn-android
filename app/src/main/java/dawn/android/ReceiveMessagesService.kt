@@ -68,6 +68,7 @@ class ReceiveMessagesService: Service() {
 
     companion object {
         var isRunning = false
+        var isReady = false
     }
 
     inner class BindInterface: Binder() {
@@ -102,6 +103,8 @@ class ReceiveMessagesService: Service() {
 
         RequestFactory.setMessageServerAddress(serverAddress)
         chats = DataManager.getAllChats()
+
+        isReady = true
 
         return super.onStartCommand(intent, flags, startId)
     }
