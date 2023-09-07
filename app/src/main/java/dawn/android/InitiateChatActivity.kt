@@ -18,14 +18,19 @@
 
 package dawn.android
 
+import android.content.ComponentName
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.IBinder
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import android.widget.Toast
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import dawn.android.data.Preferences
@@ -41,6 +46,22 @@ class InitiateChatActivity : AppCompatActivity() {
     private lateinit var actionBarText: SpannableString
     private lateinit var logTag: String
     private lateinit var mThemeLoader: ThemeLoader
+
+    private lateinit var mService: ReceiveMessagesService
+    private var mBound: Boolean = false
+
+    private val connection = object : ServiceConnection {
+
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            val binder = service as ReceiveMessagesService.BindInterface
+            mService = binder.getService()
+            mBound = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            mBound = false
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +93,12 @@ class InitiateChatActivity : AppCompatActivity() {
 
         logTag = "$packageName.InitiateChatActivity"
 
+        bindService(
+            Intent(this, ReceiveMessagesService::class.java),
+            connection,
+            BIND_AUTO_CREATE
+        )
+
         binding = ActivityInitiateChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -101,6 +128,16 @@ class InitiateChatActivity : AppCompatActivity() {
 
     private fun searchHandleAndInit() {
         val handleToSearch = binding.etHandleName.text.toString()
-
+        val initSecret = binding.etHandleSecret.text.toString()
+        val comment = binding.etInitComment.text.toString()
+        val initResult = mService.searchHandleAndInit(handleToSearch, initSecret, comment)
+        if(initResult.isErr()) {
+            val toast = Toast.makeText(this, getString(R.string.initiate_init_failed)+initResult.unwrapErr(), Toast.LENGTH_LONG)
+            toast.show()
+        }
+        else {
+            val toast = Toast.makeText(this, getString(R.string.initiate_init_request_sent), Toast.LENGTH_LONG)
+            toast.show()
+        }
     }
 }

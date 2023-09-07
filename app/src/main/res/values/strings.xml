@@ -83,5 +83,7 @@
     <string name="initiate_hint_profile_handle_secret">init secret</string>
     <string name="initiate_hint_init_comment">comment</string>
     <string name="initiate_search_handle">Search handle and initiate chat</string>
+    <string name="initiate_init_failed">Init failed: </string>
+    <string name="initiate_init_request_sent">Request was sent successfully</string>
 
 </resources>
