@@ -127,6 +127,10 @@ class InitiateChatActivity : AppCompatActivity() {
     }
 
     private fun searchHandleAndInit() {
+        if(!ReceiveMessagesService.isReady) {
+            val toast = Toast.makeText(this, getString(R.string.initiate_not_ready), Toast.LENGTH_LONG)
+            toast.show()
+        }
         val handleToSearch = binding.etHandleName.text.toString()
         val initSecret = binding.etHandleSecret.text.toString()
         val comment = binding.etInitComment.text.toString()
