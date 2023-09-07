@@ -96,6 +96,11 @@ class ReceiveMessagesService: Service() {
         setupForegroundServiceWithNotification()
 
         startTor()
+
+        val serverFileContent = String(DataManager.readFile("server", filesDir)!!, Charsets.UTF_8)
+        val serverAddress = serverFileContent.substringAfter("\n").substringBefore("\n")
+
+        RequestFactory.setMessageServerAddress(serverAddress)
         chats = DataManager.getAllChats()
 
         return super.onStartCommand(intent, flags, startId)
