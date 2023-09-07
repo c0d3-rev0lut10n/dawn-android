@@ -167,7 +167,7 @@ class ReceiveMessagesService: Service() {
 
     }
 
-    private fun searchHandleAndInit(handle: String, initSecret: String, comment: String): Result<String, String> {
+    fun searchHandleAndInit(handle: String, initSecret: String, comment: String): Result<String, String> {
         val client = if(useTor) {
             torHttpClient
         } else {
