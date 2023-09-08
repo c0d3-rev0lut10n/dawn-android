@@ -96,7 +96,7 @@ class ReceiveMessagesService: Service() {
 
         setupForegroundServiceWithNotification()
 
-        startTor()
+        if(useTor) startTor()
 
         val serverFileContent = String(DataManager.readFile("server", filesDir)!!, Charsets.UTF_8)
         val serverAddress = serverFileContent.substringAfter("\n").substringBefore("\n")
