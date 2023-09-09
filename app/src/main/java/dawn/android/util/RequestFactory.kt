@@ -52,6 +52,13 @@ object RequestFactory {
         return request.build()
     }
 
+    fun buildSetHandleRequest(id: String, handle: String, password: String, initSecret: String, allowPublicInit: Boolean): Request {
+        val request = Request
+            .Builder()
+            .url("$serverBaseAddress/sethandle/$id/$handle?password=$password&init_secret=$initSecret&allow_public_init=$allowPublicInit")
+        return request.build()
+    }
+
     fun buildWhoRequest(handle: String, initSecret: String?): Request {
         val initSecretParameter = initSecret?: ""
         val request = Request.Builder().url("$serverBaseAddress/who/$handle?init_secret=$initSecretParameter")
