@@ -29,6 +29,7 @@ import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -245,11 +246,25 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         if(profileHandleChanges && checkHandle(binding.etProfileHandle.text.toString())) {
-            // TODO: set a handle on the server
-            val profileHandleStringPrePadding = DataManager.generateStringPadding()
-            val profileHandleStringPostPadding = DataManager.generateStringPadding()
-            val profileHandleString = profileHandleStringPrePadding.concatToString() + "\n" + binding.etProfileHandle.text.toString() + "\n" + profileHandleStringPostPadding.concatToString()
-            DataManager.writeFile("profileHandle", filesDir, profileHandleString.toByteArray(Charsets.UTF_8), true)
+            val initIdBytes = DataManager.readFile("initId", filesDir)
+            if(initIdBytes == null) toastError(getString(R.string.settings_error_no_init_id))
+            else {
+                val initIdString = String(initIdBytes, Charsets.UTF_8).substringAfter("\n").substringBefore("\n")
+                if(initIdString == "") toastError(getString(R.string.settings_error_no_init_id))
+                else {
+                    // TODO: set a handle on the server
+                    val profileHandleStringPrePadding = DataManager.generateStringPadding()
+                    val profileHandleStringPostPadding = DataManager.generateStringPadding()
+                    val profileHandleString =
+                        profileHandleStringPrePadding.concatToString() + "\n" + binding.etProfileHandle.text.toString() + "\n" + profileHandleStringPostPadding.concatToString()
+                    DataManager.writeFile(
+                        "profileHandle",
+                        filesDir,
+                        profileHandleString.toByteArray(Charsets.UTF_8),
+                        true
+                    )
+                }
+            }
         }
 
         if(themeModeChanges) {
@@ -326,5 +341,10 @@ class SettingsActivity : AppCompatActivity() {
         binding.etThemeManual.isEnabled = !binding.etThemeManual.isEnabled
         binding.etThemeSystemLight.isEnabled = !binding.etThemeSystemLight.isEnabled
         binding.etThemeSystemDark.isEnabled = !binding.etThemeSystemDark.isEnabled
+    }
+
+    private fun toastError(error: String) {
+        val toast = Toast.makeText(this, error, Toast.LENGTH_LONG)
+        toast.show()
     }
 }
