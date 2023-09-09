@@ -18,6 +18,9 @@
 
 package dawn.android
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.os.Build
@@ -43,6 +46,7 @@ import dawn.android.data.Theme
 import dawn.android.databinding.ActivitySettingsBinding
 import dawn.android.util.DataManager
 import dawn.android.util.ThemeLoader
+import java.security.SecureRandom
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -124,9 +128,36 @@ class SettingsActivity : AppCompatActivity() {
             paddedProfileHandle.substringAfter("\n").substringBefore("\n")
         } else ""
 
+        val initSecret: String
+        val initSecretFileContent = DataManager.readFile("initSecret", filesDir)
+        if(initSecretFileContent == null) {
+            // there doesn't exist an init secret yet, therefore create one
+            val availableSecretCharacters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            val secretLength = 16
+            val secret = CharArray(secretLength)
+            val stringGenerationRng = SecureRandom()
+            for(i in 0 until secretLength) {
+                secret[i] = availableSecretCharacters[stringGenerationRng.nextInt(availableSecretCharacters.length)]
+            }
+            initSecret = secret.concatToString()
+            val initSecretFileString = DataManager.generateStringPadding().concatToString() + "\n" + initSecret + "\n" + DataManager.generateStringPadding().concatToString()
+            DataManager.writeFile("initSecret", filesDir, initSecretFileString.toByteArray(Charsets.UTF_8), false)
+        }
+        else {
+            initSecret = String(initSecretFileContent, Charsets.UTF_8).substringAfter("\n").substringBefore("\n")
+        }
+
         binding.etProfileName.setText(currentProfileName)
         binding.etProfileBio.setText(currentProfileBio)
         binding.etProfileHandle.setText(currentProfileHandle)
+        binding.tvInitSecret.text = getString(R.string.settings_text_init_secret, initSecret)
+        binding.tvInitSecret.setOnClickListener {
+            val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipboardContent = ClipData.newPlainText("dawn init secret", initSecret)
+            clipboardManager.setPrimaryClip(clipboardContent)
+            val toast = Toast.makeText(this, getString(R.string.settings_toast_code_copied), Toast.LENGTH_SHORT)
+            toast.show()
+        }
 
         onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
