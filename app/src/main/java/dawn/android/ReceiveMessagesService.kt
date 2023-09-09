@@ -60,6 +60,8 @@ class ReceiveMessagesService: Service() {
     private lateinit var notificationManager: NotificationManager
     private lateinit var chats: ArrayList<Chat>
     private var activeChat: Chat? = null
+    private lateinit var handle: String
+    private lateinit var initKeyDirectory: File
     private val useTor = true
     private lateinit var directHttpClient: OkHttpClient
     private lateinit var torProxy: Proxy
@@ -88,6 +90,8 @@ class ReceiveMessagesService: Service() {
         val policy = ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
+        initKeyDirectory = File(filesDir, "initKeys")
+
         logTag = "$packageName.ReceiveMessagesService"
 
         directHttpClient = OkHttpClient.Builder().proxy(null).build()
@@ -97,6 +101,11 @@ class ReceiveMessagesService: Service() {
         setupForegroundServiceWithNotification()
 
         if(useTor) startTor()
+
+        loadHandleInfo()
+        if(handle != "") {
+            // there is a handle set, try to fill it up with init keys in case those were used
+        }
 
         val serverFileContent = String(DataManager.readFile("server", filesDir)!!, Charsets.UTF_8)
         val serverAddress = serverFileContent.substringAfter("\n").substringBefore("\n")
@@ -316,5 +325,14 @@ class ReceiveMessagesService: Service() {
 
             }
         }, BIND_AUTO_CREATE)
+    }
+
+    private fun loadHandleInfo() {
+        // get the handle
+        val handleFileContent = DataManager.readFile("profileHandle", filesDir)
+        handle = if(handleFileContent != null) {
+            val paddedProfileHandle = String(handleFileContent, Charsets.UTF_8)
+            paddedProfileHandle.substringAfter("\n").substringBefore("\n")
+        } else ""
     }
 }
