@@ -44,6 +44,8 @@ import dawn.android.util.DataManager
 import dawn.android.util.RequestFactory
 import dawn.android.util.TorReceiver
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 import org.torproject.jni.TorService
 import org.torproject.jni.TorService.LocalBinder
 import java.io.ByteArrayOutputStream
@@ -261,6 +263,15 @@ class ReceiveMessagesService: Service() {
         }
 
         return ok("success")
+    }
+
+    fun makeRequest(request: Request): Response {
+        val client = if(useTor) {
+            torHttpClient
+        } else {
+            directHttpClient
+        }
+        return client.newCall(request).execute()
     }
 
     private fun setupForegroundServiceWithNotification() {
