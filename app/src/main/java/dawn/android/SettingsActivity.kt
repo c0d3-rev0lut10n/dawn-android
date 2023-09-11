@@ -20,11 +20,15 @@ package dawn.android
 
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
+import android.content.ServiceConnection
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -45,6 +49,7 @@ import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivitySettingsBinding
 import dawn.android.util.DataManager
+import dawn.android.util.RequestFactory
 import dawn.android.util.ThemeLoader
 import java.security.SecureRandom
 
@@ -57,9 +62,12 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var currentProfileName: String
     private lateinit var currentProfileBio: String
     private lateinit var currentProfileHandle: String
+    private lateinit var currentHandlePassword: String
+    private var currentHandleAllowPublicInit = false
     private lateinit var currentManualThemeName: String
     private lateinit var currentSystemDarkThemeName: String
     private lateinit var currentSystemLightThemeName: String
+    private lateinit var initSecret: String
     private var profileNameChanges = false
     private var profileBioChanges = false
     private var profileHandleChanges = false
@@ -70,6 +78,22 @@ class SettingsActivity : AppCompatActivity() {
     private var themeUseSystem = false
     private lateinit var logTag: String
     private lateinit var mThemeLoader: ThemeLoader
+
+    private lateinit var mService: ReceiveMessagesService
+    private var mBound: Boolean = false
+
+    private val connection = object : ServiceConnection {
+
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            val binder = service as ReceiveMessagesService.BindInterface
+            mService = binder.getService()
+            mBound = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            mBound = false
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -101,6 +125,12 @@ class SettingsActivity : AppCompatActivity() {
 
         logTag = "$packageName.SettingsActivity"
 
+        bindService(
+            Intent(this, ReceiveMessagesService::class.java),
+            connection,
+            BIND_AUTO_CREATE
+        )
+
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -120,15 +150,33 @@ class SettingsActivity : AppCompatActivity() {
 
         val paddedProfileName = String(DataManager.readFile("profileName", filesDir)!!, Charsets.UTF_8)
         currentProfileName = paddedProfileName.substringAfter("\n").substringBefore("\n")
+
         val paddedProfileBio = String(DataManager.readFile("profileBio", filesDir)!!, Charsets.UTF_8)
         currentProfileBio = paddedProfileBio.substringAfter("\n").substringBefore("\n")
+
         val handleFileContent = DataManager.readFile("profileHandle", filesDir)
         currentProfileHandle = if(handleFileContent != null) {
             val paddedProfileHandle = String(handleFileContent, Charsets.UTF_8)
             paddedProfileHandle.substringAfter("\n").substringBefore("\n")
         } else ""
 
-        val initSecret: String
+        val handlePasswordFileContent = DataManager.readFile("profileHandlePassword", filesDir)
+        currentHandlePassword = if(handlePasswordFileContent != null)
+            String(handlePasswordFileContent, Charsets.UTF_8).substringAfter("\n").substringBefore("\n")
+        else
+            ""
+
+        val handlePublicInitFileContent = DataManager.readFile("profileHandlePublicInit", filesDir)
+        if(handlePublicInitFileContent != null) {
+            when (String(handlePublicInitFileContent, Charsets.UTF_8)) {
+                "true" -> currentHandleAllowPublicInit = true
+                "false" -> currentHandleAllowPublicInit = false
+                else -> {
+                    Log.w(logTag, "Could not parse profileHandlePublicInit")
+                }
+            }
+        }
+
         val initSecretFileContent = DataManager.readFile("initSecret", filesDir)
         if(initSecretFileContent == null) {
             // there doesn't exist an init secret yet, therefore create one
@@ -150,6 +198,8 @@ class SettingsActivity : AppCompatActivity() {
         binding.etProfileName.setText(currentProfileName)
         binding.etProfileBio.setText(currentProfileBio)
         binding.etProfileHandle.setText(currentProfileHandle)
+        binding.etProfileHandlePassword.setText(currentHandlePassword)
+        binding.cbAllowPublicInit.isChecked = currentHandleAllowPublicInit
         binding.tvInitSecret.text = getString(R.string.settings_text_init_secret, initSecret)
         binding.tvInitSecret.setOnClickListener {
             val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -176,9 +226,17 @@ class SettingsActivity : AppCompatActivity() {
             if(!checkHandle(binding.etProfileHandle.text.toString()))
                 binding.etProfileHandleWrapper.error = getString(R.string.settings_error_handle_invalid)
             else {
-                profileHandleChanges = binding.etProfileHandle.text.toString() != currentProfileHandle
+                profileHandleChanges = checkHandleChanges()
                 binding.etProfileHandleWrapper.error = null
             }
+        }
+
+        binding.etProfileHandlePassword.addTextChangedListener {
+            profileHandleChanges = checkHandleChanges()
+        }
+
+        binding.cbAllowPublicInit.setOnCheckedChangeListener {
+                _, _ -> profileHandleChanges = checkHandleChanges()
         }
 
         val themeSelectorItems = listOf(getString(R.string.theme_dark), getString(R.string.theme_extradark), getString(R.string.theme_light))
@@ -261,6 +319,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun saveChanges() {
         // save the changes
         Log.i(logTag, "Saving changes")
+        var error = false
 
         if(profileNameChanges) {
             val profileNameStringPrePadding = DataManager.generateStringPadding()
@@ -278,22 +337,50 @@ class SettingsActivity : AppCompatActivity() {
 
         if(profileHandleChanges && checkHandle(binding.etProfileHandle.text.toString())) {
             val initIdBytes = DataManager.readFile("initId", filesDir)
-            if(initIdBytes == null) toastError(getString(R.string.settings_error_no_init_id))
+            if(initIdBytes == null) {
+                error = true
+                toastError(getString(R.string.settings_error_no_init_id))
+            }
             else {
-                val initIdString = String(initIdBytes, Charsets.UTF_8).substringAfter("\n").substringBefore("\n")
-                if(initIdString == "") toastError(getString(R.string.settings_error_no_init_id))
+                val initId = String(initIdBytes, Charsets.UTF_8).substringAfter("\n").substringBefore("\n")
+                if(initId == "") {
+                    error = true
+                    toastError(getString(R.string.settings_error_no_init_id))
+                }
                 else {
-                    // TODO: set a handle on the server
-                    val profileHandleStringPrePadding = DataManager.generateStringPadding()
-                    val profileHandleStringPostPadding = DataManager.generateStringPadding()
-                    val profileHandleString =
-                        profileHandleStringPrePadding.concatToString() + "\n" + binding.etProfileHandle.text.toString() + "\n" + profileHandleStringPostPadding.concatToString()
-                    DataManager.writeFile(
-                        "profileHandle",
-                        filesDir,
-                        profileHandleString.toByteArray(Charsets.UTF_8),
-                        true
-                    )
+                    val handlePassword = binding.etProfileHandlePassword.text.toString()
+                    val setHandleRequest = RequestFactory.buildSetHandleRequest(
+                        id = initId,
+                        handle = binding.etProfileHandle.text.toString(),
+                        password = handlePassword,
+                        initSecret = initSecret,
+                        allowPublicInit =  binding.cbAllowPublicInit.isActivated)
+                    val response = mService.makeRequest(setHandleRequest)
+
+                    if(response.code == 204) {
+                        val profileHandleStringPrePadding = DataManager.generateStringPadding()
+                        val profileHandleStringPostPadding = DataManager.generateStringPadding()
+                        val profileHandleString =
+                            profileHandleStringPrePadding.concatToString() + "\n" + binding.etProfileHandle.text.toString() + "\n" + profileHandleStringPostPadding.concatToString()
+                        error = !DataManager.writeFile(
+                            "profileHandle",
+                            filesDir,
+                            profileHandleString.toByteArray(Charsets.UTF_8),
+                            true
+                        )
+
+                        val handlePasswordString = DataManager.generateStringPadding().concatToString() + "\n" + handlePassword + "\n" + DataManager.generateStringPadding()
+                        error = error || !DataManager.writeFile("profileHandlePassword", filesDir, handlePasswordString.toByteArray(Charsets.UTF_8), true)
+
+                        val handlePublicInit = binding.cbAllowPublicInit.isChecked.toString()
+                        error = error || !DataManager.writeFile("profileHandlePublicInit", filesDir, handlePublicInit.toByteArray(Charsets.UTF_8), true)
+
+                        if(!error) Log.i(logTag, "Changed handle successfully!")
+                    }
+                    else {
+                        error = true
+                        Log.w(logTag, "Could not edit handle: $response, ${response.body}")
+                    }
                 }
             }
         }
@@ -343,8 +430,17 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
+        if(!error) finish()
+        else {
+            val errorSavingChangesDialog = MaterialAlertDialogBuilder(this)
 
-        finish()
+            errorSavingChangesDialog.setTitle(R.string.settings_title_error_saving_changes)
+            errorSavingChangesDialog.setMessage(R.string.settings_text_error_saving_changes)
+            errorSavingChangesDialog.setCancelable(false)
+            errorSavingChangesDialog.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> }
+            errorSavingChangesDialog.setNegativeButton(R.string.discard) { _: DialogInterface, _: Int -> finish() }
+            errorSavingChangesDialog.create().show()
+        }
     }
 
     private fun checkHandle(handle: String): Boolean {
@@ -372,6 +468,10 @@ class SettingsActivity : AppCompatActivity() {
         binding.etThemeManual.isEnabled = !binding.etThemeManual.isEnabled
         binding.etThemeSystemLight.isEnabled = !binding.etThemeSystemLight.isEnabled
         binding.etThemeSystemDark.isEnabled = !binding.etThemeSystemDark.isEnabled
+    }
+
+    private fun checkHandleChanges(): Boolean {
+        return binding.etProfileHandle.text.toString() != currentProfileHandle || binding.etProfileHandlePassword.text.toString() != currentHandlePassword || binding.cbAllowPublicInit.isChecked != currentHandleAllowPublicInit
     }
 
     private fun toastError(error: String) {

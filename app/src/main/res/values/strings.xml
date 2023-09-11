@@ -80,6 +80,8 @@
     <string name="settings_text_theme_system_light">Set theme to be used when Android is in light mode</string>
     <string name="settings_text_theme_system_dark">Set theme to be used when Android is in dark mode</string>
     <string name="settings_error_no_init_id">Could not get init ID, not setting handle!</string>
+    <string name="settings_title_error_saving_changes">Error saving changes</string>
+    <string name="settings_text_error_saving_changes">Not all changes were saved successfully. You can try to save them again or discard them.</string>
 
     <!-- Texts for InitiateChatActivity -->
     <string name="initiate_app_bar">New Chat</string>
