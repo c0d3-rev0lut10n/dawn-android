@@ -69,6 +69,7 @@ class ReceiveMessagesService: Service() {
     private lateinit var directHttpClient: OkHttpClient
     private lateinit var torProxy: Proxy
     private lateinit var torHttpClient: OkHttpClient
+    private lateinit var client: OkHttpClient
     private lateinit var logTag: String
 
     companion object {
@@ -97,9 +98,11 @@ class ReceiveMessagesService: Service() {
 
         logTag = "$packageName.ReceiveMessagesService"
 
-        directHttpClient = OkHttpClient.Builder().proxy(null).build()
         torProxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress("localhost", 19050)) // planned to be configurable
-        torHttpClient = OkHttpClient.Builder().proxy(torProxy).build()
+        client = if(useTor)
+            OkHttpClient.Builder().proxy(torProxy).build()
+        else
+            OkHttpClient.Builder().proxy(null).build()
 
         setupForegroundServiceWithNotification()
 
@@ -138,11 +141,6 @@ class ReceiveMessagesService: Service() {
     }
 
     private fun pollChats() {
-        val client = if(useTor) {
-            torHttpClient
-        } else {
-            directHttpClient
-        }
         for(chat in chats) {
             if(chat.dataId == activeChat?.dataId) continue // skip active chat as it gets polled separately
 
@@ -275,11 +273,6 @@ class ReceiveMessagesService: Service() {
     }
 
     fun makeRequest(request: Request): Response {
-        val client = if(useTor) {
-            torHttpClient
-        } else {
-            directHttpClient
-        }
         return client.newCall(request).execute()
     }
 
