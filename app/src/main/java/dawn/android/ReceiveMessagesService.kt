@@ -187,6 +187,14 @@ class ReceiveMessagesService: Service() {
 
     }
 
+    private fun pollInitID() {
+
+    }
+
+    private fun pollHandleAddKey() {
+
+    }
+
     fun searchHandleAndInit(handle: String, initSecret: String, comment: String): Result<String, String> {
         val client = if(useTor) {
             torHttpClient
