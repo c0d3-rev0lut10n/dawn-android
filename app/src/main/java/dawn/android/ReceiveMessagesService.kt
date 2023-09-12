@@ -63,6 +63,7 @@ class ReceiveMessagesService: Service() {
     private lateinit var chats: ArrayList<Chat>
     private var activeChat: Chat? = null
     private lateinit var handle: String
+    private lateinit var initId: String
     private lateinit var initKeyDirectory: File
     private val useTor = true
     private lateinit var directHttpClient: OkHttpClient
@@ -345,5 +346,10 @@ class ReceiveMessagesService: Service() {
             val paddedProfileHandle = String(handleFileContent, Charsets.UTF_8)
             paddedProfileHandle.substringAfter("\n").substringBefore("\n")
         } else ""
+
+        // get the init ID
+        val initIdFileContent = DataManager.readFile("initId", filesDir)
+        initId = if(initIdFileContent != null) String(initIdFileContent, Charsets.UTF_8).substringAfter("\n").substringBefore("\n")
+         else ""
     }
 }
