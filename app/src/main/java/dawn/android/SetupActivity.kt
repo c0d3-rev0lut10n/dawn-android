@@ -43,6 +43,7 @@ import dawn.android.data.Theme
 import dawn.android.databinding.ActivitySetupBinding
 import dawn.android.util.DataManager
 import dawn.android.util.ThemeLoader
+import java.io.File
 
 class SetupActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySetupBinding
@@ -210,7 +211,12 @@ class SetupActivity : AppCompatActivity() {
         val initIdPrePadding = DataManager.generateStringPadding()
         val initIdPostPadding = DataManager.generateStringPadding()
 
-        val initId = LibraryConnector.mGenId().id?: ""
+        val initId = LibraryConnector.mGenId().id
+        if(initId == null) {
+            // TODO: notify about the error
+            finish()
+            return
+        }
 
         val serverString = serverStringPrePadding.concatToString() + "\n" + serverAddress + "\n" + serverStringPostPadding.concatToString()
         val profileNameString = profileNameStringPrePadding.concatToString() + "\n" + profileName + "\n" + profileNameStringPostPadding.concatToString()
@@ -229,6 +235,12 @@ class SetupActivity : AppCompatActivity() {
         DataManager.writeFile("initId", filesDir, initIdString.toByteArray(Charsets.UTF_8), false)
         DataManager.writeFile("pubkeySig", filesDir, signatureKeypair.own_pubkey_sig!!.toByteArray(Charsets.UTF_8), false)
         DataManager.writeFile("seckeySig", filesDir, signatureKeypair.own_seckey_sig!!.toByteArray(Charsets.UTF_8), false)
+
+        val chatsDir = File(filesDir, "chats")
+        chatsDir.mkdir()
+        val receivedInitRequestDir = File(chatsDir, initId)
+        receivedInitRequestDir.mkdir()
+
         finish()
     }
 
