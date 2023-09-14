@@ -24,7 +24,10 @@ import android.util.Log
 import dawn.android.GenId
 import dawn.android.LibraryConnector
 import dawn.android.data.Chat
+import dawn.android.data.ContentType
 import dawn.android.data.Keypair
+import dawn.android.data.Message
+import dawn.android.data.Profile
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
@@ -385,13 +388,43 @@ object DataManager {
     }
 
     fun saveChatMessageId(dataId: String, messageId: UShort): Boolean {
-        val chatDir = File(File(mContext.filesDir, "chats"), dataId)
         if(dataId.contains("\n", true) || dataId == "") return false
+        val chatDir = File(File(mContext.filesDir, "chats"), dataId)
         val messageIdFileContent = messageId.toString()
 
         if(!writeFile("chatMessageId", chatDir, messageIdFileContent.toByteArray(Charsets.UTF_8), true)) return false
 
         return true
+    }
+
+    fun saveChatMessage(dataId: String, message: Message): Result<Any?, String> {
+        if(dataId.contains("\n", true) || dataId == "") return err("invalid dataID")
+        val chatDir = File(File(mContext.filesDir, "chats"), dataId)
+        val messagesDir = File(chatDir, "messages")
+        val messageNumber: UShort
+        if(!messagesDir.isDirectory) {
+            // this is the first message, create directory and message number file
+            messageNumber = 0U
+            if(!messagesDir.mkdir()) return err("Could not create messages directory")
+            if(!writeFile("messageNumber", messagesDir, "0".toByteArray(Charsets.UTF_8), true)) return err("Could not create message number file")
+        }
+        else {
+            val messageNumberFileContent = readFile("messageNumber", messagesDir)
+                ?: return err("Could not read message number file")
+            try {
+                messageNumber = String(messageNumberFileContent, Charsets.UTF_8).toUShort()
+            }
+            catch(e: Exception) {
+                return err("Could not parse message number")
+            }
+        }
+        if(!writeFile("messageNumber", messagesDir, messageNumber.toString().toByteArray(Charsets.UTF_8), true)) return err("Could not save message number")
+
+
+
+        if(!writeFile(messageNumber.toString(), messagesDir, message.toByteArray(), false)) return err("Could not write to message file")
+
+        return ok(null)
     }
 
     fun getOwnProfileName(): Result<String, String> {
