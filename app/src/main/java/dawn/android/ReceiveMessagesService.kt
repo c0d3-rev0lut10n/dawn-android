@@ -276,6 +276,12 @@ class ReceiveMessagesService: Service() {
         return client.newCall(request).execute()
     }
 
+    private fun loadInitID(): Result<Any?, String> {
+        val initIdFileContent = DataManager.readFile("initId", filesDir)?: return err("Could not load init ID file")
+        initId = String(initIdFileContent, Charsets.UTF_8).substringAfter("\n").substringBefore("\n")
+        return ok(null)
+    }
+
     private fun setupForegroundServiceWithNotification() {
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
