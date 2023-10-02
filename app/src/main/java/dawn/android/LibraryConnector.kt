@@ -133,6 +133,7 @@ data class GenInitRequest(
     val id: String? = null,
     val id_salt: String? = null,
     val mdc: String? = null,
+    val mdc_seed: String? = null,
     val ciphertext: String? = null
 )
 
@@ -148,7 +149,8 @@ data class ParseInitRequest(
     val remote_pfs_key: String?,
     val pfs_salt: String?,
     val name: String?,
-    val comment: String?
+    val comment: String?,
+    val mdc_seed: String? = null
 )
 
 object LibraryConnector {
@@ -207,8 +209,8 @@ object LibraryConnector {
         return Json.decodeFromString(libraryResponseJSON)
     }
 
-    fun mSendMsg(msg_type: Short, msg_string: String, msg_bytes: ByteArray, remote_pubkey_kyber: String, own_pubkey_sig: String, pfs_key: String, pfs_salt: String): SendMessage {
-        val libraryResponseJSON = sendMsg(msg_type, msg_string, msg_bytes, remote_pubkey_kyber, own_pubkey_sig, pfs_key, pfs_salt)
+    fun mSendMsg(msg_type: Short, msg_string: String, msg_bytes: ByteArray, remote_pubkey_kyber: String, own_pubkey_sig: String, pfs_key: String, pfs_salt: String, id: String, mdc_seed: String): SendMessage {
+        val libraryResponseJSON = sendMsg(msg_type, msg_string, msg_bytes, remote_pubkey_kyber, own_pubkey_sig, pfs_key, pfs_salt, id, mdc_seed)
         return Json.decodeFromString(libraryResponseJSON)
     }
 
@@ -267,7 +269,7 @@ object LibraryConnector {
     private external fun deriveSecurityNumber(key_a: String, key_b: String): String
     private external fun hashString(input: String): String
     private external fun hashBytes(input: ByteArray): String
-    private external fun sendMsg(msg_type: Short, msg_string: String, msg_bytes: ByteArray, remote_pubkey_kyber: String, own_seckey_sig: String, pfs_key: String, pfs_salt: String): String
+    private external fun sendMsg(msg_type: Short, msg_string: String, msg_bytes: ByteArray, remote_pubkey_kyber: String, own_seckey_sig: String, pfs_key: String, pfs_salt: String, id: String, mdc_seed: String): String
     private external fun parseMsg(msg_ciphertext: ByteArray, own_seckey_kyber: String, remote_pubkey_sig: String, pfs_key: String, pfs_salt: String): String
     private external fun encryptFile(file: ByteArray): String
     private external fun decryptFile(ciphertext: ByteArray, key: String): String
