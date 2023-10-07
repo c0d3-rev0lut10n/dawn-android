@@ -52,6 +52,11 @@ object RequestFactory {
         return request.build()
     }
 
+    fun buildReadRequest(id: String, messageNumber: UShort, mdc: String): Request {
+        val request = Request.Builder().url("$serverBaseAddress/read/$id/$messageNumber?mdc=$mdc")
+        return request.build()
+    }
+
     fun buildSetHandleRequest(id: String, handle: String, password: String, initSecret: String, allowPublicInit: Boolean): Request {
         val request = Request
             .Builder()
