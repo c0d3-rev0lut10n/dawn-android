@@ -18,11 +18,25 @@
 
 package dawn.android.data
 
-data class Chat(
+import dawn.android.data.Result.Companion.ok
+import dawn.android.data.Result.Companion.err
+
+class Chat(
     val dataId: String,
     var id: String,
     var idStamp: String,
     var idSalt: String,
     var lastMessageId: UShort,
     var name: String
-)
+) {
+    companion object {
+        fun new(): Result<Chat, String> {
+            // validate input here
+            return err("not implemented")
+        }
+    }
+    fun save(): Result<Any?, String> {
+
+        return err("not implemented")
+    }
+}
