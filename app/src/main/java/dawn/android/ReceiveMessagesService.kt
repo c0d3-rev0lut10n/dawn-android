@@ -194,11 +194,6 @@ class ReceiveMessagesService: Service() {
     }
 
     fun searchHandleAndInit(handle: String, initSecret: String, comment: String): Result<String, String> {
-        val client = if(useTor) {
-            torHttpClient
-        } else {
-            directHttpClient
-        }
         val request = RequestFactory.buildWhoRequest(handle, initSecret)
         val response = client.newCall(request).execute()
         println(response.body)
