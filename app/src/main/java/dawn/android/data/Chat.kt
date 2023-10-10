@@ -30,8 +30,16 @@ class Chat(
     var name: String
 ) {
     companion object {
-        fun new(): Result<Chat, String> {
+        fun new(id: String, idStamp: String, idSalt: String, name: String): Result<Chat, String> {
             // validate input here
+            if(id.matches(Regex.ID)) return err("invalid ID")
+            if(idStamp.matches(Regex.timestamp)) return err("invalid ID stamp")
+            if(idSalt.matches(Regex.IdSalt)) return err("invalid ID salt")
+            if(name.contains("\n", true) || name.isEmpty()) return err("invalid name")
+            return err("not implemented")
+        }
+
+        fun load(dataId: String): Result<Chat, String> {
             return err("not implemented")
         }
     }
