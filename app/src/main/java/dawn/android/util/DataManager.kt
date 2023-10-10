@@ -332,7 +332,7 @@ object DataManager {
             return null
         }
         val chatName = String(readFile("chatName", chatDir)?: return null, Charsets.UTF_8)
-        return Chat(dataId, chatId, chatIdStamp, chatIdSalt, chatMessageId, chatName)
+        return Chat(dataId, chatId, chatIdStamp, chatIdSalt, chatMessageId, chatName, mContext.filesDir)
     }
 
     // save a new chat and return the associated internal data ID
