@@ -304,7 +304,7 @@ object DataManager {
                 continue
             }
             val chatName = String(readFile("chatName", chatDir)?: continue, Charsets.UTF_8)
-            chats.add(Chat(chatDir.name, chatId, chatIdStamp, chatIdSalt, chatMessageId, chatName))
+            chats.add(Chat(chatDir.name, chatId, chatIdStamp, chatIdSalt, chatMessageId, chatName, mContext.filesDir))
         }
         return chats
     }
