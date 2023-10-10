@@ -196,7 +196,6 @@ class ReceiveMessagesService: Service() {
     fun searchHandleAndInit(handle: String, initSecret: String, comment: String): Result<String, String> {
         val request = RequestFactory.buildWhoRequest(handle, initSecret)
         val response = client.newCall(request).execute()
-        println(response.body)
         if(!response.isSuccessful) {
             Log.w(logTag, "Request $request failed, response: ${response.code}")
             return err("Request $request failed, response: ${response.code}; ${response.body}")
