@@ -44,4 +44,8 @@ class Result<T, E>(private val ok: T?, private val err: E?) {
         return this.ok == null
     }
 
+    fun isOk(): Boolean {
+        return this.err == null
+    }
+
 }
