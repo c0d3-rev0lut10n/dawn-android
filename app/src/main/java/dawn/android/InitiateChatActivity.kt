@@ -135,11 +135,7 @@ class InitiateChatActivity : AppCompatActivity() {
         val initSecret = binding.etHandleSecret.text.toString()
         val comment = binding.etInitComment.text.toString()
         val initResult = mService.searchHandleAndInit(handleToSearch, initSecret, comment)
-        if(initResult.isErr()) {
-            val toast = Toast.makeText(this, getString(R.string.initiate_init_failed)+initResult.unwrapErr(), Toast.LENGTH_LONG)
-            toast.show()
-        }
-        else {
+        if(initResult.isOk()) {
             val toast = Toast.makeText(this, getString(R.string.initiate_init_request_sent), Toast.LENGTH_LONG)
             toast.show()
         }

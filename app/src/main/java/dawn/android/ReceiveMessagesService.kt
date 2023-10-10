@@ -35,6 +35,7 @@ import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.util.Base64
 import android.util.Log
+import android.widget.Toast
 import dawn.android.data.Chat
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.ok
@@ -198,6 +199,21 @@ class ReceiveMessagesService: Service() {
         val response = client.newCall(request).execute()
         if(!response.isSuccessful) {
             Log.w(logTag, "Request $request failed, response: ${response.code}")
+            val body = response.body
+            if(body != null) {
+                val bodyString = body.string()
+                println(bodyString)
+                when(bodyString) {
+                    "init not allowed" -> {
+                    Toast.makeText(this, R.string.receive_text_wrong_init_secret, Toast.LENGTH_LONG)
+                        .show()
+                    }
+                    "all key slots empty" -> {
+                    Toast.makeText(this, R.string.receive_text_key_slots_empty, Toast.LENGTH_LONG)
+                        .show()
+                    }
+                }
+            }
             return err("Request $request failed, response: ${response.code}; ${response.body}")
         }
         if(response.code == 204) return err("handle not found")

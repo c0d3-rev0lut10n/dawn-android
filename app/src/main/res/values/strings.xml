@@ -94,4 +94,8 @@
     <string name="initiate_init_request_sent">Request was sent successfully</string>
     <string name="initiate_not_ready">The network connection is not ready yet. Please try again in a view seconds.</string>
 
+    <!-- Texts for ReceiveMessagesService -->
+    <string name="receive_text_wrong_init_secret">Wrong init secret!</string>
+    <string name="receive_text_key_slots_empty">No key slots left to initialize. Try again later after your recipient got back online.</string>
+
 </resources>
