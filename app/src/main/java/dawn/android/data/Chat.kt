@@ -19,10 +19,12 @@
 package dawn.android.data
 
 import android.content.Context
+import android.util.Log
 import dawn.android.GenId
 import dawn.android.LibraryConnector
 import dawn.android.data.Result.Companion.ok
 import dawn.android.data.Result.Companion.err
+import dawn.android.util.DataManager
 import java.io.File
 
 class Chat(
@@ -70,8 +72,29 @@ class Chat(
             return ok(Chat(dataId!!.id!!, id, idStamp, idSalt, 0U, name, filesDir))
         }
 
-        fun load(dataId: String): Result<Chat, String> {
-            return err("not implemented")
+        fun load(dataId: String, context: Context): Result<Chat, String> {
+            if(!DataManager.isInitialized()) return err("DataManager uninitialized")
+            val chatsDir = File(context.filesDir, "chats")
+            val chatDir = File(chatsDir, dataId)
+            if(!chatDir.isDirectory) return err("not found")
+            val chatContent = DataManager.readFile("chatId", chatDir) ?: return err("could not read ID file")
+            val chatContentString = String(chatContent, Charsets.UTF_8)
+            val chatId = chatContentString.substringBefore("\n")
+            val chatIdStamp = chatContentString.substringAfter("\n")
+            val chatIdSalt = String(DataManager.readFile("chatIdSalt", chatDir)?: return err("could not read salt"), Charsets.UTF_8)
+            val chatMessageId: UShort
+            try {
+                chatMessageId = String(
+                    DataManager.readFile("chatMessageId", chatDir) ?: return err("could not read chat message number file"),
+                    Charsets.UTF_8
+                ).toUShort()
+            }
+            catch(e: Exception) {
+                Log.e(context.packageName, "Could not parse chatMessageId", e)
+                return err("could not parse chatMessageId")
+            }
+            val chatName = String(DataManager.readFile("chatName", chatDir) ?: return err("could not read chat name"), Charsets.UTF_8)
+            return ok(Chat(dataId, chatId, chatIdStamp, chatIdSalt, chatMessageId, chatName, context.filesDir))
         }
     }
     fun save(): Result<Any?, String> {
