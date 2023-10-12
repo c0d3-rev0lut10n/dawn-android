@@ -350,8 +350,9 @@ object DataManager {
         val chatDirs = chatsDir.listFiles()
         if(chatDirs == null) {
             // there are no chats, we can freely choose an ID
-            dataId = LibraryConnector.mGenId()
-            if(dataId.id == null) return ""
+            val dataIdResult = LibraryConnector.mGenId()
+            if(dataIdResult.isErr()) return ""
+            dataId = dataIdResult.unwrap()
         }
         else {
             val chatDirNames = ArrayList<String>()
@@ -360,8 +361,9 @@ object DataManager {
             }
             for (i in 1..1000) {
                 // choose a random ID that is not used
-                dataId = LibraryConnector.mGenId()
-                if (dataId.id == null) return ""
+                val dataIdResult = LibraryConnector.mGenId()
+                if(dataIdResult.isErr()) return ""
+                dataId = dataIdResult.unwrap()
                 if (dataId.id!! !in chatDirNames) break
                 if(i == 1000) return ""
             }
