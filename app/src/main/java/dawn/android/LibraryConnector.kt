@@ -1,5 +1,8 @@
 package dawn.android
 
+import dawn.android.data.Result
+import dawn.android.data.Result.Companion.ok
+import dawn.android.data.Result.Companion.err
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 
@@ -172,114 +175,140 @@ object LibraryConnector {
         System.loadLibrary("dawn")
     }
 
-    fun mInitCrypto(): InitCrypto {
-        val libraryResponseJSON = initCrypto()
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mInitCrypto(): Result<InitCrypto, String> {
+        val libraryResponse: InitCrypto = Json.decodeFromString(initCrypto())
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mKyberKeygen(): KyberKeys {
-        val libraryResponseJSON = kyberKeygen()
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mKyberKeygen(): Result<KyberKeys, String> {
+        val libraryResponse: KyberKeys = Json.decodeFromString(kyberKeygen())
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mCurveKeygen(): CurveKeys {
-        val libraryResponseJSON = curveKeygen()
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mCurveKeygen(): Result<CurveKeys, String> {
+        val libraryResponse: CurveKeys = Json.decodeFromString(curveKeygen())
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mSignKeygen(): SignKeys {
-        val libraryResponseJSON = signKeygen()
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mSignKeygen(): Result<SignKeys, String> {
+        val libraryResponse: SignKeys = Json.decodeFromString(signKeygen())
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mSymKeygen(): SymKey {
-        val libraryResponseJSON = symKeygen()
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mSymKeygen(): Result<SymKey, String> {
+        val libraryResponse: SymKey = Json.decodeFromString(symKeygen())
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mGenId(): GenId {
-        val libraryResponseJSON = genId()
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mGenId(): Result<GenId, String> {
+        val libraryResponse: GenId = Json.decodeFromString(genId())
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mGetTempId(id: String): TempId {
-        val libraryResponseJSON = getTempId(id)
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mGetTempId(id: String): Result<TempId, String> {
+        val libraryResponse: TempId = Json.decodeFromString(getTempId(id))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mGetCustomTempId(id: String, modifier: String): TempId {
-        val libraryResponseJSON = getCustomTempId(id, modifier)
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mGetCustomTempId(id: String, modifier: String): Result<TempId, String> {
+        val libraryResponse: TempId = Json.decodeFromString(getCustomTempId(id, modifier))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mGetNextId(id: String, salt: String): NextId {
-        val libraryResponseJSON = getNextId(id, salt)
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mGetNextId(id: String, salt: String): Result<NextId, String> {
+        val libraryResponse: NextId = Json.decodeFromString(getNextId(id, salt))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mDeriveSecurityNumber(key_a: String, key_b: String): SecurityNumber {
-        val libraryResponseJSON = deriveSecurityNumber(key_a, key_b)
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mDeriveSecurityNumber(key_a: String, key_b: String): Result<SecurityNumber, String> {
+        val libraryResponse: SecurityNumber = Json.decodeFromString(deriveSecurityNumber(key_a, key_b))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mHash(input: String): Hash {
-        val libraryResponseJSON = hashString(input)
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mHash(input: String): Result<Hash, String> {
+        val libraryResponse: Hash = Json.decodeFromString(hashString(input))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mHash(input: ByteArray): Hash {
-        val libraryResponseJSON = hashBytes(input)
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mHash(input: ByteArray): Result<Hash, String> {
+        val libraryResponse: Hash = Json.decodeFromString(hashBytes(input))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mSendMsg(msg_type: Short, msg_string: String, msg_bytes: ByteArray, remote_pubkey_kyber: String, own_pubkey_sig: String, pfs_key: String, pfs_salt: String, id: String, mdc_seed: String): SendMessage {
-        val libraryResponseJSON = sendMsg(msg_type, msg_string, msg_bytes, remote_pubkey_kyber, own_pubkey_sig, pfs_key, pfs_salt, id, mdc_seed)
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mSendMsg(msg_type: Short, msg_string: String, msg_bytes: ByteArray, remote_pubkey_kyber: String, own_pubkey_sig: String, pfs_key: String, pfs_salt: String, id: String, mdc_seed: String):
+            Result<SendMessage, String> {
+        val libraryResponse: SendMessage = Json.decodeFromString(sendMsg(msg_type, msg_string, msg_bytes, remote_pubkey_kyber, own_pubkey_sig, pfs_key, pfs_salt, id, mdc_seed))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mParseMsg(msg_ciphertext: ByteArray, own_seckey_kyber: String, remote_pubkey_sig: String, pfs_key: String, pfs_salt: String): ParseMessage {
-        val libraryResponseJSON = parseMsg(msg_ciphertext, own_seckey_kyber, remote_pubkey_sig, pfs_key, pfs_salt)
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mParseMsg(msg_ciphertext: ByteArray, own_seckey_kyber: String, remote_pubkey_sig: String, pfs_key: String, pfs_salt: String):
+            Result<ParseMessage, String> {
+        val libraryResponse: ParseMessage = Json.decodeFromString(parseMsg(msg_ciphertext, own_seckey_kyber, remote_pubkey_sig, pfs_key, pfs_salt))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mEncryptFile(file: ByteArray): EncryptFile {
-        val libraryResponseJSON = encryptFile(file)
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mEncryptFile(file: ByteArray): Result<EncryptFile, String> {
+        val libraryResponse: EncryptFile = Json.decodeFromString(encryptFile(file))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mDecryptFile(ciphertext: ByteArray, key: String): DecryptFile {
-        val libraryResponseJSON = decryptFile(ciphertext, key)
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mDecryptFile(ciphertext: ByteArray, key: String): Result<DecryptFile, String> {
+        val libraryResponse: DecryptFile = Json.decodeFromString(decryptFile(ciphertext, key))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mGetCurrentTimestamp(): Timestamp {
-        val libraryResponseJSON = getCurrentTimestamp()
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mGetCurrentTimestamp(): Result<Timestamp, String> {
+        val libraryResponse: Timestamp = Json.decodeFromString(getCurrentTimestamp())
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mGetAllTimestampsSince(timestamp: String): MultiTimestamp {
-        val libraryResponseJSON = getAllTimestampsSince(timestamp)
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mGetAllTimestampsSince(timestamp: String): Result<MultiTimestamp, String> {
+        val libraryResponse: MultiTimestamp = Json.decodeFromString(getAllTimestampsSince(timestamp))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mGenHandle(init_pubkey_kyber: String, init_pubkey_curve: String, init_pubkey_kyber_for_salt: String, init_pubkey_curve_for_salt: String, name: String): GenHandle {
-        val libraryResponseJSON = genHandle(init_pubkey_kyber, init_pubkey_curve, init_pubkey_kyber_for_salt, init_pubkey_curve_for_salt, name)
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mGenHandle(init_pubkey_kyber: String, init_pubkey_curve: String, init_pubkey_kyber_for_salt: String, init_pubkey_curve_for_salt: String, name: String): Result<GenHandle, String> {
+        val libraryResponse: GenHandle = Json.decodeFromString(genHandle(init_pubkey_kyber, init_pubkey_curve, init_pubkey_kyber_for_salt, init_pubkey_curve_for_salt, name))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mParseHandle(handle: ByteArray): ParseHandle {
-        val libraryResponseJSON = parseHandle(handle)
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mParseHandle(handle: ByteArray): Result<ParseHandle, String> {
+        val libraryResponse: ParseHandle = Json.decodeFromString(parseHandle(handle))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mGenInitRequest(remote_pubkey_kyber: String, remote_pubkey_kyber_for_salt: String, remote_pubkey_curve: String, remote_pubkey_curve_pfs_2: String, remote_pubkey_curve_for_salt: String, own_pubkey_sig: String, own_seckey_sig: String, name: String, comment: String): GenInitRequest {
-        val libraryResponseJSON = genInitRequest(remote_pubkey_kyber, remote_pubkey_kyber_for_salt, remote_pubkey_curve, remote_pubkey_curve_pfs_2, remote_pubkey_curve_for_salt, own_pubkey_sig, own_seckey_sig, name, comment)
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mGenInitRequest(remote_pubkey_kyber: String, remote_pubkey_kyber_for_salt: String, remote_pubkey_curve: String, remote_pubkey_curve_pfs_2: String, remote_pubkey_curve_for_salt: String, own_pubkey_sig: String, own_seckey_sig: String, name: String, comment: String):
+            Result<GenInitRequest, String> {
+        val libraryResponse: GenInitRequest = Json.decodeFromString(genInitRequest(remote_pubkey_kyber, remote_pubkey_kyber_for_salt, remote_pubkey_curve, remote_pubkey_curve_pfs_2, remote_pubkey_curve_for_salt, own_pubkey_sig, own_seckey_sig, name, comment))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
-    fun mParseInitRequest(ciphertext: ByteArray, own_seckey_kyber: String, own_seckey_curve: String, own_seckey_curve_pfs_2: String, own_seckey_kyber_for_salt: String, own_seckey_curve_for_salt: String): ParseInitRequest {
-        val libraryResponseJSON = parseInitRequest(ciphertext, own_seckey_kyber, own_seckey_curve, own_seckey_curve_pfs_2, own_seckey_kyber_for_salt, own_seckey_curve_for_salt)
-        return Json.decodeFromString(libraryResponseJSON)
+    fun mParseInitRequest(ciphertext: ByteArray, own_seckey_kyber: String, own_seckey_curve: String, own_seckey_curve_pfs_2: String, own_seckey_kyber_for_salt: String, own_seckey_curve_for_salt: String):
+            Result<ParseInitRequest, String> {
+        val libraryResponse: ParseInitRequest = Json.decodeFromString(parseInitRequest(ciphertext, own_seckey_kyber, own_seckey_curve, own_seckey_curve_pfs_2, own_seckey_kyber_for_salt, own_seckey_curve_for_salt))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
     }
 
     private external fun initCrypto(): String
