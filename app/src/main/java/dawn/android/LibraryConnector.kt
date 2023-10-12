@@ -18,6 +18,19 @@ data class InitCrypto(
 )
 
 @Serializable
+data class KyberKeys(
+    val status: String,
+    val own_pubkey_kyber: String? = null,
+    val own_seckey_kyber: String? = null
+)
+
+@Serializable
+data class CurveKeys(
+    val status: String,
+    val own_pubkey_curve: String? = null,
+    val own_seckey_curve: String? = null
+)
+@Serializable
 data class SignKeys(
     val status: String,
     val own_pubkey_sig: String? = null,
@@ -164,6 +177,16 @@ object LibraryConnector {
         return Json.decodeFromString(libraryResponseJSON)
     }
 
+    fun mKyberKeygen(): KyberKeys {
+        val libraryResponseJSON = kyberKeygen()
+        return Json.decodeFromString(libraryResponseJSON)
+    }
+
+    fun mCurveKeygen(): CurveKeys {
+        val libraryResponseJSON = curveKeygen()
+        return Json.decodeFromString(libraryResponseJSON)
+    }
+
     fun mSignKeygen(): SignKeys {
         val libraryResponseJSON = signKeygen()
         return Json.decodeFromString(libraryResponseJSON)
@@ -260,6 +283,8 @@ object LibraryConnector {
     }
 
     private external fun initCrypto(): String
+    private external fun kyberKeygen(): String
+    private external fun curveKeygen(): String
     private external fun signKeygen(): String
     private external fun symKeygen(): String
     private external fun genId(): String
