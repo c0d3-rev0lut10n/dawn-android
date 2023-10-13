@@ -53,8 +53,9 @@ class Chat(
             val chatDirs = chatsDir.listFiles()
             if(chatDirs == null) {
                 // there are no chats, we can freely choose an ID
-                dataId = LibraryConnector.mGenId()
-                if(dataId.id == null) return err("could not generate data ID")
+                val dataIdResult = LibraryConnector.mGenId()
+                if(dataIdResult.isErr()) return err("could not generate data ID")
+                dataId = dataIdResult.unwrap()
             }
             else {
                 val chatDirNames = ArrayList<String>()
@@ -63,8 +64,9 @@ class Chat(
                 }
                 for (i in 1..1000) {
                     // choose a random ID that is not used
-                    dataId = LibraryConnector.mGenId()
-                    if (dataId.id == null) return err("could not generate data ID")
+                    val dataIdResult = LibraryConnector.mGenId()
+                    if (dataIdResult.isErr()) return err("could not generate data ID")
+                    dataId = dataIdResult.unwrap()
                     if (dataId.id!! !in chatDirNames) break
                     if(i == 1000) return err("could not generate data ID")
                 }
