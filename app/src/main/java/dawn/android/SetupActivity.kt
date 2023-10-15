@@ -211,23 +211,25 @@ class SetupActivity : AppCompatActivity() {
         val initIdPrePadding = DataManager.generateStringPadding()
         val initIdPostPadding = DataManager.generateStringPadding()
 
-        val initId = LibraryConnector.mGenId().id
-        if(initId == null) {
+        val initIdResult = LibraryConnector.mGenId()
+        if(initIdResult.isErr()) {
             // TODO: notify about the error
             finish()
             return
         }
+        val initId = initIdResult.unwrap().id!!
 
         val serverString = serverStringPrePadding.concatToString() + "\n" + serverAddress + "\n" + serverStringPostPadding.concatToString()
         val profileNameString = profileNameStringPrePadding.concatToString() + "\n" + profileName + "\n" + profileNameStringPostPadding.concatToString()
         val profileBioString = profileBioStringPrePadding.concatToString() + "\n" + profileBio + "\n" + profileBioStringPostPadding.concatToString()
         val initIdString = initIdPrePadding.concatToString() + "\n" + initId + "\n" + initIdPostPadding.concatToString()
 
-        val signatureKeypair = LibraryConnector.mSignKeygen()
-        if(signatureKeypair.status != "ok") {
+        val signatureKeypairResult = LibraryConnector.mSignKeygen()
+        if(signatureKeypairResult.isErr()) {
             // TODO: notify about the error
             finish()
         }
+        val signatureKeypair = signatureKeypairResult.unwrap()
 
         DataManager.writeFile("server", filesDir, serverString.toByteArray(Charsets.UTF_8), false)
         DataManager.writeFile("profileName", filesDir, profileNameString.toByteArray(Charsets.UTF_8), false)
