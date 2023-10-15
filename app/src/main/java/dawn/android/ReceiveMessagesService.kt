@@ -145,17 +145,19 @@ class ReceiveMessagesService: Service() {
         for(chat in chats) {
             if(chat.dataId == activeChat?.dataId) continue // skip active chat as it gets polled separately
 
-            val timestampsToCheck = LibraryConnector.mGetAllTimestampsSince(chat.idStamp)
-            if(timestampsToCheck.status != "ok") {
-                Log.e(logTag, "Deriving timestamps failed: ${timestampsToCheck.status}")
+            val timestampsToCheckResult = LibraryConnector.mGetAllTimestampsSince(chat.idStamp)
+            if(timestampsToCheckResult.isErr()) {
+                Log.e(logTag, "Deriving timestamps failed: ${timestampsToCheckResult.unwrapErr()}")
                 return
             }
+            val timestampsToCheck = timestampsToCheckResult.unwrap()
             for(timestamp in timestampsToCheck.timestamps!!) {
-                val temporaryId = LibraryConnector.mGetCustomTempId(chat.id, timestamp)
-                if(temporaryId.status != "ok") {
-                    Log.e(logTag, "Getting temporary ID failed: ${temporaryId.status}")
+                val temporaryIdResult = LibraryConnector.mGetCustomTempId(chat.id, timestamp)
+                if(temporaryIdResult.isErr()) {
+                    Log.e(logTag, "Getting temporary ID failed: ${temporaryIdResult.unwrapErr()}")
                     return
                 }
+                val temporaryId = temporaryIdResult.unwrap()
                 while(chat.lastMessageId < 60000U) {
                     val request = RequestFactory.buildRcvRequest(temporaryId.id!!, chat.lastMessageId)
                     val response = client.newCall(request).execute()
@@ -169,13 +171,15 @@ class ReceiveMessagesService: Service() {
                     chat.lastMessageId++
                     DataManager.saveChatMessageId(chat.dataId, chat.lastMessageId)
                 }
-                if (chat.idStamp == LibraryConnector.mGetCurrentTimestamp().timestamp) continue// if the checked ID is the currently used one, we do not need to derive a new one. Therefore, we continue
+                val currentTimestamp = LibraryConnector.mGetCurrentTimestamp()
+                if(currentTimestamp.isErr()) return
+                if (chat.idStamp == currentTimestamp.unwrap().timestamp) continue// if the checked ID is the currently used one, we do not need to derive a new one. Therefore, we continue
                 // we are done with this ID, derive and save the new one
                 val nextId = LibraryConnector.mGetNextId(chat.id, chat.idSalt)
-                if(nextId.status != "ok") {
-                    Log.e(logTag, "Deriving next ID for chat $chat failed: ${nextId.status}")
+                if(nextId.isErr()) {
+                    Log.e(logTag, "Deriving next ID for chat $chat failed: ${nextId.unwrapErr()}")
                 }
-                chat.id = nextId.id!!
+                chat.id = nextId.unwrap().id!!
                 DataManager.saveChatMessageId(chat.dataId, 0U)
                 DataManager.saveChatId(chat.dataId, chat.id, timestamp)
             }
@@ -222,10 +226,11 @@ class ReceiveMessagesService: Service() {
             // parse received keys and ID
             val id = response.headers["X-ID"]?: return err("no ID associated with handle")
             val responseBody = response.body?: return err("Response $response to request $request did not have a request body")
-            val handleInfo = LibraryConnector.mParseHandle(responseBody.bytes())
-            if(handleInfo.status != "ok") {
-                return err("Could not parse handle: ${handleInfo.status}")
+            val handleInfoResult = LibraryConnector.mParseHandle(responseBody.bytes())
+            if(handleInfoResult.isErr()) {
+                return err("Could not parse handle: ${handleInfoResult.unwrapErr()}")
             }
+            val handleInfo = handleInfoResult.unwrap()
 
             val ownSignKeypairResult = DataManager.getOwnProfileSignKeys()
             if(ownSignKeypairResult.isErr()) return err("could not get signature keypair: ${ownSignKeypairResult.unwrapErr()}")
@@ -235,7 +240,7 @@ class ReceiveMessagesService: Service() {
             val profileNameResult = DataManager.getOwnProfileName()
             if(profileNameResult.isErr()) return err("could not get profile name: ${profileNameResult.unwrapErr()}")
 
-            val initRequest = LibraryConnector.mGenInitRequest(
+            val initRequestResult = LibraryConnector.mGenInitRequest(
                 handleInfo.init_pk_kyber!!,
                 handleInfo.init_pk_kyber_for_salt!!,
                 handleInfo.init_pk_curve!!,
@@ -247,7 +252,8 @@ class ReceiveMessagesService: Service() {
                 comment
             )
 
-            if(initRequest.status != "ok") return err("could not generate init request: ${initRequest.status}")
+            if(initRequestResult.isErr()) return err("could not generate init request: ${initRequestResult.unwrapErr()}")
+            val initRequest = initRequestResult.unwrap()
 
             val initRequestToSend = RequestFactory.buildSndRequest(id, Base64.decode(initRequest.ciphertext, Base64.NO_WRAP), initRequest.mdc!!)
 
