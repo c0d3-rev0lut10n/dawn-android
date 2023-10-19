@@ -64,6 +64,16 @@ object RequestFactory {
         return request.build()
     }
 
+    fun buildAddKeyRequest(handle: String, password: String, key: ByteArray): Request {
+        val request = Request.Builder().url("$serverBaseAddress/addkey/$handle?password=$password")
+            .post(
+                key.toRequestBody(
+                    "application/octet-stream".toMediaTypeOrNull()
+                )
+            )
+        return request.build()
+    }
+
     fun buildWhoRequest(handle: String, initSecret: String?): Request {
         val initSecretParameter = initSecret?: ""
         val request = Request.Builder().url("$serverBaseAddress/who/$handle?init_secret=$initSecretParameter")
