@@ -24,10 +24,8 @@ import android.util.Log
 import dawn.android.GenId
 import dawn.android.LibraryConnector
 import dawn.android.data.Chat
-import dawn.android.data.ContentType
 import dawn.android.data.Keypair
 import dawn.android.data.Message
-import dawn.android.data.Profile
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
@@ -39,7 +37,6 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
-import kotlin.Exception
 
 // since we use the application context, this is NOT a memory leak, so SHUT UP
 @SuppressLint("StaticFieldLeak")
