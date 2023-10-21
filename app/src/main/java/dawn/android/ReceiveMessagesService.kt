@@ -37,6 +37,8 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import dawn.android.data.Chat
+import dawn.android.data.HandlePrivateInfo
+import dawn.android.data.Ok
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.ok
 import dawn.android.data.Result.Companion.err
@@ -54,6 +56,8 @@ import java.io.File
 import java.io.ObjectOutputStream
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.util.Timer
+import kotlin.concurrent.timer
 
 
 class ReceiveMessagesService: Service() {
@@ -72,6 +76,9 @@ class ReceiveMessagesService: Service() {
     private lateinit var torHttpClient: OkHttpClient
     private lateinit var client: OkHttpClient
     private lateinit var logTag: String
+
+    private var pollHandleAddKeyTimer: Timer? = null
+    private var handleAddKeyActive = false
 
     companion object {
         var isRunning = false
@@ -112,6 +119,18 @@ class ReceiveMessagesService: Service() {
         loadHandleInfo()
         if(handle != "") {
             // there is a handle set, try to fill it up with init keys in case those were used
+            pollHandleAddKeyTimer = timer(null, false, 5000, 30000) {
+                if (!handleAddKeyActive) {
+                    handleAddKeyActive = true
+                    Log.d(logTag, "Polling handles...")
+                    val result = pollHandleAddKey()
+                    if (result.isErr()) {
+                        Log.w(logTag, "pollHandleAddKey returned error: ${result.unwrapErr()}")
+                    }
+                    Log.d(logTag, "Finished polling handles")
+                    handleAddKeyActive = false
+                }
+            }
         }
 
         val serverFileContent = String(DataManager.readFile("server", filesDir)!!, Charsets.UTF_8)
@@ -194,8 +213,108 @@ class ReceiveMessagesService: Service() {
 
     }
 
-    private fun pollHandleAddKey() {
+    private fun pollHandleAddKey(): Result<Ok, String> {
+        val handleDir = File(filesDir, "handles")
+        if(!handleDir.isDirectory) handleDir.mkdir()
 
+        for(i in 0..15) {
+            val keyFile = File(handleDir, i.toString())
+            if (!keyFile.isFile) {
+                Log.i(logTag, "Generating new handle with number: $i")
+                val initKeysKyberResult = LibraryConnector.mKyberKeygen()
+                if(initKeysKyberResult.isErr()) return err(initKeysKyberResult.unwrapErr())
+                val initKeysCurveResult = LibraryConnector.mCurveKeygen()
+                if(initKeysCurveResult.isErr()) return err(initKeysCurveResult.unwrapErr())
+                val initKeysCurvePfs2Result = LibraryConnector.mCurveKeygen()
+                if(initKeysCurvePfs2Result.isErr()) return err(initKeysCurvePfs2Result.unwrapErr())
+                val initKeysKyberSaltResult = LibraryConnector.mKyberKeygen()
+                if(initKeysKyberSaltResult.isErr()) return err(initKeysKyberSaltResult.unwrapErr())
+                val initKeysCurveSaltResult = LibraryConnector.mCurveKeygen()
+                if(initKeysCurveSaltResult.isErr()) return err(initKeysCurveSaltResult.unwrapErr())
+                val nameResult = DataManager.getOwnProfileName()
+                if(nameResult.isErr()) return err(nameResult.unwrapErr())
+
+                val kyberKeys = initKeysKyberResult.unwrap()
+                val curveKeys = initKeysCurveResult.unwrap()
+                val curvePfs2Keys = initKeysCurvePfs2Result.unwrap()
+                val kyberSaltKeys = initKeysKyberSaltResult.unwrap()
+                val curveSaltKeys = initKeysCurveSaltResult.unwrap()
+
+                val handleResult = LibraryConnector.mGenHandle(
+                    kyberKeys.own_pubkey_kyber!!,
+                    curveKeys.own_pubkey_curve!!,
+                    curvePfs2Keys.own_pubkey_curve!!,
+                    kyberSaltKeys.own_pubkey_kyber!!,
+                    curveSaltKeys.own_pubkey_curve!!,
+                    nameResult.unwrap()
+                )
+                if(handleResult.isErr()) return err(handleResult.unwrapErr())
+                val handleContent = Base64.decode(handleResult.unwrap().handle!!, Base64.NO_WRAP)
+                if(!DataManager.writeFile(
+                        i.toString(),
+                        handleDir,
+                        handleContent,
+                        false
+                    )
+                ) return err("Could not write to handle file")
+                val handlePrivateInfo = HandlePrivateInfo(
+                    initKeypairKyber = kyberKeys,
+                    initKeypairCurve = curveKeys,
+                    initKeypairCurvePfs2 = curvePfs2Keys,
+                    initKeypairKyberSalt = kyberSaltKeys,
+                    initKeypairCurveSalt = curveSaltKeys
+                )
+                if(!DataManager.writeFile(
+                        "$i.private",
+                        handleDir,
+                        handlePrivateInfo.toString().toByteArray(Charsets.UTF_8),
+                        false
+                    )
+                ) return err("Could not write to handle private info file")
+                val handlePasswordFileContent =
+                    DataManager.readFile("profileHandlePassword", filesDir)
+                val handlePassword = if(handlePasswordFileContent != null)
+                    String(handlePasswordFileContent, Charsets.UTF_8).substringAfter("\n")
+                        .substringBefore("\n")
+                else
+                    return err("Could not get handle password")
+                val request =
+                    RequestFactory.buildAddKeyRequest(handle, handlePassword, handleContent)
+                val response = makeRequest(request)
+                if(response.isSuccessful) {
+                    File(handleDir, "$i.uploaded").createNewFile()
+                }
+                else {
+                    Log.w(logTag, "Could not upload new handle key: ${request.url} returned response: ${response.body?.string()}")
+                }
+            }
+            else if(!File(handleDir, "$i.uploaded").isFile) {
+                // try reupload
+                val handleContent = DataManager.readFile(i.toString(), handleDir)
+                if(handleContent != null) {
+                    val handlePasswordFileContent =
+                        DataManager.readFile("profileHandlePassword", filesDir)
+                    val handlePassword = if(handlePasswordFileContent != null)
+                        String(handlePasswordFileContent, Charsets.UTF_8).substringAfter("\n")
+                            .substringBefore("\n")
+                    else
+                        return err("Could not get handle password")
+                    val request = RequestFactory.buildAddKeyRequest(
+                        handle,
+                        handlePassword,
+                        handleContent
+                    )
+                    val response = makeRequest(request)
+                    if(response.isSuccessful) {
+                        File(handleDir, "$i.uploaded").createNewFile()
+                    }
+                    else {
+                        Log.w(logTag, "Could not upload new handle key: ${request.url} returned response: ${response.body?.string()}")
+                    }
+                }
+            }
+        }
+        return ok(Ok())
     }
 
     fun searchHandleAndInit(handle: String, initSecret: String, comment: String): Result<String, String> {
