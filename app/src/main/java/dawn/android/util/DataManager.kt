@@ -26,6 +26,7 @@ import dawn.android.LibraryConnector
 import dawn.android.data.Chat
 import dawn.android.data.Keypair
 import dawn.android.data.Message
+import dawn.android.data.Ok
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
@@ -396,7 +397,7 @@ object DataManager {
         return true
     }
 
-    fun saveChatMessage(dataId: String, message: Message): Result<Any?, String> {
+    fun saveChatMessage(dataId: String, message: Message): Result<Ok, String> {
         if(dataId.contains("\n", true) || dataId == "") return err("invalid dataID")
         val chatDir = File(File(mContext.filesDir, "chats"), dataId)
         val messagesDir = File(chatDir, "messages")
@@ -423,7 +424,7 @@ object DataManager {
 
         if(!writeFile(messageNumber.toString(), messagesDir, message.toByteArray(), false)) return err("Could not write to message file")
 
-        return ok(null)
+        return ok(Ok)
     }
 
     fun getOwnProfileName(): Result<String, String> {

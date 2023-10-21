@@ -99,7 +99,7 @@ class Chat(
             return ok(Chat(dataId, chatId, chatIdStamp, chatIdSalt, chatMessageId, chatName, context.filesDir))
         }
     }
-    fun save(): Result<Any?, String> {
+    fun save(): Result<Ok, String> {
 
         return err("not implemented")
     }

@@ -314,7 +314,7 @@ class ReceiveMessagesService: Service() {
                 }
             }
         }
-        return ok(Ok())
+        return ok(Ok)
     }
 
     fun searchHandleAndInit(handle: String, initSecret: String, comment: String): Result<String, String> {
@@ -411,10 +411,10 @@ class ReceiveMessagesService: Service() {
         return client.newCall(request).execute()
     }
 
-    private fun loadInitID(): Result<Any?, String> {
+    private fun loadInitID(): Result<Ok, String> {
         val initIdFileContent = DataManager.readFile("initId", filesDir)?: return err("Could not load init ID file")
         initId = String(initIdFileContent, Charsets.UTF_8).substringAfter("\n").substringBefore("\n")
-        return ok(null)
+        return ok(Ok)
     }
 
     private fun setupForegroundServiceWithNotification() {
