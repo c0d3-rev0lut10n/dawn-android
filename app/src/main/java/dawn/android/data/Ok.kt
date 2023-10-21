@@ -18,4 +18,4 @@
 
 package dawn.android.data
 
-class Ok()
+object Ok
