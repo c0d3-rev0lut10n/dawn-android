@@ -28,6 +28,7 @@ import android.os.IBinder
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.widget.Toast
@@ -137,6 +138,11 @@ class InitiateChatActivity : AppCompatActivity() {
         val initResult = mService.searchHandleAndInit(handleToSearch, initSecret, comment)
         if(initResult.isOk()) {
             val toast = Toast.makeText(this, getString(R.string.initiate_init_request_sent), Toast.LENGTH_LONG)
+            toast.show()
+        }
+        else {
+            Log.e(logTag, "Error during init: ${initResult.unwrapErr()}")
+            val toast = Toast.makeText(this, getString(R.string.initiate_error) + initResult.unwrapErr(), Toast.LENGTH_LONG)
             toast.show()
         }
     }
