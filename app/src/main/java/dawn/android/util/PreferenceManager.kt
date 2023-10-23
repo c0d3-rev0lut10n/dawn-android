@@ -26,7 +26,7 @@ import java.io.File
 class PreferenceManager(
     private val preferencePath: File
 ) {
-    val cache: HashMap<String, String> = HashMap()
+    private val cache: HashMap<String, String> = HashMap()
 
     init {
         val preferenceFileContent = DataManager.readFile("preferences", preferencePath)
