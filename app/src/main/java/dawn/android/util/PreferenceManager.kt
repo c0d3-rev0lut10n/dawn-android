@@ -18,6 +18,7 @@
 
 package dawn.android.util
 
+import dawn.android.data.Ok
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.ok
 import dawn.android.data.Result.Companion.err
@@ -41,5 +42,9 @@ class PreferenceManager(
 
     fun set(key: String, value: String) {
         cache[key] = value
+    }
+
+    fun write(): Result<Ok, String> {
+        return err("not implemented")
     }
 }
