@@ -117,19 +117,16 @@ class ReceiveMessagesService: Service() {
         if(useTor) startTor()
 
         loadHandleInfo()
-        if(handle != "") {
-            // there is a handle set, try to fill it up with init keys in case those were used
-            pollHandleAddKeyTimer = timer(null, false, 5000, 30000) {
-                if (!handleAddKeyActive) {
-                    handleAddKeyActive = true
-                    Log.d(logTag, "Polling handles...")
-                    val result = pollHandleAddKey()
-                    if (result.isErr()) {
-                        Log.w(logTag, "pollHandleAddKey returned error: ${result.unwrapErr()}")
-                    }
-                    Log.d(logTag, "Finished polling handles")
-                    handleAddKeyActive = false
+        pollHandleAddKeyTimer = timer(null, false, 5000, 30000) {
+            if (!handleAddKeyActive) {
+                handleAddKeyActive = true
+                Log.d(logTag, "Polling handles...")
+                val result = pollHandleAddKey()
+                if (result.isErr()) {
+                    Log.w(logTag, "pollHandleAddKey returned error: ${result.unwrapErr()}")
                 }
+                Log.d(logTag, "Finished polling handles")
+                handleAddKeyActive = false
             }
         }
 
@@ -214,6 +211,7 @@ class ReceiveMessagesService: Service() {
     }
 
     private fun pollHandleAddKey(): Result<Ok, String> {
+        if(handle == "") return ok(Ok)
         val handleDir = File(filesDir, "handles")
         if(!handleDir.isDirectory) handleDir.mkdir()
 
