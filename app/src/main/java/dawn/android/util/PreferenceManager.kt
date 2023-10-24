@@ -22,29 +22,37 @@ import dawn.android.data.Ok
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.ok
 import dawn.android.data.Result.Companion.err
+import dawn.android.data.SimpleStringMap
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.File
 
-class PreferenceManager(
-    private val preferencePath: File
-) {
-    private val cache: HashMap<String, String> = HashMap()
+object PreferenceManager {
+    private val cache: SimpleStringMap = SimpleStringMap(
+        HashMap()
+    )
+    private lateinit var path: File
 
-    init {
-        val preferenceFileContent = DataManager.readFile("preferences", preferencePath)
-        // TODO: parse preferences and cache them
+    fun init(preferencePath: File) {
+        path = preferencePath
+        val preferenceFileContent = DataManager.readFile("preferences", path)?: throw Exception("@$this: could not read preferences")
+        cache.content = Json.decodeFromString(String(preferenceFileContent, Charsets.UTF_8))
     }
 
     fun get(key: String): Result<String, String> {
-        val valueFromCache = cache[key]
+        val valueFromCache = cache.content[key]
         if(valueFromCache != null) return ok(valueFromCache)
-        return err("not implemented")
+        return err("not found")
     }
 
     fun set(key: String, value: String) {
-        cache[key] = value
+        cache.content[key] = value
     }
 
     fun write(): Result<Ok, String> {
-        return err("not implemented")
+        val fileContent = Json.encodeToString(cache).toByteArray(Charsets.UTF_8)
+        val result = DataManager.writeFile("preferences", path, fileContent, true)
+        return if(!result) err("@$this: could not write preferences")
+        else ok(Ok)
     }
 }
