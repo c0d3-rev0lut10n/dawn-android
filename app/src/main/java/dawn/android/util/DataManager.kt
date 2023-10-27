@@ -52,9 +52,9 @@ object DataManager {
     private var initializing = false
 
     fun init(context: Context, password: String): Boolean {
-        if(initializing) return false
+        if (initializing) return false
         else initializing = true
-        if(initialized) return true
+        if (initialized) return true
         mContext = context.applicationContext
         dataDirectory = mContext.filesDir
         messagesDirectory = File(dataDirectory, "messages")
@@ -65,70 +65,70 @@ object DataManager {
 
         try {
 
-        // check if files exist
-        if(!isStorageInitialized(context)) return false
-        val mFileInputStream = FileInputStream(saltFile)
-        salt = mFileInputStream.readBytes()
-        mFileInputStream.close()
+            // check if files exist
+            if (!isStorageInitialized(context)) return false
+            val mFileInputStream = FileInputStream(saltFile)
+            salt = mFileInputStream.readBytes()
+            mFileInputStream.close()
 
-        //println(Base64.encodeToString(salt, Base64.NO_WRAP))
+            //println(Base64.encodeToString(salt, Base64.NO_WRAP))
 
-        val passwordChars = password.toCharArray()
-        println(java.time.LocalTime.now())
-        val pbeKeySpec = PBEKeySpec(passwordChars, salt, 100000, 256)
-        val secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
-        val passwordDerivedKey = secretKeyFactory.generateSecret(pbeKeySpec).encoded
-        println(java.time.LocalTime.now())
-        val passwordDerivedKeySpec = SecretKeySpec(passwordDerivedKey, "AES")
+            val passwordChars = password.toCharArray()
+            println(java.time.LocalTime.now())
+            val pbeKeySpec = PBEKeySpec(passwordChars, salt, 100000, 256)
+            val secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+            val passwordDerivedKey = secretKeyFactory.generateSecret(pbeKeySpec).encoded
+            println(java.time.LocalTime.now())
+            val passwordDerivedKeySpec = SecretKeySpec(passwordDerivedKey, "AES")
 
-        val keyFileInputStream = FileInputStream(keyFile)
-        val keyBytesInputStream = BufferedInputStream(keyFileInputStream)
-        val keyFileBytes = keyBytesInputStream.readBytes()
-        keyBytesInputStream.close()
-        keyFileInputStream.close()
+            val keyFileInputStream = FileInputStream(keyFile)
+            val keyBytesInputStream = BufferedInputStream(keyFileInputStream)
+            val keyFileBytes = keyBytesInputStream.readBytes()
+            keyBytesInputStream.close()
+            keyFileInputStream.close()
 
-        if(keyFileBytes.size <= 16) return false
+            if (keyFileBytes.size <= 16) return false
 
-        val keyFileIv = keyFileBytes.copyOfRange(0, 16)
-        val encryptedKey = keyFileBytes.copyOfRange(16, keyFileBytes.size)
+            val keyFileIv = keyFileBytes.copyOfRange(0, 16)
+            val encryptedKey = keyFileBytes.copyOfRange(16, keyFileBytes.size)
 
-        val keyDecryptionCipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
-        val keyFileIvSpec = IvParameterSpec(keyFileIv)
-        keyDecryptionCipher.init(Cipher.DECRYPT_MODE, passwordDerivedKeySpec, keyFileIvSpec)
-        val key = keyDecryptionCipher.doFinal(encryptedKey)
-        encryptionKeySpec = SecretKeySpec(key, "AES")
+            val keyDecryptionCipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
+            val keyFileIvSpec = IvParameterSpec(keyFileIv)
+            keyDecryptionCipher.init(Cipher.DECRYPT_MODE, passwordDerivedKeySpec, keyFileIvSpec)
+            val key = keyDecryptionCipher.doFinal(encryptedKey)
+            encryptionKeySpec = SecretKeySpec(key, "AES")
 
-        // check the key using the test file
-        val testFileInputStream = FileInputStream(testFile)
-        val testBytesInputStream = BufferedInputStream(testFileInputStream)
-        val testFileBytes = testBytesInputStream.readBytes()
-        testBytesInputStream.close()
-        testFileInputStream.close()
+            // check the key using the test file
+            val testFileInputStream = FileInputStream(testFile)
+            val testBytesInputStream = BufferedInputStream(testFileInputStream)
+            val testFileBytes = testBytesInputStream.readBytes()
+            testBytesInputStream.close()
+            testFileInputStream.close()
 
-        if(testFileBytes.size <= 16) return false
+            if (testFileBytes.size <= 16) return false
 
-        val testFileIv = testFileBytes.copyOfRange(0, 16)
-        val testFileEncryptedContent = testFileBytes.copyOfRange(16, testFileBytes.size)
+            val testFileIv = testFileBytes.copyOfRange(0, 16)
+            val testFileEncryptedContent = testFileBytes.copyOfRange(16, testFileBytes.size)
 
-        val testFileDecryptionCipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
-        val testFileIvSpec = IvParameterSpec(testFileIv)
-        testFileDecryptionCipher.init(Cipher.DECRYPT_MODE, encryptionKeySpec, testFileIvSpec)
-        val testFileContent = testFileDecryptionCipher.doFinal(testFileEncryptedContent)
+            val testFileDecryptionCipher = Cipher.getInstance("AES/CBC/PKCS7Padding")
+            val testFileIvSpec = IvParameterSpec(testFileIv)
+            testFileDecryptionCipher.init(Cipher.DECRYPT_MODE, encryptionKeySpec, testFileIvSpec)
+            val testFileContent = testFileDecryptionCipher.doFinal(testFileEncryptedContent)
 
-        if(testFileContent.size <= 64) return false
+            if (testFileContent.size <= 64) return false
 
-        val testData = testFileContent.copyOfRange(0, 64)
-        val encodedHash = testFileContent.copyOfRange(64, testFileContent.size)
+            val testData = testFileContent.copyOfRange(0, 64)
+            val encodedHash = testFileContent.copyOfRange(64, testFileContent.size)
 
-        val digest = MessageDigest.getInstance("SHA-256")
-        val derivedEncodedHash = digest.digest(testData)
+            val digest = MessageDigest.getInstance("SHA-256")
+            val derivedEncodedHash = digest.digest(testData)
 
-        if(!encodedHash.contentEquals(derivedEncodedHash)) return false
+            if (!encodedHash.contentEquals(derivedEncodedHash)) return false
 
-        initialized = true
-        return true
-        }
-        catch (e: Exception) {
+            initialized = true
+            PreferenceManager.init(mContext.filesDir)
+            return true
+        } catch (e: Exception) {
             Log.e(context.packageName, "decryption of the app data failed!", e)
             initializing = false
             return false
