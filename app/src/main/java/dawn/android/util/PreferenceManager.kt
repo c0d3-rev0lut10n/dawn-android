@@ -28,7 +28,7 @@ import kotlinx.serialization.json.Json
 import java.io.File
 
 object PreferenceManager {
-    private val cache: SimpleStringMap = SimpleStringMap(
+    private var cache: SimpleStringMap = SimpleStringMap(
         HashMap()
     )
     private lateinit var path: File
@@ -40,7 +40,7 @@ object PreferenceManager {
     fun init(preferencePath: File) {
         path = preferencePath
         val preferenceFileContent = DataManager.readFile("preferences", path)?: throw Exception("@$this: could not read preferences")
-        cache.content = Json.decodeFromString(String(preferenceFileContent, Charsets.UTF_8))
+        cache = Json.decodeFromString(String(preferenceFileContent, Charsets.UTF_8))
     }
 
     fun get(key: String): Result<String, String> {
