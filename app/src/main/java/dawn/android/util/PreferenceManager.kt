@@ -33,6 +33,10 @@ object PreferenceManager {
     )
     private lateinit var path: File
 
+    fun new(preferencePath: File) {
+        path = preferencePath
+    }
+
     fun init(preferencePath: File) {
         path = preferencePath
         val preferenceFileContent = DataManager.readFile("preferences", path)?: throw Exception("@$this: could not read preferences")
