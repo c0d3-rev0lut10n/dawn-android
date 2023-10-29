@@ -42,6 +42,7 @@ import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivitySetupBinding
 import dawn.android.util.DataManager
+import dawn.android.util.PreferenceManager
 import dawn.android.util.ThemeLoader
 import java.io.File
 
@@ -242,6 +243,8 @@ class SetupActivity : AppCompatActivity() {
         chatsDir.mkdir()
         val receivedInitRequestDir = File(chatsDir, initId)
         receivedInitRequestDir.mkdir()
+        PreferenceManager.new(filesDir)
+        PreferenceManager.write().unwrap()
 
         finish()
     }
