@@ -202,15 +202,6 @@ class SetupActivity : AppCompatActivity() {
 
     private fun saveProfileData(password: String, serverAddress: String, profileName: String, profileBio: String) {
         DataManager.init(this.applicationContext, password)
-        // add some padding in front and at the end of the string to make it less vulnerable to any potential known-plaintext-attacks
-        val serverStringPrePadding = DataManager.generateStringPadding()
-        val serverStringPostPadding = DataManager.generateStringPadding()
-        val profileNameStringPrePadding = DataManager.generateStringPadding()
-        val profileNameStringPostPadding = DataManager.generateStringPadding()
-        val profileBioStringPrePadding = DataManager.generateStringPadding()
-        val profileBioStringPostPadding = DataManager.generateStringPadding()
-        val initIdPrePadding = DataManager.generateStringPadding()
-        val initIdPostPadding = DataManager.generateStringPadding()
 
         val initIdResult = LibraryConnector.mGenId()
         if(initIdResult.isErr()) {
@@ -220,11 +211,6 @@ class SetupActivity : AppCompatActivity() {
         }
         val initId = initIdResult.unwrap().id!!
 
-        val serverString = serverStringPrePadding.concatToString() + "\n" + serverAddress + "\n" + serverStringPostPadding.concatToString()
-        val profileNameString = profileNameStringPrePadding.concatToString() + "\n" + profileName + "\n" + profileNameStringPostPadding.concatToString()
-        val profileBioString = profileBioStringPrePadding.concatToString() + "\n" + profileBio + "\n" + profileBioStringPostPadding.concatToString()
-        val initIdString = initIdPrePadding.concatToString() + "\n" + initId + "\n" + initIdPostPadding.concatToString()
-
         val signatureKeypairResult = LibraryConnector.mSignKeygen()
         if(signatureKeypairResult.isErr()) {
             // TODO: notify about the error
@@ -232,18 +218,18 @@ class SetupActivity : AppCompatActivity() {
         }
         val signatureKeypair = signatureKeypairResult.unwrap()
 
-        DataManager.writeFile("server", filesDir, serverString.toByteArray(Charsets.UTF_8), false)
-        DataManager.writeFile("profileName", filesDir, profileNameString.toByteArray(Charsets.UTF_8), false)
-        DataManager.writeFile("profileBio", filesDir, profileBioString.toByteArray(Charsets.UTF_8), false)
-        DataManager.writeFile("initId", filesDir, initIdString.toByteArray(Charsets.UTF_8), false)
-        DataManager.writeFile("pubkeySig", filesDir, signatureKeypair.own_pubkey_sig!!.toByteArray(Charsets.UTF_8), false)
-        DataManager.writeFile("seckeySig", filesDir, signatureKeypair.own_seckey_sig!!.toByteArray(Charsets.UTF_8), false)
+        PreferenceManager.new(filesDir)
+        PreferenceManager.set("server", serverAddress)
+        PreferenceManager.set("profileName", profileName)
+        PreferenceManager.set("profileBio", profileBio)
+        PreferenceManager.set("initId", initId)
+        PreferenceManager.set("pubkeySig", signatureKeypair.own_pubkey_sig!!)
+        PreferenceManager.set("seckeySig", signatureKeypair.own_seckey_sig!!)
 
         val chatsDir = File(filesDir, "chats")
         chatsDir.mkdir()
         val receivedInitRequestDir = File(chatsDir, initId)
         receivedInitRequestDir.mkdir()
-        PreferenceManager.new(filesDir)
         PreferenceManager.write().unwrap()
 
         finish()

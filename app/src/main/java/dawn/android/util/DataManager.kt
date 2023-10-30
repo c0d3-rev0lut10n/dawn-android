@@ -428,23 +428,22 @@ object DataManager {
     }
 
     fun getOwnProfileName(): Result<String, String> {
-        val profileFileContent = readFile("profileName", mContext.filesDir) ?: return err("Could not read file")
-        val paddedProfileName = String(profileFileContent, Charsets.UTF_8)
-        val profileName = paddedProfileName.substringAfter("\n").substringBefore("\n")
-        return ok(profileName)
+        val profileName = PreferenceManager.get("profileName")
+        if(profileName.isErr()) return err(profileName.unwrapErr())
+        return ok(profileName.unwrap())
     }
 
     fun getOwnProfileSignKeys(): Result<Keypair, String> {
-        val pubKey = readFile("pubkeySig", mContext.filesDir)
-        val secKey = readFile("seckeySig", mContext.filesDir)
+        val pubKey = PreferenceManager.get("pubkeySig")
+        val secKey = PreferenceManager.get("seckeySig")
 
-        if(pubKey == null || secKey == null) {
+        if(pubKey.isErr() || secKey.isErr()) {
             return err("could not read keys")
         }
 
         val keypair = Keypair(
-            publicKey = String(pubKey, Charsets.UTF_8),
-            privateKey = String(secKey, Charsets.UTF_8)
+            publicKey = pubKey.unwrap(),
+            privateKey = secKey.unwrap()
         )
         return ok(keypair)
     }

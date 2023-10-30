@@ -49,6 +49,7 @@ import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivitySettingsBinding
 import dawn.android.util.DataManager
+import dawn.android.util.PreferenceManager
 import dawn.android.util.RequestFactory
 import dawn.android.util.ThemeLoader
 import java.security.SecureRandom
@@ -148,11 +149,9 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(mTheme.backButtonIcon)
 
-        val paddedProfileName = String(DataManager.readFile("profileName", filesDir)!!, Charsets.UTF_8)
-        currentProfileName = paddedProfileName.substringAfter("\n").substringBefore("\n")
+        currentProfileName = PreferenceManager.get("profileName").unwrap()
 
-        val paddedProfileBio = String(DataManager.readFile("profileBio", filesDir)!!, Charsets.UTF_8)
-        currentProfileBio = paddedProfileBio.substringAfter("\n").substringBefore("\n")
+        currentProfileBio = PreferenceManager.get("profileBio").unwrap()
 
         val handleFileContent = DataManager.readFile("profileHandle", filesDir)
         currentProfileHandle = if(handleFileContent != null) {

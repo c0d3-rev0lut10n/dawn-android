@@ -44,6 +44,7 @@ import dawn.android.data.Result.Companion.ok
 import dawn.android.data.Result.Companion.err
 import dawn.android.data.SentInitRequest
 import dawn.android.util.DataManager
+import dawn.android.util.PreferenceManager
 import dawn.android.util.RequestFactory
 import dawn.android.util.TorReceiver
 import okhttp3.OkHttpClient
@@ -130,8 +131,7 @@ class ReceiveMessagesService: Service() {
             }
         }
 
-        val serverFileContent = String(DataManager.readFile("server", filesDir)!!, Charsets.UTF_8)
-        val serverAddress = serverFileContent.substringAfter("\n").substringBefore("\n")
+        val serverAddress = PreferenceManager.get("server").unwrap()
 
         RequestFactory.setMessageServerAddress(serverAddress)
         chats = DataManager.getAllChats()
@@ -410,8 +410,9 @@ class ReceiveMessagesService: Service() {
     }
 
     private fun loadInitID(): Result<Ok, String> {
-        val initIdFileContent = DataManager.readFile("initId", filesDir)?: return err("Could not load init ID file")
-        initId = String(initIdFileContent, Charsets.UTF_8).substringAfter("\n").substringBefore("\n")
+        val initIdResult = PreferenceManager.get("initId")
+        if(initIdResult.isErr()) return err(initIdResult.unwrapErr())
+        initId = initIdResult.unwrap()
         return ok(Ok)
     }
 
@@ -488,8 +489,8 @@ class ReceiveMessagesService: Service() {
         } else ""
 
         // get the init ID
-        val initIdFileContent = DataManager.readFile("initId", filesDir)
-        initId = if(initIdFileContent != null) String(initIdFileContent, Charsets.UTF_8).substringAfter("\n").substringBefore("\n")
-         else ""
+        val initIdResult = PreferenceManager.get("initId")
+        initId = if(initIdResult.isErr()) ""
+        else initIdResult.unwrap()
     }
 }
