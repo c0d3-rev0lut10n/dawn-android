@@ -73,8 +73,6 @@ object DataManager {
             salt = mFileInputStream.readBytes()
             mFileInputStream.close()
 
-            //println(Base64.encodeToString(salt, Base64.NO_WRAP))
-
             val passwordChars = password.toCharArray()
             Log.i(logTag, "Starting decryption of app data")
             val pbeKeySpec = PBEKeySpec(passwordChars, salt, 100000, 256)
