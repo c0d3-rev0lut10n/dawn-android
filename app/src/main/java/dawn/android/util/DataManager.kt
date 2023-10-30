@@ -50,12 +50,14 @@ object DataManager {
     private lateinit var messagesDirectory: File
     private var initialized = false
     private var initializing = false
+    private lateinit var logTag: String
 
     fun init(context: Context, password: String): Boolean {
         if (initializing) return false
         else initializing = true
         if (initialized) return true
         mContext = context.applicationContext
+        logTag = "${mContext.packageName}.DataManager"
         dataDirectory = mContext.filesDir
         messagesDirectory = File(dataDirectory, "messages")
 
@@ -74,11 +76,11 @@ object DataManager {
             //println(Base64.encodeToString(salt, Base64.NO_WRAP))
 
             val passwordChars = password.toCharArray()
-            println(java.time.LocalTime.now())
+            Log.i(logTag, "Starting decryption of app data")
             val pbeKeySpec = PBEKeySpec(passwordChars, salt, 100000, 256)
             val secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
             val passwordDerivedKey = secretKeyFactory.generateSecret(pbeKeySpec).encoded
-            println(java.time.LocalTime.now())
+            Log.i(logTag, "Finished decryption of app data")
             val passwordDerivedKeySpec = SecretKeySpec(passwordDerivedKey, "AES")
 
             val keyFileInputStream = FileInputStream(keyFile)
