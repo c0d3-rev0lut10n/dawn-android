@@ -17,6 +17,10 @@
         android:theme="@style/Theme.Dawn.Dark"
         tools:targetApi="31">
         <activity
+            android:name=".DebugActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+        <activity
             android:name=".InitiateChatActivity"
             android:exported="false"
             android:parentActivityName=".MainActivity" />
@@ -48,11 +52,13 @@
             </intent-filter>
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
-                    android:scheme="https"
-                    android:host="chat.dawn-privacy.org" />
+                    android:host="chat.dawn-privacy.org"
+                    android:scheme="https" />
             </intent-filter>
         </activity>
     </application>
