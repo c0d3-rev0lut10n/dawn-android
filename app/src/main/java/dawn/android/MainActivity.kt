@@ -52,6 +52,8 @@ import dawn.android.data.Theme
 import dawn.android.databinding.ActivityMainBinding
 import dawn.android.util.DataManager
 import dawn.android.util.ThemeLoader
+import kotlinx.coroutines.delay
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
 
@@ -78,6 +80,8 @@ class MainActivity : AppCompatActivity() {
             mBound = false
         }
     }
+
+    private var launchDebugPresses = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -168,6 +172,8 @@ class MainActivity : AppCompatActivity() {
         chatPreviewLayoutParams.setMargins(30, 30, 30, 0)
 
         makeChatlist()
+
+        binding.appBarMain.toolbar.setOnClickListener { thread {launchDebugActivity()} }
     }
 
     override fun onResume() {
@@ -306,5 +312,15 @@ class MainActivity : AppCompatActivity() {
             noChatsYetTextView.gravity = Gravity.CENTER
             binding.appBarMain.content.contentLayout.addView(noChatsYetTextView)
         }
+    }
+
+    private fun launchDebugActivity() {
+        if(launchDebugPresses == 10) {
+            val intent = Intent(this, DebugActivity::class.java)
+            startActivity(intent)
+        }
+        launchDebugPresses += 1
+        Thread.sleep(3000)
+        launchDebugPresses = 0
     }
 }
