@@ -153,21 +153,15 @@ class SettingsActivity : AppCompatActivity() {
 
         currentProfileBio = PreferenceManager.get("profileBio").unwrap()
 
-        val handleFileContent = DataManager.readFile("profileHandle", filesDir)
-        currentProfileHandle = if(handleFileContent != null) {
-            val paddedProfileHandle = String(handleFileContent, Charsets.UTF_8)
-            paddedProfileHandle.substringAfter("\n").substringBefore("\n")
-        } else ""
+        val profileHandleResult = PreferenceManager.get("profileHandle")
+        currentProfileHandle = if(profileHandleResult.isErr()) "" else profileHandleResult.unwrap()
 
-        val handlePasswordFileContent = DataManager.readFile("profileHandlePassword", filesDir)
-        currentHandlePassword = if(handlePasswordFileContent != null)
-            String(handlePasswordFileContent, Charsets.UTF_8).substringAfter("\n").substringBefore("\n")
-        else
-            ""
+        val handlePasswordResult = PreferenceManager.get("profileHandlePassword")
+        currentHandlePassword = if(handlePasswordResult.isErr()) "" else handlePasswordResult.unwrap()
 
-        val handlePublicInitFileContent = DataManager.readFile("profileHandlePublicInit", filesDir)
-        if(handlePublicInitFileContent != null) {
-            when (String(handlePublicInitFileContent, Charsets.UTF_8)) {
+        val handlePublicInitResult = PreferenceManager.get("profileHandlePublicInit")
+        if(handlePublicInitResult.isOk()) {
+            when (handlePublicInitResult.unwrap()) {
                 "true" -> currentHandleAllowPublicInit = true
                 "false" -> currentHandleAllowPublicInit = false
                 else -> {
