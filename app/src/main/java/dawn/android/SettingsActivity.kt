@@ -189,6 +189,7 @@ class SettingsActivity : AppCompatActivity() {
             }
             initSecret = secret.concatToString()
             PreferenceManager.set("initSecret", initSecret)
+            PreferenceManager.write()
         }
 
         binding.etProfileName.setText(currentProfileName)
@@ -318,17 +319,11 @@ class SettingsActivity : AppCompatActivity() {
         var error = false
 
         if(profileNameChanges) {
-            val profileNameStringPrePadding = DataManager.generateStringPadding()
-            val profileNameStringPostPadding = DataManager.generateStringPadding()
-            val profileNameString = profileNameStringPrePadding.concatToString() + "\n" + binding.etProfileName.text.toString() + "\n" + profileNameStringPostPadding.concatToString()
-            DataManager.writeFile("profileName", filesDir, profileNameString.toByteArray(Charsets.UTF_8), true)
+            PreferenceManager.set("profileName", binding.etProfileName.text.toString())
         }
 
         if(profileBioChanges) {
-            val profileBioStringPrePadding = DataManager.generateStringPadding()
-            val profileBioStringPostPadding = DataManager.generateStringPadding()
-            val profileBioString = profileBioStringPrePadding.concatToString() + "\n" + binding.etProfileBio.text.toString() + "\n" + profileBioStringPostPadding.concatToString()
-            DataManager.writeFile("profileBio", filesDir, profileBioString.toByteArray(Charsets.UTF_8), true)
+            PreferenceManager.set("profileBio", binding.etProfileBio.text.toString())
         }
 
         if(profileHandleChanges && checkHandle(binding.etProfileHandle.text.toString())) {
@@ -348,35 +343,10 @@ class SettingsActivity : AppCompatActivity() {
                 val response = mService.makeRequest(setHandleRequest)
 
                 if (response.code == 204) {
-                    val profileHandleStringPrePadding = DataManager.generateStringPadding()
-                    val profileHandleStringPostPadding = DataManager.generateStringPadding()
-                    val profileHandleString =
-                        profileHandleStringPrePadding.concatToString() + "\n" + binding.etProfileHandle.text.toString() + "\n" + profileHandleStringPostPadding.concatToString()
-                    error = !DataManager.writeFile(
-                        "profileHandle",
-                        filesDir,
-                        profileHandleString.toByteArray(Charsets.UTF_8),
-                        true
-                    )
-
-                    val handlePasswordString = DataManager.generateStringPadding()
-                        .concatToString() + "\n" + handlePassword + "\n" + DataManager.generateStringPadding()
-                    error = error || !DataManager.writeFile(
-                        "profileHandlePassword",
-                        filesDir,
-                        handlePasswordString.toByteArray(Charsets.UTF_8),
-                        true
-                    )
-
-                    val handlePublicInit = binding.cbAllowPublicInit.isChecked.toString()
-                    error = error || !DataManager.writeFile(
-                        "profileHandlePublicInit",
-                        filesDir,
-                        handlePublicInit.toByteArray(Charsets.UTF_8),
-                        true
-                    )
-
-                    if (!error) Log.i(logTag, "Changed handle successfully!")
+                    PreferenceManager.set("profileHandle", binding.etProfileHandle.text.toString())
+                    PreferenceManager.set("profileHandlePassword", binding.etProfileHandlePassword.text.toString())
+                    PreferenceManager.set("profileHandlePublicInit", binding.cbAllowPublicInit.isChecked.toString())
+                    Log.i(logTag, "Changed handle successfully!")
                 } else {
                     error = true
                     Log.w(logTag, "Could not edit handle: $response, ${response.body}")
@@ -429,6 +399,9 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
+
+        PreferenceManager.write()
+
         if(!error) finish()
         else {
             val errorSavingChangesDialog = MaterialAlertDialogBuilder(this)
