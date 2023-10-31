@@ -185,6 +185,7 @@ class SettingsActivity : AppCompatActivity() {
             PreferenceManager.set("initSecret", initSecret)
             PreferenceManager.write()
         }
+        else initSecret = initSecretResult.unwrap()
 
         binding.etProfileName.setText(currentProfileName)
         binding.etProfileBio.setText(currentProfileBio)
