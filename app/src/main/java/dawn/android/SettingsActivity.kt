@@ -176,9 +176,10 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        val initSecretFileContent = DataManager.readFile("initSecret", filesDir)
-        if(initSecretFileContent == null) {
+        val initSecretResult = PreferenceManager.get("initSecret")
+        if(initSecretResult.isErr()) {
             // there doesn't exist an init secret yet, therefore create one
+            Log.i(logTag, "Creating new init secret")
             val availableSecretCharacters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
             val secretLength = 16
             val secret = CharArray(secretLength)
@@ -187,11 +188,7 @@ class SettingsActivity : AppCompatActivity() {
                 secret[i] = availableSecretCharacters[stringGenerationRng.nextInt(availableSecretCharacters.length)]
             }
             initSecret = secret.concatToString()
-            val initSecretFileString = DataManager.generateStringPadding().concatToString() + "\n" + initSecret + "\n" + DataManager.generateStringPadding().concatToString()
-            DataManager.writeFile("initSecret", filesDir, initSecretFileString.toByteArray(Charsets.UTF_8), false)
-        }
-        else {
-            initSecret = String(initSecretFileContent, Charsets.UTF_8).substringAfter("\n").substringBefore("\n")
+            PreferenceManager.set("initSecret", initSecret)
         }
 
         binding.etProfileName.setText(currentProfileName)
@@ -335,51 +332,54 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         if(profileHandleChanges && checkHandle(binding.etProfileHandle.text.toString())) {
-            val initIdBytes = DataManager.readFile("initId", filesDir)
-            if(initIdBytes == null) {
+            val initId = PreferenceManager.get("initId")
+            if(initId.isErr()) {
                 error = true
                 toastError(getString(R.string.settings_error_no_init_id))
-            }
-            else {
-                val initId = String(initIdBytes, Charsets.UTF_8).substringAfter("\n").substringBefore("\n")
-                if(initId == "") {
+            } else {
+                val handlePassword = binding.etProfileHandlePassword.text.toString()
+                val setHandleRequest = RequestFactory.buildSetHandleRequest(
+                    id = initId.unwrap(),
+                    handle = binding.etProfileHandle.text.toString(),
+                    password = handlePassword,
+                    initSecret = initSecret,
+                    allowPublicInit = binding.cbAllowPublicInit.isActivated
+                )
+                val response = mService.makeRequest(setHandleRequest)
+
+                if (response.code == 204) {
+                    val profileHandleStringPrePadding = DataManager.generateStringPadding()
+                    val profileHandleStringPostPadding = DataManager.generateStringPadding()
+                    val profileHandleString =
+                        profileHandleStringPrePadding.concatToString() + "\n" + binding.etProfileHandle.text.toString() + "\n" + profileHandleStringPostPadding.concatToString()
+                    error = !DataManager.writeFile(
+                        "profileHandle",
+                        filesDir,
+                        profileHandleString.toByteArray(Charsets.UTF_8),
+                        true
+                    )
+
+                    val handlePasswordString = DataManager.generateStringPadding()
+                        .concatToString() + "\n" + handlePassword + "\n" + DataManager.generateStringPadding()
+                    error = error || !DataManager.writeFile(
+                        "profileHandlePassword",
+                        filesDir,
+                        handlePasswordString.toByteArray(Charsets.UTF_8),
+                        true
+                    )
+
+                    val handlePublicInit = binding.cbAllowPublicInit.isChecked.toString()
+                    error = error || !DataManager.writeFile(
+                        "profileHandlePublicInit",
+                        filesDir,
+                        handlePublicInit.toByteArray(Charsets.UTF_8),
+                        true
+                    )
+
+                    if (!error) Log.i(logTag, "Changed handle successfully!")
+                } else {
                     error = true
-                    toastError(getString(R.string.settings_error_no_init_id))
-                }
-                else {
-                    val handlePassword = binding.etProfileHandlePassword.text.toString()
-                    val setHandleRequest = RequestFactory.buildSetHandleRequest(
-                        id = initId,
-                        handle = binding.etProfileHandle.text.toString(),
-                        password = handlePassword,
-                        initSecret = initSecret,
-                        allowPublicInit =  binding.cbAllowPublicInit.isActivated)
-                    val response = mService.makeRequest(setHandleRequest)
-
-                    if(response.code == 204) {
-                        val profileHandleStringPrePadding = DataManager.generateStringPadding()
-                        val profileHandleStringPostPadding = DataManager.generateStringPadding()
-                        val profileHandleString =
-                            profileHandleStringPrePadding.concatToString() + "\n" + binding.etProfileHandle.text.toString() + "\n" + profileHandleStringPostPadding.concatToString()
-                        error = !DataManager.writeFile(
-                            "profileHandle",
-                            filesDir,
-                            profileHandleString.toByteArray(Charsets.UTF_8),
-                            true
-                        )
-
-                        val handlePasswordString = DataManager.generateStringPadding().concatToString() + "\n" + handlePassword + "\n" + DataManager.generateStringPadding()
-                        error = error || !DataManager.writeFile("profileHandlePassword", filesDir, handlePasswordString.toByteArray(Charsets.UTF_8), true)
-
-                        val handlePublicInit = binding.cbAllowPublicInit.isChecked.toString()
-                        error = error || !DataManager.writeFile("profileHandlePublicInit", filesDir, handlePublicInit.toByteArray(Charsets.UTF_8), true)
-
-                        if(!error) Log.i(logTag, "Changed handle successfully!")
-                    }
-                    else {
-                        error = true
-                        Log.w(logTag, "Could not edit handle: $response, ${response.body}")
-                    }
+                    Log.w(logTag, "Could not edit handle: $response, ${response.body}")
                 }
             }
         }
