@@ -99,4 +99,7 @@
     <string name="receive_text_wrong_init_secret">Wrong init secret!</string>
     <string name="receive_text_key_slots_empty">No key slots left to initialize. Try again later after your recipient got back online.</string>
 
+    <!-- Texts for DebugActivity -->
+    <string name="debug_app_bar">Debugging Tools</string>
+
 </resources>
