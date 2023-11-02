@@ -34,6 +34,129 @@
 
             </com.google.android.material.appbar.AppBarLayout>
 
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbarThumbVertical="?attr/colorPrimary">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/content_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/backgroundColor">
+
+                    <TextView
+                        android:id="@+id/tvPreferenceHeading"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="90dp"
+                        android:layout_marginEnd="30dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:text="@string/debug_heading_preference"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:id="@+id/tvPreference"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginEnd="30dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvPreferenceHeading"
+                        android:text="@string/debug_text_preference" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/etPreferenceWrapper"
+                        style="@style/Theme.Dawn.TextField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="30dp"
+                        android:ems="10"
+                        android:hint="@string/debug_hint_enter_preference"
+                        android:inputType="text"
+                        android:minHeight="48dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvPreference">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etPreference"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="?android:attr/textColor"
+                            tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <TextView
+                        android:id="@+id/tvPreferenceValue"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginEnd="30dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/etPreferenceWrapper"
+                        android:text="@string/debug_text_preference_value" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/etPreferenceValueWrapper"
+                        style="@style/Theme.Dawn.TextField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="30dp"
+                        android:ems="10"
+                        android:hint="@string/debug_hint_enter_value"
+                        android:inputType="text"
+                        android:minHeight="48dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvPreferenceValue">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etPreferenceValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="?android:attr/textColor"
+                            tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/btnGetPreference"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginEnd="5dp"
+                        android:minHeight="48dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/etPreferenceValueWrapper"
+                        android:text="@string/debug_btn_get_preference"
+                        />
+
+                    <Button
+                        android:id="@+id/btnSetPreference"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginEnd="30dp"
+                        android:minHeight="48dp"
+                        app:layout_constraintStart_toEndOf="@id/btnGetPreference"
+                        app:layout_constraintTop_toBottomOf="@id/etPreferenceValueWrapper"
+                        android:text="@string/debug_btn_set_preference"
+                        />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </ScrollView>
+
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

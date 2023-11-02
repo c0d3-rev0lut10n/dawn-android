@@ -101,5 +101,12 @@
 
     <!-- Texts for DebugActivity -->
     <string name="debug_app_bar">Debugging Tools</string>
+    <string name="debug_heading_preference">Preferences</string>
+    <string name="debug_text_preference">Enter a preference you want to look at or change:</string>
+    <string name="debug_text_preference_value">If you want to change the preference, enter the new string below:</string>
+    <string name="debug_hint_enter_preference">very_interesting_preference</string>
+    <string name="debug_hint_enter_value">example value</string>
+    <string name="debug_btn_get_preference">Get</string>
+    <string name="debug_btn_set_preference">Change</string>
 
 </resources>
