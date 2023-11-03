@@ -67,7 +67,6 @@ class ReceiveMessagesService: Service() {
     private val mTorReceiver = TorReceiver
     private lateinit var notificationManager: NotificationManager
     private lateinit var chats: ArrayList<Chat>
-    private var activeChat: Chat? = null
     private lateinit var handle: String
     private lateinit var initId: String
     private lateinit var initKeyDirectory: File
@@ -151,14 +150,8 @@ class ReceiveMessagesService: Service() {
         return true
     }
 
-    fun setActiveChat(chat: Chat) {
-        activeChat = chat
-    }
-
     private fun pollChats() {
         for(chat in chats) {
-            if(chat.dataId == activeChat?.dataId) continue // skip active chat as it gets polled separately
-
             val timestampsToCheckResult = LibraryConnector.mGetAllTimestampsSince(chat.idStamp)
             if(timestampsToCheckResult.isErr()) {
                 Log.e(logTag, "Deriving timestamps failed: ${timestampsToCheckResult.unwrapErr()}")
@@ -198,10 +191,6 @@ class ReceiveMessagesService: Service() {
                 DataManager.saveChatId(chat.dataId, chat.id, timestamp)
             }
         }
-    }
-
-    private fun pollActiveChat() {
-
     }
 
     private fun pollInitID() {
