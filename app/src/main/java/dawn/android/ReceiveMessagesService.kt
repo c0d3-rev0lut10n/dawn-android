@@ -266,11 +266,14 @@ class ReceiveMessagesService: Service() {
                 val request =
                     RequestFactory.buildAddKeyRequest(handle, handlePassword, handleContent)
                 val response = makeRequest(request)
-                if(response.isSuccessful) {
+                if(response.isOk() && response.unwrap().isSuccessful) {
                     File(handleDir, "$i.uploaded").createNewFile()
                 }
                 else {
-                    Log.w(logTag, "Could not upload new handle key: ${request.url} returned response: ${response.body?.string()}")
+                    if(response.isOk())
+                        Log.w(logTag, "Could not upload new handle key: ${request.url} returned response: ${response.unwrap().body?.string()}")
+                    else
+                        Log.w(logTag, "Could not upload new handle key: ${request.url} call failed: ${response.unwrapErr()}")
                 }
             }
             else if(!File(handleDir, "$i.uploaded").isFile) {
@@ -290,11 +293,14 @@ class ReceiveMessagesService: Service() {
                         handleContent
                     )
                     val response = makeRequest(request)
-                    if(response.isSuccessful) {
+                    if(response.isOk() && response.unwrap().isSuccessful) {
                         File(handleDir, "$i.uploaded").createNewFile()
                     }
                     else {
-                        Log.w(logTag, "Could not upload new handle key: ${request.url} returned response: ${response.body?.string()}")
+                        if(response.isOk())
+                            Log.w(logTag, "Could not upload new handle key: ${request.url} returned response: ${response.unwrap().body?.string()}")
+                        else
+                            Log.w(logTag, "Could not upload new handle key: ${request.url} call failed: ${response.unwrapErr()}")
                     }
                 }
             }
@@ -392,8 +398,12 @@ class ReceiveMessagesService: Service() {
         return ok("success")
     }
 
-    fun makeRequest(request: Request): Response {
-        return client.newCall(request).execute()
+    fun makeRequest(request: Request): Result<Response, String> {
+        return try {
+            ok(client.newCall(request).execute())
+        } catch (e: Exception) {
+            err(e.stackTraceToString())
+        }
     }
 
     private fun setupForegroundServiceWithNotification() {

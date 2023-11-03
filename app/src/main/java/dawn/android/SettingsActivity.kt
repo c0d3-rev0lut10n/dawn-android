@@ -335,16 +335,32 @@ class SettingsActivity : AppCompatActivity() {
                     initSecret = initSecret,
                     allowPublicInit = binding.cbAllowPublicInit.isActivated
                 )
-                val response = mService.makeRequest(setHandleRequest)
+                val responseResult = mService.makeRequest(setHandleRequest)
 
-                if (response.code == 204) {
-                    PreferenceManager.set("profileHandle", binding.etProfileHandle.text.toString())
-                    PreferenceManager.set("profileHandlePassword", binding.etProfileHandlePassword.text.toString())
-                    PreferenceManager.set("profileHandlePublicInit", binding.cbAllowPublicInit.isChecked.toString())
-                    Log.i(logTag, "Changed handle successfully!")
-                } else {
+                if(responseResult.isErr()) {
                     error = true
-                    Log.w(logTag, "Could not edit handle: $response, ${response.body}")
+                    Log.w(logTag, "Could not edit handle: ${responseResult.unwrapErr()}")
+                }
+                else {
+                    val response = responseResult.unwrap()
+                    if (response.code == 204) {
+                        PreferenceManager.set(
+                            "profileHandle",
+                            binding.etProfileHandle.text.toString()
+                        )
+                        PreferenceManager.set(
+                            "profileHandlePassword",
+                            binding.etProfileHandlePassword.text.toString()
+                        )
+                        PreferenceManager.set(
+                            "profileHandlePublicInit",
+                            binding.cbAllowPublicInit.isChecked.toString()
+                        )
+                        Log.i(logTag, "Changed handle successfully!")
+                    } else {
+                        error = true
+                        Log.w(logTag, "Could not edit handle: $response, ${response.body}")
+                    }
                 }
             }
         }
