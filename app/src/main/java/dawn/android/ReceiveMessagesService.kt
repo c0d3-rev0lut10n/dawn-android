@@ -396,13 +396,6 @@ class ReceiveMessagesService: Service() {
         return client.newCall(request).execute()
     }
 
-    private fun loadInitID(): Result<Ok, String> {
-        val initIdResult = PreferenceManager.get("initId")
-        if(initIdResult.isErr()) return err(initIdResult.unwrapErr())
-        initId = initIdResult.unwrap()
-        return ok(Ok)
-    }
-
     private fun setupForegroundServiceWithNotification() {
         notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
