@@ -72,9 +72,7 @@ class ReceiveMessagesService: Service() {
     private lateinit var initId: String
     private lateinit var initKeyDirectory: File
     private val useTor = true
-    private lateinit var directHttpClient: OkHttpClient
     private lateinit var torProxy: Proxy
-    private lateinit var torHttpClient: OkHttpClient
     private lateinit var client: OkHttpClient
     private lateinit var logTag: String
 
