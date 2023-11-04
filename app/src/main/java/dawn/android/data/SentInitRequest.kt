@@ -18,6 +18,9 @@
 
 package dawn.android.data
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 class SentInitRequest (
     val ownPubkeyKyber: String,
     val ownSeckeyKyber: String,
