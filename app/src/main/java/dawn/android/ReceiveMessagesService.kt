@@ -74,6 +74,7 @@ class ReceiveMessagesService: Service() {
     private lateinit var torProxy: Proxy
     private lateinit var client: OkHttpClient
     private lateinit var logTag: String
+    private var tickInProgress = false
 
     private var pollHandleAddKeyTimer: Timer? = null
     private var handleAddKeyActive = false
@@ -140,6 +141,14 @@ class ReceiveMessagesService: Service() {
 
     override fun onBind(intent: Intent): IBinder {
         return bindInterface
+    }
+
+    private fun tick() {
+        if(tickInProgress) return
+        tickInProgress = true
+        // here happens everything that gets executed during a tick
+
+        tickInProgress = false
     }
 
     fun addChat(chat: Chat): Boolean {
