@@ -25,9 +25,11 @@ import dawn.android.LibraryConnector
 import dawn.android.data.Result.Companion.ok
 import dawn.android.data.Result.Companion.err
 import dawn.android.util.DataManager
+import dawn.android.util.PreferenceManager
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 
@@ -91,7 +93,9 @@ class Chat(
         }
     }
     fun save(): Result<Ok, String> {
-
-        return err("not implemented")
+        val fileContent = Json.encodeToString(this).toByteArray(Charsets.UTF_8)
+        val result = DataManager.writeFile("chat", filesDir!!, fileContent, true)
+        return if(!result) err("@$this: could not save chat")
+        else ok(Ok)
     }
 }
