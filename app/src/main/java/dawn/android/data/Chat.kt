@@ -25,8 +25,13 @@ import dawn.android.LibraryConnector
 import dawn.android.data.Result.Companion.ok
 import dawn.android.data.Result.Companion.err
 import dawn.android.util.DataManager
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import java.io.File
 
+@Serializable
 class Chat(
     val dataId: String,
     var id: String,
@@ -34,7 +39,7 @@ class Chat(
     var idSalt: String,
     var lastMessageId: UShort,
     var name: String,
-    val filesDir: File
+    @Transient var filesDir: File? = null
 ) {
     companion object {
         fun new(id: String, idStamp: String, idSalt: String, name: String, context: Context): Result<Chat, String> {
@@ -79,24 +84,10 @@ class Chat(
             val chatsDir = File(context.filesDir, "chats")
             val chatDir = File(chatsDir, dataId)
             if(!chatDir.isDirectory) return err("not found")
-            val chatContent = DataManager.readFile("chatId", chatDir) ?: return err("could not read ID file")
-            val chatContentString = String(chatContent, Charsets.UTF_8)
-            val chatId = chatContentString.substringBefore("\n")
-            val chatIdStamp = chatContentString.substringAfter("\n")
-            val chatIdSalt = String(DataManager.readFile("chatIdSalt", chatDir)?: return err("could not read salt"), Charsets.UTF_8)
-            val chatMessageId: UShort
-            try {
-                chatMessageId = String(
-                    DataManager.readFile("chatMessageId", chatDir) ?: return err("could not read chat message number file"),
-                    Charsets.UTF_8
-                ).toUShort()
-            }
-            catch(e: Exception) {
-                Log.e(context.packageName, "Could not parse chatMessageId", e)
-                return err("could not parse chatMessageId")
-            }
-            val chatName = String(DataManager.readFile("chatName", chatDir) ?: return err("could not read chat name"), Charsets.UTF_8)
-            return ok(Chat(dataId, chatId, chatIdStamp, chatIdSalt, chatMessageId, chatName, context.filesDir))
+            val chatContent = DataManager.readFile("chat", chatDir)?: return err("not found")
+            val chat = Json.decodeFromString<Chat>(String(chatContent, Charsets.UTF_8))
+            chat.filesDir = context.filesDir
+            return ok(chat)
         }
     }
     fun save(): Result<Ok, String> {
