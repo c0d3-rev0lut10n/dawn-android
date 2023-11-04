@@ -52,6 +52,7 @@ import dawn.android.util.DataManager
 import dawn.android.util.PreferenceManager
 import dawn.android.util.RequestFactory
 import dawn.android.util.ThemeLoader
+import java.io.File
 import java.security.SecureRandom
 
 class SettingsActivity : AppCompatActivity() {
@@ -356,6 +357,17 @@ class SettingsActivity : AppCompatActivity() {
                             "profileHandlePublicInit",
                             binding.cbAllowPublicInit.isChecked.toString()
                         )
+                        val handleDir = File(filesDir, "handles")
+                        if(!handleDir.isDirectory) handleDir.mkdir()
+
+                        for(i in 0..15) {
+                            val keyFile = File(handleDir, i.toString())
+                            if (keyFile.isFile) {
+                                keyFile.delete()
+                                val keyPrivateInfoFile = File(handleDir, "$i.private")
+                                keyPrivateInfoFile.delete()
+                            }
+                        }
                         Log.i(logTag, "Changed handle successfully!")
                     } else {
                         error = true
