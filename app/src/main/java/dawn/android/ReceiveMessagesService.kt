@@ -115,6 +115,10 @@ class ReceiveMessagesService: Service() {
 
         if(useTor) startTor()
 
+        val serverAddress = PreferenceManager.get("server").unwrap()
+        RequestFactory.setMessageServerAddress(serverAddress)
+        chats = DataManager.getAllChats()
+
         loadHandleInfo()
         pollHandleAddKeyTimer = timer(null, false, 5000, 30000) {
             if (!handleAddKeyActive) {
@@ -128,11 +132,6 @@ class ReceiveMessagesService: Service() {
                 handleAddKeyActive = false
             }
         }
-
-        val serverAddress = PreferenceManager.get("server").unwrap()
-
-        RequestFactory.setMessageServerAddress(serverAddress)
-        chats = DataManager.getAllChats()
 
         isReady = true
 
