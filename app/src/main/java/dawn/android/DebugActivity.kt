@@ -1,5 +1,6 @@
 package dawn.android
 
+import android.content.DialogInterface
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -10,10 +11,11 @@ import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivityDebugBinding
-import dawn.android.databinding.ActivitySettingsBinding
+import dawn.android.util.PreferenceManager
 import dawn.android.util.ThemeLoader
 
 class DebugActivity : AppCompatActivity() {
@@ -71,10 +73,27 @@ class DebugActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(mTheme.backButtonIcon)
+
+        binding.btnGetPreference.setOnClickListener { getPreference() }
     }
 
     override fun onResume() {
         binding.toolbar.title = actionBarText
         super.onResume()
+    }
+
+    private fun getPreference() {
+        val key = binding.etPreference.text.toString()
+        val result = PreferenceManager.get(key)
+
+        val dialog = MaterialAlertDialogBuilder(this)
+        dialog.setTitle(R.string.debug_dialog_preference_get_heading)
+        if(result.isOk())
+            dialog.setMessage(getString(R.string.debug_dialog_preference_get_text_success, key, result.unwrap()))
+        else
+            dialog.setMessage(getString(R.string.debug_dialog_preference_get_text_not_found, key))
+        dialog.setCancelable(true)
+        dialog.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> }
+        dialog.create().show()
     }
 }

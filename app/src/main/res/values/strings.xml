@@ -108,5 +108,9 @@
     <string name="debug_hint_enter_value">example value</string>
     <string name="debug_btn_get_preference">Get</string>
     <string name="debug_btn_set_preference">Change</string>
+    <string name="debug_dialog_preference_get_heading">Get preference</string>
+    <string name="debug_dialog_preference_set_heading">Set preference</string>
+    <string name="debug_dialog_preference_get_text_success">Preference \"%1$s\" was found. Value: \"%2$s\"</string>
+    <string name="debug_dialog_preference_get_text_not_found">Preference \"%1$s\" was not found.</string>
 
 </resources>
