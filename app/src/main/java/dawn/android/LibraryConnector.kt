@@ -139,7 +139,8 @@ data class ParseHandle(
     val init_pk_curve_pfs_2: String? = null,
     val init_pk_kyber_for_salt: String? = null,
     val init_pk_curve_for_salt: String? = null,
-    val name: String? = null
+    val name: String? = null,
+    val mdc: String? = null
 )
 
 @Serializable
