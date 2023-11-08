@@ -223,6 +223,7 @@ class SetupActivity : AppCompatActivity() {
         PreferenceManager.set("profileName", profileName)
         PreferenceManager.set("profileBio", profileBio)
         PreferenceManager.set("initId", initId)
+        PreferenceManager.set("initMdc", LibraryConnector.mMdcGen().unwrap().mdc!!)
         PreferenceManager.set("pubkeySig", signatureKeypair.own_pubkey_sig!!)
         PreferenceManager.set("seckeySig", signatureKeypair.own_seckey_sig!!)
 
