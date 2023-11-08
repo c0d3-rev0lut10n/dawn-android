@@ -65,6 +65,12 @@ data class NextId(
 )
 
 @Serializable
+data class Mdc(
+    val status: String,
+    val mdc: String? = null
+)
+
+@Serializable
 data class SecurityNumber(
     val status: String,
     val number: String? = null
@@ -229,6 +235,12 @@ object LibraryConnector {
         return ok(libraryResponse)
     }
 
+    fun mMdcGen(): Result<Mdc, String> {
+        val libraryResponse: Mdc = Json.decodeFromString(genMdc())
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
+    }
+
     fun mDeriveSecurityNumber(key_a: String, key_b: String): Result<SecurityNumber, String> {
         val libraryResponse: SecurityNumber = Json.decodeFromString(deriveSecurityNumber(key_a, key_b))
         if(libraryResponse.status != "ok") return err(libraryResponse.status)
@@ -320,6 +332,7 @@ object LibraryConnector {
     private external fun getTempId(id: String): String
     private external fun getCustomTempId(id: String, modifier: String): String
     private external fun getNextId(id: String, salt: String): String
+    private external fun genMdc(): String
     private external fun deriveSecurityNumber(key_a: String, key_b: String): String
     private external fun hashString(input: String): String
     private external fun hashBytes(input: ByteArray): String
