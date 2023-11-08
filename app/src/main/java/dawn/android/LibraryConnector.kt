@@ -310,9 +310,9 @@ object LibraryConnector {
         return ok(libraryResponse)
     }
 
-    fun mGenInitRequest(remote_pubkey_kyber: String, remote_pubkey_kyber_for_salt: String, remote_pubkey_curve: String, remote_pubkey_curve_pfs_2: String, remote_pubkey_curve_for_salt: String, own_pubkey_sig: String, own_seckey_sig: String, name: String, comment: String):
+    fun mGenInitRequest(remote_pubkey_kyber: String, remote_pubkey_kyber_for_salt: String, remote_pubkey_curve: String, remote_pubkey_curve_pfs_2: String, remote_pubkey_curve_for_salt: String, own_pubkey_sig: String, own_seckey_sig: String, name: String, comment: String, mdc: String):
             Result<GenInitRequest, String> {
-        val libraryResponse: GenInitRequest = Json.decodeFromString(genInitRequest(remote_pubkey_kyber, remote_pubkey_kyber_for_salt, remote_pubkey_curve, remote_pubkey_curve_pfs_2, remote_pubkey_curve_for_salt, own_pubkey_sig, own_seckey_sig, name, comment))
+        val libraryResponse: GenInitRequest = Json.decodeFromString(genInitRequest(remote_pubkey_kyber, remote_pubkey_kyber_for_salt, remote_pubkey_curve, remote_pubkey_curve_pfs_2, remote_pubkey_curve_for_salt, own_pubkey_sig, own_seckey_sig, name, comment, mdc))
         if(libraryResponse.status != "ok") return err(libraryResponse.status)
         return ok(libraryResponse)
     }
@@ -345,6 +345,6 @@ object LibraryConnector {
     private external fun getAllTimestampsSince(timestamp: String): String
     private external fun genHandle(init_pubkey_kyber: String, init_pubkey_curve: String, init_pubkey_curve_pfs_2: String, init_pubkey_kyber_for_salt: String, init_pubkey_curve_for_salt: String, name: String, mdc: String): String
     private external fun parseHandle(handle: ByteArray): String
-    private external fun genInitRequest(remote_pubkey_kyber: String, remote_pubkey_kyber_for_salt: String, remote_pubkey_curve: String, remote_pubkey_curve_pfs_2: String, remote_pubkey_curve_for_salt: String, own_pubkey_sig: String, own_seckey_sig: String, name: String, comment: String): String
+    private external fun genInitRequest(remote_pubkey_kyber: String, remote_pubkey_kyber_for_salt: String, remote_pubkey_curve: String, remote_pubkey_curve_pfs_2: String, remote_pubkey_curve_for_salt: String, own_pubkey_sig: String, own_seckey_sig: String, name: String, comment: String, mdc: String): String
     private external fun parseInitRequest(ciphertext: ByteArray, own_seckey_kyber: String, own_seckey_curve: String, own_seckey_curve_pfs_2: String, own_seckey_kyber_for_salt: String, own_seckey_curve_for_salt: String): String
 }
