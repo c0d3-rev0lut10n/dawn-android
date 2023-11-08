@@ -35,6 +35,11 @@ object RequestFactory {
         return request.build()
     }
 
+    fun buildRcvRequest(id: String, messageNumber: UShort, mdc: String): Request {
+        val request = Request.Builder().url("$serverBaseAddress/rcv/$id/$messageNumber?mdc=$mdc")
+        return request.build()
+    }
+
     fun buildDetailRequest(id: String, messageNumber: UShort, mdc: String): Request {
         val request = Request.Builder().url("$serverBaseAddress/d/$id/$messageNumber?mdc=$mdc")
         return request.build()
