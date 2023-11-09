@@ -201,7 +201,7 @@ class SetupActivity : AppCompatActivity() {
     }
 
     private fun saveProfileData(password: String, serverAddress: String, profileName: String, profileBio: String) {
-        DataManager.init(this.applicationContext, password)
+        DataManager.init(this.applicationContext, password, false)
 
         val initIdResult = LibraryConnector.mGenId()
         if(initIdResult.isErr()) {

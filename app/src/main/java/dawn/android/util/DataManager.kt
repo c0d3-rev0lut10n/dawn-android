@@ -53,6 +53,9 @@ object DataManager {
     private lateinit var logTag: String
 
     fun init(context: Context, password: String): Boolean {
+        return init(context, password, true)
+    }
+    fun init(context: Context, password: String, initPreferences: Boolean): Boolean {
         if (initializing) return false
         else initializing = true
         if (initialized) return true
@@ -126,7 +129,8 @@ object DataManager {
             if (!encodedHash.contentEquals(derivedEncodedHash)) return false
 
             initialized = true
-            PreferenceManager.init(mContext.filesDir)
+            if(initPreferences)
+                PreferenceManager.init(mContext.filesDir)
             return true
         } catch (e: Exception) {
             Log.e(context.packageName, "decryption of the app data failed!", e)
