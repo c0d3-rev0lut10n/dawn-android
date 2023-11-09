@@ -75,6 +75,7 @@ class DebugActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(mTheme.backButtonIcon)
 
         binding.btnGetPreference.setOnClickListener { getPreference() }
+        binding.btnSetPreference.setOnClickListener { setPreference() }
     }
 
     override fun onResume() {
@@ -95,5 +96,12 @@ class DebugActivity : AppCompatActivity() {
         dialog.setCancelable(true)
         dialog.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> }
         dialog.create().show()
+    }
+
+    private fun setPreference() {
+        val key = binding.etPreference.text.toString()
+        val value = binding.etPreferenceValue.text.toString()
+        PreferenceManager.set(key, value)
+        PreferenceManager.write()
     }
 }
