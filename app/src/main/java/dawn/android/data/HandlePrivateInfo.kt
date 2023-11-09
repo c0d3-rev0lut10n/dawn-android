@@ -48,14 +48,6 @@ class HandlePrivateInfo (
         fun fromString(input: String): Result<HandlePrivateInfo, String> {
             val substrings = input.split("\n", limit = 10)
             if(substrings.size < 10) return err("missing information")
-            for(stringToTest in substrings) {
-                try {
-                    Base64.decode(stringToTest, Base64.NO_WRAP)
-                }
-                catch (e: Exception) {
-                    return err("the following string isn't valid base64: $stringToTest\nerror: $e")
-                }
-            }
             val initKeypairKyber = KyberKeys("ok", substrings[0], substrings[1])
             val initKeypairCurve = CurveKeys("ok", substrings[2], substrings[3])
             val initKeypairCurvePfs2 = CurveKeys("ok", substrings[4], substrings[5])
