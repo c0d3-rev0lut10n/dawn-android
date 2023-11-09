@@ -53,6 +53,11 @@ object PreferenceManager {
         cache.content[key] = value
     }
 
+    fun drop(key: String): Result<Ok, String> {
+        return if(cache.content.remove(key) == null) err("value did not exist")
+        else ok(Ok)
+    }
+
     fun write(): Result<Ok, String> {
         val fileContent = Json.encodeToString(cache).toByteArray(Charsets.UTF_8)
         val result = DataManager.writeFile("preferences", path, fileContent, true)
