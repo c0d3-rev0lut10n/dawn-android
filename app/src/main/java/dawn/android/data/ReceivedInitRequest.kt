@@ -18,6 +18,9 @@
 
 package dawn.android.data
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class ReceivedInitRequest (
     val remotePubkeyKyber: String,
     val remotePubkeySig: String,
@@ -27,6 +30,7 @@ data class ReceivedInitRequest (
     val id: String,
     val idSalt: String,
     val mdc: String,
+    val mdcSeed: String,
     val name: String,
     val comment: String
 )
