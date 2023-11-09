@@ -20,6 +20,7 @@ package dawn.android
 
 import android.annotation.SuppressLint
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
@@ -43,6 +44,7 @@ import dawn.android.data.Theme
 import dawn.android.databinding.ActivitySetupBinding
 import dawn.android.util.DataManager
 import dawn.android.util.PreferenceManager
+import dawn.android.util.RequestFactory
 import dawn.android.util.ThemeLoader
 import java.io.File
 
@@ -232,6 +234,15 @@ class SetupActivity : AppCompatActivity() {
         val receivedInitRequestDir = File(chatsDir, initId)
         receivedInitRequestDir.mkdir()
         PreferenceManager.write().unwrap()
+
+        if(!ReceiveMessagesService.isRunning) {
+            val startServiceIntent = Intent(this, ReceiveMessagesService::class.java)
+            if (Build.VERSION.SDK_INT >= 26) {
+                startForegroundService(startServiceIntent)
+            } else {
+                startService(startServiceIntent)
+            }
+        }
 
         finish()
     }
