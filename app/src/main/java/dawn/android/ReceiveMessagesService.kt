@@ -560,6 +560,6 @@ class ReceiveMessagesService: Service() {
     }
 
     private fun deriveReferrer(handleCiphertext: ByteArray): String {
-        return LibraryConnector.mHash(handleCiphertext).unwrap().hash!!.slice(0..8)
+        return LibraryConnector.mHash(handleCiphertext).unwrap().hash!!.slice(0..15)
     }
 }
