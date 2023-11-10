@@ -150,7 +150,8 @@ class ReceiveMessagesService: Service() {
         tickInProgress = true
         // here happens everything that gets executed during a tick
         Log.i(logTag, "Starting tick")
-        //pollInitID() // commented out because it is not ready yet
+        //val result = pollInitID() // commented out because it is not ready yet
+        //if(result.isErr()) Log.e(logTag, result.unwrapErr())
         tickInProgress = false
     }
 
@@ -221,10 +222,43 @@ class ReceiveMessagesService: Service() {
         when(initIdResponse.code) {
             200 -> {
                 // there is a new init request
-                Log.i(logTag, "DEBUG: NEW INIT REQUEST!")
+                val initMdcResult = PreferenceManager.get("initMdc")
+                if(initMdcResult.isErr()) {
+                    return err("Could not get init MDC: ${initMdcResult.unwrapErr()}")
+                }
+                val initMdc = initMdcResult.unwrap()
+
+                val getInitRequestResult = makeRequest(RequestFactory.buildRcvRequest(initId, initMessageNumber, initMdc))
+                if(getInitRequestResult.isErr()) return err("Could not download new init request: ${getInitRequestResult.unwrapErr()}")
+                val getInitRequestResponse = getInitRequestResult.unwrap()
+                if(getInitRequestResponse.code != 200) return err("Could not download new init request: ${getInitRequestResponse.code}\n${getInitRequestResponse.body?.string()}")
+                val initRequestBytesStream = getInitRequestResponse.body?: return err("Could not download new init request: could not get response body")
+                val initRequestBytes = initRequestBytesStream.bytes()
+                initRequestBytesStream.close()
+
                 initMessageNumber = (initMessageNumber+1U).toUShort()
                 PreferenceManager.set("initMessageNumber", initMessageNumber.toString())
                 PreferenceManager.write()
+
+                val referrer = getInitRequestResponse.header("X-Referrer")
+                if(referrer.isNullOrEmpty()) return err("Init request did not come with a referrer")
+
+                val handleDir = File(filesDir, "handles")
+                val handlePrivateInfoFile = DataManager.readFile(referrer, handleDir)
+                    ?: return err("Init request referrer does not point to any saved handle on this device")
+                val handlePrivateInfoResult = HandlePrivateInfo.fromString(String(handlePrivateInfoFile, Charsets.UTF_8))
+                if(handlePrivateInfoResult.isErr()) return err("Could not read handle private info: ${handlePrivateInfoResult.unwrapErr()}")
+                val handlePrivateInfo = handlePrivateInfoResult.unwrap()
+                val initRequest = LibraryConnector.mParseInitRequest(
+                    initRequestBytes,
+                    handlePrivateInfo.initKeypairKyber.own_seckey_kyber!!,
+                    handlePrivateInfo.initKeypairCurve.own_seckey_curve!!,
+                    handlePrivateInfo.initKeypairCurvePfs2.own_seckey_curve!!,
+                    handlePrivateInfo.initKeypairKyberSalt.own_seckey_kyber!!,
+                    handlePrivateInfo.initKeypairCurveSalt.own_seckey_curve!!
+                    )
+                if(initRequest.isErr()) return err("Could not parse init request: ${initRequest.unwrapErr()}")
+                Log.i(logTag, initRequest.unwrap().comment!!)
             }
             204 -> {
                 // no new init request
@@ -240,6 +274,11 @@ class ReceiveMessagesService: Service() {
 
     private fun pollHandleAddKey(): Result<Ok, String> {
         if(handle == "") return ok(Ok)
+        val initMdcResult = PreferenceManager.get("initMdc")
+        if(initMdcResult.isErr()) {
+            return err("Could not get init MDC: ${initMdcResult.unwrapErr()}")
+        }
+        val initMdc = initMdcResult.unwrap()
         val handleDir = File(filesDir, "handles")
         if(!handleDir.isDirectory) handleDir.mkdir()
 
@@ -272,10 +311,12 @@ class ReceiveMessagesService: Service() {
                     curvePfs2Keys.own_pubkey_curve!!,
                     kyberSaltKeys.own_pubkey_kyber!!,
                     curveSaltKeys.own_pubkey_curve!!,
-                    nameResult.unwrap()
+                    nameResult.unwrap(),
+                    initMdc
                 )
                 if(handleResult.isErr()) return err(handleResult.unwrapErr())
                 val handleContent = Base64.decode(handleResult.unwrap().handle!!, Base64.NO_WRAP)
+                val referrer = deriveReferrer(handleContent)
                 if(!DataManager.writeFile(
                         i.toString(),
                         handleDir,
@@ -291,7 +332,7 @@ class ReceiveMessagesService: Service() {
                     initKeypairCurveSalt = curveSaltKeys
                 )
                 if(!DataManager.writeFile(
-                        "$i.private",
+                        referrer,
                         handleDir,
                         handlePrivateInfo.toString().toByteArray(Charsets.UTF_8),
                         false
@@ -370,8 +411,10 @@ class ReceiveMessagesService: Service() {
         if(response.code == 200) {
             // parse received keys and ID
             val id = response.headers["X-ID"]?: return err("no ID associated with handle")
-            val responseBody = response.body?: return err("Response $response to request $request did not have a request body")
-            val handleInfoResult = LibraryConnector.mParseHandle(responseBody.bytes())
+            val responseBodyStream = response.body?: return err("Response $response to request $request did not have a response body")
+            val responseBody = responseBodyStream.bytes()
+            responseBodyStream.close()
+            val handleInfoResult = LibraryConnector.mParseHandle(responseBody)
             if(handleInfoResult.isErr()) {
                 return err("Could not parse handle: ${handleInfoResult.unwrapErr()}")
             }
@@ -394,13 +437,15 @@ class ReceiveMessagesService: Service() {
                 ownSignKeypair.publicKey,
                 ownSignKeypair.privateKey,
                 profileNameResult.unwrap(),
-                comment
+                comment,
+                handleInfo.mdc!!
             )
 
             if(initRequestResult.isErr()) return err("could not generate init request: ${initRequestResult.unwrapErr()}")
             val initRequest = initRequestResult.unwrap()
 
-            val initRequestToSend = RequestFactory.buildSndRequest(id, Base64.decode(initRequest.ciphertext, Base64.NO_WRAP), initRequest.mdc!!)
+            val referrer = deriveReferrer(responseBody)
+            val initRequestToSend = RequestFactory.buildSndRequest(id, Base64.decode(initRequest.ciphertext, Base64.NO_WRAP), initRequest.mdc!!, referrer)
 
             val sentInitResponse = client.newCall(initRequestToSend).execute()
 
@@ -512,5 +557,9 @@ class ReceiveMessagesService: Service() {
         val initIdResult = PreferenceManager.get("initId")
         initId = if(initIdResult.isErr()) ""
         else initIdResult.unwrap()
+    }
+
+    private fun deriveReferrer(handleCiphertext: ByteArray): String {
+        return LibraryConnector.mHash(handleCiphertext).unwrap().hash!!.slice(0..8)
     }
 }
