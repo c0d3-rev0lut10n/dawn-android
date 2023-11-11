@@ -245,7 +245,7 @@ class ReceiveMessagesService: Service() {
 
                 val handleDir = File(filesDir, "handles")
                 val handlePrivateInfoFile = DataManager.readFile(referrer, handleDir)
-                    ?: return err("Init request referrer does not point to any saved handle on this device")
+                    ?: return err("Init request referrer does not point to any saved handle on this device: $referrer")
                 val handlePrivateInfoResult = HandlePrivateInfo.fromString(String(handlePrivateInfoFile, Charsets.UTF_8))
                 if(handlePrivateInfoResult.isErr()) return err("Could not read handle private info: ${handlePrivateInfoResult.unwrapErr()}")
                 val handlePrivateInfo = handlePrivateInfoResult.unwrap()
