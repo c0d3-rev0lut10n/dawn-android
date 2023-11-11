@@ -62,7 +62,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="30dp"
-                        android:layout_marginTop="30dp"
+                        android:layout_marginTop="20dp"
                         android:layout_marginEnd="30dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/tvPreferenceHeading"
@@ -151,6 +151,92 @@
                         app:layout_constraintStart_toEndOf="@id/btnGetPreference"
                         app:layout_constraintTop_toBottomOf="@id/etPreferenceValueWrapper"
                         android:text="@string/debug_btn_set_preference"
+                        />
+
+                    <TextView
+                        android:id="@+id/tvFilesHeading"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginEnd="30dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/btnSetPreference"
+                        android:text="@string/debug_heading_files"
+                        android:textSize="24sp" />
+
+                    <TextView
+                        android:id="@+id/tvFiles"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="30dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvFilesHeading"
+                        android:text="@string/debug_text_files" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/etFileWrapper"
+                        style="@style/Theme.Dawn.TextField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="30dp"
+                        android:ems="10"
+                        android:hint="@string/debug_hint_file"
+                        android:inputType="text"
+                        android:minHeight="48dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/tvFiles">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etFile"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="?android:attr/textColor"
+                            tools:ignore="TextContrastCheck,DuplicateSpeakableTextCheck" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/btnListFiles"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="30dp"
+                        android:layout_marginEnd="30dp"
+                        android:minHeight="48dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/etFileWrapper"
+                        android:text="@string/debug_btn_list_files"
+                        />
+
+                    <Button
+                        android:id="@+id/btnShowFileContent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginEnd="30dp"
+                        android:minHeight="48dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/btnListFiles"
+                        android:text="@string/debug_btn_show_content"
+                        />
+
+                    <Button
+                        android:id="@+id/btnShowRawFileContent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginEnd="30dp"
+                        android:minHeight="48dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/btnShowFileContent"
+                        android:text="@string/debug_btn_show_raw_content"
                         />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

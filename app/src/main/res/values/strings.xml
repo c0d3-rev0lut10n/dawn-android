@@ -112,5 +112,11 @@
     <string name="debug_dialog_preference_set_heading">Set preference</string>
     <string name="debug_dialog_preference_get_text_success">Preference \"%1$s\" was found. Value: \"%2$s\"</string>
     <string name="debug_dialog_preference_get_text_not_found">Preference \"%1$s\" was not found.</string>
+    <string name="debug_heading_files">Files</string>
+    <string name="debug_text_files">Enter a file or directory you want to check out (\"/\" is the root of the app\'s filesDir):</string>
+    <string name="debug_hint_file">/some_file</string>
+    <string name="debug_btn_list_files">List files</string>
+    <string name="debug_btn_show_content">Show content</string>
+    <string name="debug_btn_show_raw_content">Show raw content</string>
 
 </resources>
