@@ -118,5 +118,10 @@
     <string name="debug_btn_list_files">List files</string>
     <string name="debug_btn_show_content">Show content</string>
     <string name="debug_btn_show_raw_content">Show raw content</string>
+    <string name="debug_dialog_list_files_heading">List files</string>
+    <string name="debug_dialog_list_files_not_directory">Error: Not a directory</string>
+    <string name="debug_dialog_list_files_empty">Empty directory</string>
+    <string name="debug_dialog_list_files_directory">(directory)</string>
+    <string name="debug_dialog_list_files_file">(file)</string>
 
 </resources>

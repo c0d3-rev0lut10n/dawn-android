@@ -17,6 +17,7 @@ import dawn.android.data.Theme
 import dawn.android.databinding.ActivityDebugBinding
 import dawn.android.util.PreferenceManager
 import dawn.android.util.ThemeLoader
+import java.io.File
 
 class DebugActivity : AppCompatActivity() {
 
@@ -76,6 +77,7 @@ class DebugActivity : AppCompatActivity() {
 
         binding.btnGetPreference.setOnClickListener { getPreference() }
         binding.btnSetPreference.setOnClickListener { setPreference() }
+        binding.btnListFiles.setOnClickListener { listFiles() }
     }
 
     override fun onResume() {
@@ -103,5 +105,32 @@ class DebugActivity : AppCompatActivity() {
         val value = binding.etPreferenceValue.text.toString()
         PreferenceManager.set(key, value)
         PreferenceManager.write()
+    }
+
+    private fun listFiles() {
+        val path = binding.etFile.text.toString()
+        val fileAtPath = File(filesDir.path + path)
+        val dialog = MaterialAlertDialogBuilder(this)
+        dialog.setTitle(R.string.debug_dialog_list_files_heading)
+        if(fileAtPath.isDirectory) {
+            val filesInDirectory = fileAtPath.listFiles()
+            if(filesInDirectory.isNullOrEmpty()) dialog.setMessage(R.string.debug_dialog_list_files_empty)
+            else {
+                var directoryContent = ""
+                for(file in filesInDirectory) {
+                    val type =
+                        if(file.isDirectory) getString(R.string.debug_dialog_list_files_directory)
+                    else getString(R.string.debug_dialog_list_files_file)
+                    directoryContent += file.name + " " + type + "\n"
+                }
+                dialog.setMessage(directoryContent)
+            }
+        }
+        else {
+            dialog.setMessage(R.string.debug_dialog_list_files_not_directory)
+        }
+        dialog.setCancelable(true)
+        dialog.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> }
+        dialog.create().show()
     }
 }
