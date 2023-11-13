@@ -150,8 +150,8 @@ class ReceiveMessagesService: Service() {
         tickInProgress = true
         // here happens everything that gets executed during a tick
         Log.i(logTag, "Starting tick")
-        //val result = pollInitID() // commented out because it is not ready yet
-        //if(result.isErr()) Log.e(logTag, result.unwrapErr())
+        val result = pollInitID() // commented out because it is not ready yet
+        if(result.isErr()) Log.e(logTag, result.unwrapErr())
         tickInProgress = false
     }
 
@@ -258,7 +258,11 @@ class ReceiveMessagesService: Service() {
                     handlePrivateInfo.initKeypairCurveSalt.own_seckey_curve!!
                     )
                 if(initRequest.isErr()) return err("Could not parse init request: ${initRequest.unwrapErr()}")
-                Log.i(logTag, initRequest.unwrap().comment!!)
+                val receivedRequestsDirectory = File(filesDir, "receivedRequests")
+                if(!receivedRequestsDirectory.isDirectory) receivedRequestsDirectory.mkdir()
+
+                val requestBytes = Json.encodeToString(initRequest.unwrap()).toByteArray(Charsets.UTF_8)
+                if(!DataManager.writeFile(initRequest.unwrap().id!!, receivedRequestsDirectory, requestBytes, false)) return err("could not write file")
             }
             204 -> {
                 // no new init request
