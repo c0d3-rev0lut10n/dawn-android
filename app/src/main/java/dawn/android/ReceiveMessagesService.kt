@@ -68,7 +68,6 @@ class ReceiveMessagesService: Service() {
     private lateinit var notificationManager: NotificationManager
     private lateinit var chats: ArrayList<Chat>
     private lateinit var handle: String
-    private lateinit var initId: String
     private lateinit var initKeyDirectory: File
     private val useTor = true
     private lateinit var torProxy: Proxy
@@ -121,7 +120,6 @@ class ReceiveMessagesService: Service() {
         RequestFactory.setMessageServerAddress(serverAddress)
         chats = DataManager.getAllChats()
 
-        loadHandleInfo()
         pollHandleAddKeyTimer = timer(null, false, 5000, 30000) {
             if (!handleAddKeyActive) {
                 handleAddKeyActive = true
@@ -207,6 +205,9 @@ class ReceiveMessagesService: Service() {
     }
 
     private fun pollInitID(): Result<Ok, String> {
+        val initIdResult = PreferenceManager.get("initId")
+        if(initIdResult.isErr() || initIdResult.unwrap() == "") return err("Could not get init ID")
+        val initId = initIdResult.unwrap()
         var initMessageNumber: UShort
         val initMessageNumberResult = PreferenceManager.get("initMessageNumber")
         if(initMessageNumberResult.isErr()) {
@@ -277,7 +278,9 @@ class ReceiveMessagesService: Service() {
     }
 
     private fun pollHandleAddKey(): Result<Ok, String> {
-        if(handle == "") return ok(Ok)
+        val handleResult = PreferenceManager.get("profileHandle")
+        if(handleResult.isErr() || handleResult.unwrap() == "") return ok(Ok)
+        val handle = handleResult.unwrap()
         val initMdcResult = PreferenceManager.get("initMdc")
         if(initMdcResult.isErr()) {
             return err("Could not get init MDC: ${initMdcResult.unwrapErr()}")
@@ -549,18 +552,6 @@ class ReceiveMessagesService: Service() {
 
             }
         }, BIND_AUTO_CREATE)
-    }
-
-    private fun loadHandleInfo() {
-        // get the handle
-        val handleResult = PreferenceManager.get("profileHandle")
-        handle = if(handleResult.isOk()) handleResult.unwrap()
-        else ""
-
-        // get the init ID
-        val initIdResult = PreferenceManager.get("initId")
-        initId = if(initIdResult.isErr()) ""
-        else initIdResult.unwrap()
     }
 
     private fun deriveReferrer(handleCiphertext: ByteArray): String {
