@@ -15,6 +15,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivityDebugBinding
+import dawn.android.util.DataManager
 import dawn.android.util.PreferenceManager
 import dawn.android.util.ThemeLoader
 import java.io.File
@@ -78,6 +79,7 @@ class DebugActivity : AppCompatActivity() {
         binding.btnGetPreference.setOnClickListener { getPreference() }
         binding.btnSetPreference.setOnClickListener { setPreference() }
         binding.btnListFiles.setOnClickListener { listFiles() }
+        binding.btnShowFileContent.setOnClickListener { showContent() }
     }
 
     override fun onResume() {
@@ -128,6 +130,21 @@ class DebugActivity : AppCompatActivity() {
         }
         else {
             dialog.setMessage(R.string.debug_dialog_list_files_not_directory)
+        }
+        dialog.setCancelable(true)
+        dialog.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> }
+        dialog.create().show()
+    }
+
+    private fun showContent() {
+        val path = binding.etFile.text.toString()
+        val fileAtPath = File(filesDir.path + path)
+        val dialog = MaterialAlertDialogBuilder(this)
+        dialog.setTitle(R.string.debug_dialog_show_content_heading)
+        if(fileAtPath.isFile) {
+            val fileContent = DataManager.readFile(fileAtPath.name, fileAtPath.parentFile!!)
+            if(fileContent == null) dialog.setMessage(R.string.debug_dialog_show_content_read_fail)
+            else dialog.setMessage(String(fileContent, Charsets.UTF_8))
         }
         dialog.setCancelable(true)
         dialog.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> }

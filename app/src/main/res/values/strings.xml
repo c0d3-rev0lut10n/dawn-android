@@ -123,5 +123,8 @@
     <string name="debug_dialog_list_files_empty">Empty directory</string>
     <string name="debug_dialog_list_files_directory">(directory)</string>
     <string name="debug_dialog_list_files_file">(file)</string>
+    <string name="debug_dialog_show_content_heading">Show file content</string>
+    <string name="debug_dialog_show_content_not_file">Error: Not a file</string>
+    <string name="debug_dialog_show_content_read_fail">Error: Could not read file</string>
 
 </resources>
