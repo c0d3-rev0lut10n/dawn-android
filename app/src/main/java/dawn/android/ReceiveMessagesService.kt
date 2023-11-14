@@ -277,9 +277,9 @@ class ReceiveMessagesService: Service() {
     }
 
     private fun pollHandleAddKey(): Result<Ok, String> {
-        val handleResult = PreferenceManager.get("profileHandle")
-        if(handleResult.isErr() || handleResult.unwrap() == "") return ok(Ok)
-        val handle = handleResult.unwrap()
+        val handleNameResult = PreferenceManager.get("profileHandle")
+        if(handleNameResult.isErr() || handleNameResult.unwrap() == "") return ok(Ok)
+        val handle = handleNameResult.unwrap()
         val initMdcResult = PreferenceManager.get("initMdc")
         if(initMdcResult.isErr()) {
             return err("Could not get init MDC: ${initMdcResult.unwrapErr()}")
