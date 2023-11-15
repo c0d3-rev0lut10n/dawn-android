@@ -154,7 +154,7 @@ class SettingsActivity : AppCompatActivity() {
 
         currentProfileBio = PreferenceManager.get("profileBio").unwrap()
 
-        val profileHandleResult = PreferenceManager.get("profileHandle")
+        val profileHandleResult = PreferenceManager.get(Preferences.profileHandle)
         currentProfileHandle = if(profileHandleResult.isErr()) "" else profileHandleResult.unwrap()
 
         val handlePasswordResult = PreferenceManager.get("profileHandlePassword")
@@ -346,7 +346,7 @@ class SettingsActivity : AppCompatActivity() {
                     val response = responseResult.unwrap()
                     if (response.code == 204) {
                         PreferenceManager.set(
-                            "profileHandle",
+                            Preferences.profileHandle,
                             binding.etProfileHandle.text.toString()
                         )
                         PreferenceManager.set(

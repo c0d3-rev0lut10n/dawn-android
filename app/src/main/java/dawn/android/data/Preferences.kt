@@ -25,4 +25,5 @@ object Preferences {
     const val THEME_DARK = 2
     const val THEME_EXTRADARK = 3
     const val THEME_LIGHT = 4
+    const val profileHandle = "profileHandle"
 }

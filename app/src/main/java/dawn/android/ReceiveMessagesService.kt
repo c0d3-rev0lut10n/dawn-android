@@ -39,6 +39,7 @@ import android.widget.Toast
 import dawn.android.data.Chat
 import dawn.android.data.HandlePrivateInfo
 import dawn.android.data.Ok
+import dawn.android.data.Preferences
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.ok
 import dawn.android.data.Result.Companion.err
@@ -277,7 +278,7 @@ class ReceiveMessagesService: Service() {
     }
 
     private fun pollHandleAddKey(): Result<Ok, String> {
-        val handleNameResult = PreferenceManager.get("profileHandle")
+        val handleNameResult = PreferenceManager.get(Preferences.profileHandle)
         if(handleNameResult.isErr() || handleNameResult.unwrap() == "") return ok(Ok)
         val handle = handleNameResult.unwrap()
         val initMdcResult = PreferenceManager.get("initMdc")
