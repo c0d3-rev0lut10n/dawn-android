@@ -58,6 +58,10 @@ object PreferenceManager {
         else ok(Ok)
     }
 
+    fun dump(): HashMap<String, String> {
+        return this.cache.content
+    }
+
     fun write(): Result<Ok, String> {
         val fileContent = Json.encodeToString(cache).toByteArray(Charsets.UTF_8)
         val result = DataManager.writeFile("preferences", path, fileContent, true)
