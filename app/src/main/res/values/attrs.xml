@@ -4,4 +4,7 @@
     <attr name="textFieldBackgroundColor" format="color" />
     <attr name="mainColor" format="color" />
     <attr name="textColorEmphasize" format="color" />
+    <declare-styleable name="ChatListItem">
+        <attr name="chatId" format="string" />
+    </declare-styleable>
 </resources>

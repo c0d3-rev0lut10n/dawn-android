@@ -38,6 +38,7 @@
     <string name="text_no_password_provided">Your password is empty. Please try again!</string>
     <string name="text_wrong_password">Your password is wrong or decrypting the data failed for some other reason. Please try again!</string>
     <string name="main_text_no_chats_yet">You don\'t have any chats yet.\nStart a new one :)</string>
+    <string name="main_text_profile_picture">Profile picture</string>
 
     <!-- Texts for SetupActivity -->
     <string name="text_welcome">Welcome to Dawn!</string>
