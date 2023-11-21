@@ -16,16 +16,19 @@
         android:layout_marginStart="24dp"
         android:layout_toEndOf="@id/profilePicture"
         android:maxLines="1"
-        android:maxLength="64"/>
+        android:maxLength="64"
+        android:textSize="24sp" />
 
     <TextView
         android:id="@+id/chatPreview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_toEndOf="@id/profilePicture"
         android:layout_below="@id/chatName"
-        android:maxLines="1"
-        android:maxLength="100"/>
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="24dp"
+        android:layout_toEndOf="@id/profilePicture"
+        android:maxLength="100"
+        android:maxLines="1" />
 
 </RelativeLayout>
