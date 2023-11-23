@@ -24,6 +24,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import dawn.android.R
@@ -40,7 +41,8 @@ class ChatPreviewAdapter(
             mConvertView = layoutInflater.inflate(resource, parent, false)
         }
 
-        val tvChatName = mConvertView!!.findViewById<TextView>(R.id.chatName)
+        val layout = mConvertView!!.findViewById<RelativeLayout>(R.id.chatPreview)
+        val tvChatName = mConvertView.findViewById<TextView>(R.id.chatName)
         val tvChatPreview = mConvertView.findViewById<TextView>(R.id.chatPreview)
         val tvTime = mConvertView.findViewById<TextView>(R.id.time)
         val ivProfilePicture = mConvertView.findViewById<ImageView>(R.id.profilePicture)
