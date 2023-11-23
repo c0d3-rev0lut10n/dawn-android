@@ -52,7 +52,6 @@ import dawn.android.data.Theme
 import dawn.android.databinding.ActivityMainBinding
 import dawn.android.util.DataManager
 import dawn.android.util.ThemeLoader
-import kotlinx.coroutines.delay
 import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity() {
