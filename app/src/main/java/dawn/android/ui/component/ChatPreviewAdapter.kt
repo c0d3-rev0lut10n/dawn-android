@@ -29,7 +29,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import dawn.android.R
 import dawn.android.ui.data.ChatPreviewData
 
-
 class ChatPreviewAdapter(
     private val context: Context,
     private val resource: Int,
