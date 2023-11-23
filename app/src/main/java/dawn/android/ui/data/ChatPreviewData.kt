@@ -44,7 +44,9 @@ class ChatPreviewData(
     }
 
     fun getMessagePreview(): String {
-        return messagePreview
+        return if(userName != null)
+            "$userName: $messagePreview"
+        else messagePreview
     }
 
     fun setMessagePreview(preview: String) {
