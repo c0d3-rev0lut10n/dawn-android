@@ -77,4 +77,12 @@ class ChatPreviewData(
     fun setIsRead(read: Boolean) {
         isRead = read
     }
+
+    fun getDataId(): String {
+        return dataId
+    }
+
+    fun setDataId(id: String) {
+        dataId = id
+    }
 }
