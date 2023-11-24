@@ -24,7 +24,8 @@ class ChatPreviewData(
     private var messagePreview: String,
     private var time: String,
     private var isSent: Boolean,
-    private var isRead: Boolean
+    private var isRead: Boolean,
+    private var dataId: String
 ) {
     fun getChatName(): String {
         return chatName
