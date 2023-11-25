@@ -63,6 +63,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var actionBarText: SpannableString
     private val sizeFactor = 3 // this will be configurable
     private lateinit var chatPreviewLayoutParams: ConstraintLayout.LayoutParams
+    private lateinit var noChatsYetTextView: TextView
 
     private lateinit var mService: ReceiveMessagesService
     private var mBound: Boolean = false
@@ -170,6 +171,7 @@ class MainActivity : AppCompatActivity() {
         chatPreviewLayoutParams = ConstraintLayout.LayoutParams(LayoutParams.MATCH_PARENT, sizeFactor * 32)
         chatPreviewLayoutParams.setMargins(30, 30, 30, 0)
 
+        noChatsYetTextView = TextView(this)
         makeChatlist()
 
         binding.appBarMain.toolbar.setOnClickListener { thread {launchDebugActivity()} }
@@ -296,11 +298,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun makeChatlist() {
-        binding.appBarMain.content.contentLayout.removeAllViews()
         val chats = DataManager.getAllChats()
         if(chats.isEmpty()) {
             // no chats yet, show a notice about that instead
-            val noChatsYetTextView = TextView(this)
+            if(noChatsYetTextView.parent != null) return
             val layoutParams = chatPreviewLayoutParams
             layoutParams.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID
             layoutParams.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID
@@ -309,7 +310,11 @@ class MainActivity : AppCompatActivity() {
             noChatsYetTextView.text = getString(R.string.main_text_no_chats_yet)
             noChatsYetTextView.textSize = (sizeFactor * 6.5).toFloat()
             noChatsYetTextView.gravity = Gravity.CENTER
-            binding.appBarMain.content.contentLayout.addView(noChatsYetTextView)
+            binding.appBarMain.content.contentLayoutParent.addView(noChatsYetTextView)
+        }
+        else {
+            if(noChatsYetTextView.parent != null)
+                binding.appBarMain.content.contentLayoutParent.removeView(noChatsYetTextView)
         }
     }
 

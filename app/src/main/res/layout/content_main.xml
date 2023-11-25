@@ -6,22 +6,16 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:showIn="@layout/app_bar_main"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:id="@+id/contentLayoutParent">
 
-    <ScrollView
+    <ListView
+        android:id="@+id/contentLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbarThumbVertical="?attr/colorPrimary">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/backgroundColor"
-            android:id="@+id/content_layout">
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </ScrollView>
+    </ListView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
