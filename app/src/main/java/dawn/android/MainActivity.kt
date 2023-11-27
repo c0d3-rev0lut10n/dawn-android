@@ -65,6 +65,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var chatPreviewLayoutParams: ConstraintLayout.LayoutParams
     private lateinit var noChatsYetTextView: TextView
 
+    private lateinit var logTag: String
+
     private lateinit var mService: ReceiveMessagesService
     private var mBound: Boolean = false
 
@@ -88,6 +90,7 @@ class MainActivity : AppCompatActivity() {
         mLibraryConnector = LibraryConnector
 
         super.onCreate(savedInstanceState)
+        logTag = "$packageName.MainActivity"
 
         // load theme
         val mThemeLoader = ThemeLoader(this)
@@ -175,6 +178,23 @@ class MainActivity : AppCompatActivity() {
         makeChatlist()
 
         binding.appBarMain.toolbar.setOnClickListener { thread {launchDebugActivity()} }
+
+        val uriToOpen = intent.data
+        if(uriToOpen != null) {
+            val task = uriToOpen.lastPathSegment
+            when(task) {
+                "init" -> {
+                    val handle = uriToOpen.getQueryParameter("handle")
+                    val initSecret = uriToOpen.getQueryParameter("init_secret")
+                    if(handle == null || initSecret == null) {
+                        Log.w(logTag, "Received invalid init URL via Intent: $uriToOpen")
+                    }
+                }
+                else -> {
+                    Log.w(logTag, "Received unrecognized URL via Intent: $uriToOpen")
+                }
+            }
+        }
     }
 
     override fun onResume() {
