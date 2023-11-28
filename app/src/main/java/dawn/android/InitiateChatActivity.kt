@@ -22,7 +22,6 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
 import android.text.Spannable
@@ -32,6 +31,7 @@ import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import dawn.android.data.Preferences
@@ -119,6 +119,12 @@ class InitiateChatActivity : AppCompatActivity() {
 
         binding.btnSearchHandle.setOnClickListener {
             searchHandleAndInit()
+        }
+
+        val extras = intent.extras
+        if(extras != null) {
+            binding.etHandleName.setText(extras.getString("handle"))
+            binding.etHandleSecret.setText(extras.getString("initSecret"))
         }
     }
 
