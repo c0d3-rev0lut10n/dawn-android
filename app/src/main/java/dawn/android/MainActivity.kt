@@ -189,6 +189,10 @@ class MainActivity : AppCompatActivity() {
                     if(handle == null || initSecret == null) {
                         Log.w(logTag, "Received invalid init URL via Intent: $uriToOpen")
                     }
+                    val intent = Intent(this, InitiateChatActivity::class.java)
+                    intent.putExtra("handle", handle)
+                    intent.putExtra("initSecret", initSecret)
+                    startActivity(intent)
                 }
                 else -> {
                     Log.w(logTag, "Received unrecognized URL via Intent: $uriToOpen")
