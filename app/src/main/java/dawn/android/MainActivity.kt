@@ -35,7 +35,7 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.MenuItem
-import android.view.ViewGroup.LayoutParams
+import android.view.ViewGroup
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.widget.EditText
@@ -164,40 +164,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         else {
-
             if (!mDataManager.isInitialized()) {
                 askForPassword()
             }
-            else connectReceiveMessagesService()
-        }
-
-        chatPreviewLayoutParams = ConstraintLayout.LayoutParams(LayoutParams.MATCH_PARENT, sizeFactor * 32)
-        chatPreviewLayoutParams.setMargins(30, 30, 30, 0)
-
-        noChatsYetTextView = TextView(this)
-        makeChatlist()
-
-        binding.appBarMain.toolbar.setOnClickListener { thread {launchDebugActivity()} }
-
-        val uriToOpen = intent.data
-        if(uriToOpen != null) {
-            val task = uriToOpen.lastPathSegment
-            when(task) {
-                "init" -> {
-                    val handle = uriToOpen.getQueryParameter("handle")
-                    val initSecret = uriToOpen.getQueryParameter("init_secret")
-                    if(handle == null || initSecret == null) {
-                        Log.w(logTag, "Received invalid init URL via Intent: $uriToOpen")
-                    }
-                    val intent = Intent(this, InitiateChatActivity::class.java)
-                    intent.putExtra("handle", handle)
-                    intent.putExtra("initSecret", initSecret)
-                    startActivity(intent)
-                }
-                else -> {
-                    Log.w(logTag, "Received unrecognized URL via Intent: $uriToOpen")
-                }
-            }
+            else onCreateAfterUnlock()
         }
     }
 
@@ -302,10 +272,11 @@ class MainActivity : AppCompatActivity() {
             wrongPasswordDialog.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> askForPassword()}
             wrongPasswordDialog.create().show()
         }
-        else connectReceiveMessagesService()
+        else onCreateAfterUnlock()
     }
 
-    private fun connectReceiveMessagesService() {
+    private fun onCreateAfterUnlock() {
+        // start ReceiveMessagesService
         if(!ReceiveMessagesService.isRunning) {
             val startServiceIntent = Intent(this, ReceiveMessagesService::class.java)
             if (Build.VERSION.SDK_INT >= 26) {
@@ -319,6 +290,37 @@ class MainActivity : AppCompatActivity() {
             connection,
             BIND_AUTO_CREATE
         )
+
+        // setup layout
+        chatPreviewLayoutParams = ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, sizeFactor * 32)
+        chatPreviewLayoutParams.setMargins(30, 30, 30, 0)
+
+        noChatsYetTextView = TextView(this)
+        makeChatlist()
+
+        binding.appBarMain.toolbar.setOnClickListener { thread {launchDebugActivity()} }
+
+        // execute action if a supported link was opened
+        val uriToOpen = intent.data
+        if(uriToOpen != null) {
+            val task = uriToOpen.lastPathSegment
+            when(task) {
+                "init" -> {
+                    val handle = uriToOpen.getQueryParameter("handle")
+                    val initSecret = uriToOpen.getQueryParameter("init_secret")
+                    if(handle == null || initSecret == null) {
+                        Log.w(logTag, "Received invalid init URL via Intent: $uriToOpen")
+                    }
+                    val intent = Intent(this, InitiateChatActivity::class.java)
+                    intent.putExtra("handle", handle)
+                    intent.putExtra("initSecret", initSecret)
+                    startActivity(intent)
+                }
+                else -> {
+                    Log.w(logTag, "Received unrecognized URL via Intent: $uriToOpen")
+                }
+            }
+        }
     }
 
     private fun makeChatlist() {
