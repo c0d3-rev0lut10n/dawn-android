@@ -18,7 +18,11 @@
 
 package dawn.android.data
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Profile(
+    val dataId: String,
     val name: String,
     val handle: String,
     val bio: String,
