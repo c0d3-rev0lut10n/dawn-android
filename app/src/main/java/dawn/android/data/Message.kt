@@ -18,6 +18,7 @@
 
 package dawn.android.data
 
+import dawn.android.data.serialized.SerializedMessage
 import java.io.ByteArrayOutputStream
 import java.io.ObjectOutputStream
 
@@ -36,5 +37,15 @@ class Message(
                 return bos.toByteArray()
             }
         }
+    }
+
+    fun intoSerializable(): SerializedMessage {
+        return SerializedMessage(
+            sender = sender.dataId,
+            sent,
+            received,
+            contentType,
+            text
+        )
     }
 }
