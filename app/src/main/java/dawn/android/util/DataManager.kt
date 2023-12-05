@@ -306,7 +306,8 @@ object DataManager {
                 continue
             }
             val chatName = String(readFile("chatName", chatDir)?: continue, Charsets.UTF_8)
-            chats.add(Chat(chatDir.name, chatId, chatIdStamp, chatIdSalt, chatMessageId, chatName, mContext.filesDir))
+            // TODO: use new API and transfer functionality to ChatManager
+            //chats.add(Chat(chatDir.name, chatId, chatIdStamp, chatIdSalt, chatMessageId, chatName, mContext.filesDir))
         }
         return chats
     }
@@ -334,7 +335,9 @@ object DataManager {
             return null
         }
         val chatName = String(readFile("chatName", chatDir)?: return null, Charsets.UTF_8)
-        return Chat(dataId, chatId, chatIdStamp, chatIdSalt, chatMessageId, chatName, mContext.filesDir)
+        // TODO: se new API and transfer functionality to ChatManager
+        return null
+        //return Chat(dataId, chatId, chatIdStamp, chatIdSalt, chatMessageId, chatName, mContext.filesDir)
     }
 
     // save a new chat and return the associated internal data ID
