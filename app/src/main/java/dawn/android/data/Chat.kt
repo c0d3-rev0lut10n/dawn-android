@@ -19,21 +19,16 @@
 package dawn.android.data
 
 import android.content.Context
-import android.util.Log
 import dawn.android.GenId
 import dawn.android.LibraryConnector
-import dawn.android.data.Result.Companion.ok
 import dawn.android.data.Result.Companion.err
+import dawn.android.data.Result.Companion.ok
 import dawn.android.util.DataManager
-import dawn.android.util.PreferenceManager
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
 
-@Serializable
 class Chat(
     val dataId: String,
     var id: String,
@@ -41,6 +36,7 @@ class Chat(
     var idSalt: String,
     var lastMessageId: UShort,
     var name: String,
+    val messages: ArrayList<Message>,
     @Transient var filesDir: File? = null
 ) {
     companion object {
@@ -78,7 +74,7 @@ class Chat(
                     if(i == 1000) return err("could not generate data ID")
                 }
             }
-            return ok(Chat(dataId!!.id!!, id, idStamp, idSalt, 0U, name, filesDir))
+            return ok(Chat(dataId!!.id!!, id, idStamp, idSalt, 0U, name, ArrayList(), filesDir))
         }
 
         fun load(dataId: String, context: Context): Result<Chat, String> {
