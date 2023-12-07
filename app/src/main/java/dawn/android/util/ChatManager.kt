@@ -21,7 +21,11 @@ package dawn.android.util
 import dawn.android.data.Chat
 import dawn.android.data.Profile
 import dawn.android.data.ReceivedInitRequest
+import dawn.android.data.Result
+import dawn.android.data.Result.Companion.err
+import dawn.android.data.Result.Companion.ok
 import dawn.android.data.SentInitRequest
+import kotlinx.serialization.json.Json
 import java.io.File
 
 object ChatManager {
@@ -39,5 +43,19 @@ object ChatManager {
         sentRequestsPath = File(storageRoot, "sentRequests")
         receivedRequestsPath = File(storageRoot, "receivedRequests")
         profilePath = File(storageRoot, "profiles")
+    }
+
+    fun getProfile(id: String): Result<Profile, String> {
+        if(!profileCache.contains(id)) {
+            try {
+                val serializedProfile = String(DataManager.readFile(id, profilePath)!!, Charsets.UTF_8)
+                val profile: Profile = Json.decodeFromString(serializedProfile)
+                profileCache[id] = profile
+            }
+            catch(e: Exception) {
+                return err("getProfile: Error getting profile $id: $e")
+            }
+        }
+        return ok(profileCache[id]?: return err("getProfile: Profile disappeared from cache"))
     }
 }
