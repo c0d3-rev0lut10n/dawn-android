@@ -23,6 +23,7 @@ import dawn.android.GenId
 import dawn.android.LibraryConnector
 import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
+import dawn.android.data.serialized.SerializedChat
 import dawn.android.util.DataManager
 import kotlinx.serialization.Transient
 import kotlinx.serialization.encodeToString
@@ -86,6 +87,24 @@ class Chat(
             val chat = Json.decodeFromString<Chat>(String(chatContent, Charsets.UTF_8))
             chat.filesDir = context.filesDir
             return ok(chat)
+        }
+
+        fun fromSerialized(ser: SerializedChat): Chat {
+            val messages = ArrayList<Message>()
+            for(serMsg in ser.messages) {
+                val message = Message.fromSerialized(serMsg)
+                if(message.isOk())
+                    messages.add(message.unwrap())
+            }
+            return Chat(
+                dataId = ser.dataId,
+                id = ser.id,
+                idStamp = ser.idStamp,
+                idSalt = ser.idSalt,
+                lastMessageId = ser.lastMessageId,
+                name = ser.name,
+                messages = messages
+            )
         }
     }
     fun save(): Result<Ok, String> {
