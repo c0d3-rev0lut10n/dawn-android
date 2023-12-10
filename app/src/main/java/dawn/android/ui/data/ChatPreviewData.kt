@@ -35,9 +35,8 @@ class ChatPreviewData(
         chatName = name
     }
 
-    fun getUserName(): String {
-        return if(userName == null) chatName
-        else userName!!
+    fun getUserName(): String? {
+        return userName
     }
 
     fun setUserName(name: String) {
