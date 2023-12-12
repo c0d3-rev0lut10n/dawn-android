@@ -28,6 +28,15 @@
     <string name="theme_extradark">Extra Dark (Stargazer)</string>
     <string name="theme_light">Light</string>
 
+    <!-- day of week: abbreviations -->
+    <string name="monday_short">Mo.</string>
+    <string name="tuesday_short">Tu.</string>
+    <string name="wednesday_short">We.</string>
+    <string name="thursday_short">Th.</string>
+    <string name="friday_short">Fr.</string>
+    <string name="saturday_short">Sa.</string>
+    <string name="sunday_short">Su.</string>
+
     <!-- Notification-related strings -->
     <string name="notification_channel_bg">Background service is running</string>
     <string name="notification_bg_content">Dawn is keeping your messages up-to-date in background. You can hide this notification in the system settings or by tapping on it.</string>
