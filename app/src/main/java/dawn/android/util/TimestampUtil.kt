@@ -49,18 +49,22 @@ object TimestampUtil {
     fun Long.toTimestampForChatPreview(): String {
         val date = Instant.ofEpochSecond(this)
         val currentDate = Instant.now()
-        val difference = Duration.between(date, currentDate)
-        if(difference.toDays() == 0L && (weekDayPattern.format(date) == weekDayPattern.format(currentDate))) {
+        return deriveHumanReadableTimestamp(currentDate, date)
+    }
+
+    private fun deriveHumanReadableTimestamp(dateNow: Instant, dateForTimestamp: Instant): String {
+        val difference = Duration.between(dateForTimestamp, dateNow)
+        if(difference.toDays() == 0L && (weekDayPattern.format(dateForTimestamp) == weekDayPattern.format(dateNow))) {
             // the timestamp is from the same day, return the time only
-            return timeOnlyPattern.format(date)
+            return timeOnlyPattern.format(dateForTimestamp)
         }
-        else if(difference.toDays() > 6L || (difference.toDays() == 6L && weekDayPattern.format(date) == weekDayPattern.format(currentDate))) {
+        else if(difference.toDays() > 6L || (difference.toDays() == 6L && weekDayPattern.format(dateForTimestamp) == weekDayPattern.format(dateNow))) {
             // the timestamp refers to a date further away than a week or to the same day-of-week last week
-            return dateOnlyPattern.format(date)
+            return dateOnlyPattern.format(dateForTimestamp)
         }
         else {
             // within a week and not from the same day
-            return when(weekDayPattern.format(date)) {
+            return when(weekDayPattern.format(dateForTimestamp)) {
                 "Mon" -> monday
                 "Tue" -> tuesday
                 "Wed" -> wednesday
@@ -69,7 +73,7 @@ object TimestampUtil {
                 "Sat" -> saturday
                 "Sun" -> sunday
                 else -> {
-                    weekDayPattern.format(date)
+                    weekDayPattern.format(dateForTimestamp)
                 }
             }
         }
