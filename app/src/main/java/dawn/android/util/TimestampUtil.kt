@@ -20,8 +20,10 @@ package dawn.android.util
 
 import android.content.Context
 import dawn.android.R
+import java.time.DayOfWeek
 import java.time.Duration
 import java.time.Instant
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 object TimestampUtil {
@@ -32,6 +34,7 @@ object TimestampUtil {
     private var friday = "Fr."
     private var saturday = "Sa."
     private var sunday = "Su."
+    private var zone = ZoneId.of("UTC")
     private val weekDayPattern = DateTimeFormatter.ofPattern("EEE")
     private val timeOnlyPattern = DateTimeFormatter.ofPattern("HH:mm")
     private val dateOnlyPattern = DateTimeFormatter.ofPattern("dd.MM.")
@@ -49,31 +52,33 @@ object TimestampUtil {
     fun Long.toTimestampForChatPreview(): String {
         val date = Instant.ofEpochSecond(this)
         val currentDate = Instant.now()
-        return deriveHumanReadableTimestamp(currentDate, date)
+        return deriveHumanReadableTimestamp(currentDate, date, zone)
     }
 
-    private fun deriveHumanReadableTimestamp(dateNow: Instant, dateForTimestamp: Instant): String {
+    fun deriveHumanReadableTimestamp(dateNow: Instant, dateForTimestamp: Instant, zone: ZoneId): String {
         val difference = Duration.between(dateForTimestamp, dateNow)
-        if(difference.toDays() == 0L && (weekDayPattern.format(dateForTimestamp) == weekDayPattern.format(dateNow))) {
+        val dateNowLocal = dateNow.atZone(zone)
+        val dateForTimestampLocal = dateForTimestamp.atZone(zone)
+        if(difference.toDays() == 0L && (dateForTimestampLocal.dayOfWeek == dateNowLocal.dayOfWeek)) {
             // the timestamp is from the same day, return the time only
-            return timeOnlyPattern.format(dateForTimestamp)
+            return timeOnlyPattern.format(dateForTimestampLocal)
         }
-        else if(difference.toDays() > 6L || (difference.toDays() == 6L && weekDayPattern.format(dateForTimestamp) == weekDayPattern.format(dateNow))) {
+        else if(difference.toDays() > 6L || (difference.toDays() == 6L && dateForTimestampLocal.dayOfWeek == dateNowLocal.dayOfWeek)) {
             // the timestamp refers to a date further away than a week or to the same day-of-week last week
-            return dateOnlyPattern.format(dateForTimestamp)
+            return dateOnlyPattern.format(dateForTimestampLocal)
         }
         else {
             // within a week and not from the same day
-            return when(weekDayPattern.format(dateForTimestamp)) {
-                "Mon" -> monday
-                "Tue" -> tuesday
-                "Wed" -> wednesday
-                "Thu" -> thursday
-                "Fri" -> friday
-                "Sat" -> saturday
-                "Sun" -> sunday
+            return when(dateForTimestampLocal.dayOfWeek) {
+                DayOfWeek.MONDAY -> monday
+                DayOfWeek.TUESDAY -> tuesday
+                DayOfWeek.WEDNESDAY -> wednesday
+                DayOfWeek.THURSDAY -> thursday
+                DayOfWeek.FRIDAY -> friday
+                DayOfWeek.SATURDAY -> saturday
+                DayOfWeek.SUNDAY -> sunday
                 else -> {
-                    weekDayPattern.format(dateForTimestamp)
+                    weekDayPattern.format(dateForTimestampLocal)
                 }
             }
         }
