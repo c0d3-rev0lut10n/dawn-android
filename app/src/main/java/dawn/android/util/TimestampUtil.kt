@@ -25,13 +25,13 @@ import java.time.Instant
 import java.time.format.DateTimeFormatter
 
 object TimestampUtil {
-    private lateinit var monday: String
-    private lateinit var tuesday: String
-    private lateinit var wednesday: String
-    private lateinit var thursday: String
-    private lateinit var friday: String
-    private lateinit var saturday: String
-    private lateinit var sunday: String
+    private var monday = "Mo."
+    private var tuesday = "Tu."
+    private var wednesday = "We."
+    private var thursday = "Th."
+    private var friday = "Fr."
+    private var saturday = "Sa."
+    private var sunday = "Su."
     private val weekDayPattern = DateTimeFormatter.ofPattern("EEE")
     private val timeOnlyPattern = DateTimeFormatter.ofPattern("HH:mm")
     private val dateOnlyPattern = DateTimeFormatter.ofPattern("dd.MM.")
