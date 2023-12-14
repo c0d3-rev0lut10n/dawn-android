@@ -27,8 +27,8 @@ import java.io.ObjectOutputStream
 
 class Message(
     val sender: Profile,
-    val sent: Long,
-    var received: Long,
+    val sent: Long?,
+    var received: Long?,
     val contentType: ContentType,
     val text: String,
     val media: ByteArray?
@@ -62,8 +62,8 @@ class Message(
     fun intoSerializable(): SerializedMessage {
         return SerializedMessage(
             sender = sender.dataId,
-            sent,
-            received,
+            sent!!,
+            received!!,
             contentType,
             text
         )
