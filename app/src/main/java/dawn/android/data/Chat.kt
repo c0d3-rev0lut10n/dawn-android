@@ -19,12 +19,15 @@
 package dawn.android.data
 
 import android.content.Context
+import android.util.Log
 import dawn.android.GenId
 import dawn.android.LibraryConnector
 import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
 import dawn.android.data.serialized.SerializedChat
+import dawn.android.ui.data.ChatPreviewData
 import dawn.android.util.DataManager
+import dawn.android.util.TimestampUtil.toTimestampForChatPreview
 import kotlinx.serialization.Transient
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -107,6 +110,42 @@ class Chat(
             )
         }
     }
+
+    fun toPreview(): ChatPreviewData {
+        val messageForPreview: Message
+        val userName: String?
+        val messagePreview: String
+        try {
+            messageForPreview = messages.last()
+            userName = messageForPreview.sender.name
+            messagePreview = if(messageForPreview.text.length > 42)
+                messageForPreview.text.slice(IntRange(0,42))
+            else messageForPreview.text
+
+        }
+        catch(e: Exception) {
+            Log.w(this.javaClass.name, "Chat preview generation failed: no message yet")
+            return ChatPreviewData(
+                "UNKNOWN", null, "COULD NOT LOAD CHAT", "", false, false, dataId
+            )
+        }
+        val time: String = if(messageForPreview.received != null)
+           messageForPreview.received!!.toTimestampForChatPreview()
+        else if(messageForPreview.sent != null)
+            messageForPreview.sent.toTimestampForChatPreview()
+        else
+            ""
+        return ChatPreviewData(
+            chatName = name,
+            userName = userName,
+            messagePreview = messagePreview,
+            time = time,
+            isSent = messageForPreview.sent != null,
+            isRead = messageForPreview.received != null,
+            dataId = dataId
+        )
+    }
+
     fun save(): Result<Ok, String> {
         val fileContent = Json.encodeToString(this).toByteArray(Charsets.UTF_8)
         val result = DataManager.writeFile("chat", filesDir!!, fileContent, true)
