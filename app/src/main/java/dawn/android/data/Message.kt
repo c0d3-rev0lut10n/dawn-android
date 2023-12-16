@@ -35,7 +35,7 @@ class Message(
         fun fromSerialized(ser: SerializedMessage): Result<Message, String> {
             val profile = ChatManager.getProfile(ser.sender)
             if (profile.isErr())
-                return err("")
+                return err("Message.fromSerialized: Unknown profile")
             return ok(
                 Message(
                     sender = profile.unwrap(),
