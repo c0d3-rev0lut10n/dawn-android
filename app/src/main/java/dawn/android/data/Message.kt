@@ -22,8 +22,6 @@ import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
 import dawn.android.data.serialized.SerializedMessage
 import dawn.android.util.ChatManager
-import java.io.ByteArrayOutputStream
-import java.io.ObjectOutputStream
 
 class Message(
     val sender: Profile,
@@ -36,7 +34,7 @@ class Message(
     companion object {
         fun fromSerialized(ser: SerializedMessage): Result<Message, String> {
             val profile = ChatManager.getProfile(ser.sender)
-            if(profile.isErr())
+            if (profile.isErr())
                 return err("")
             return ok(
                 Message(
@@ -48,14 +46,6 @@ class Message(
                     media = null // media is lazy-loaded for applicable message types to save memory
                 )
             )
-        }
-    }
-    fun toByteArray(): ByteArray {
-        ByteArrayOutputStream().use { bos ->
-            ObjectOutputStream(bos).use {oos ->
-                oos.writeObject(this)
-                return bos.toByteArray()
-            }
         }
     }
 
