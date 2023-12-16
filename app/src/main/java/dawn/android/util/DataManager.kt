@@ -30,6 +30,8 @@ import dawn.android.data.Ok
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.*
 import java.security.MessageDigest
 import java.security.SecureRandom
@@ -429,7 +431,7 @@ object DataManager {
 
 
 
-        if(!writeFile(messageNumber.toString(), messagesDir, message.toByteArray(), false)) return err("Could not write to message file")
+        if(!writeFile(messageNumber.toString(), messagesDir, Json.encodeToString(message.intoSerializable()).toByteArray(Charsets.UTF_8), false)) return err("Could not write to message file")
 
         return ok(Ok)
     }
