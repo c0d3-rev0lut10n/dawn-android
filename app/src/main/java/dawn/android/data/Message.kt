@@ -25,7 +25,7 @@ import dawn.android.util.ChatManager
 
 class Message(
     val sender: Profile,
-    val sent: Long?,
+    var sent: Long?,
     var received: Long?,
     val contentType: ContentType,
     val text: String,
