@@ -41,10 +41,11 @@ class Chat(
     var lastMessageId: UShort,
     var name: String,
     val messages: ArrayList<Message>,
+    var type: ChatType,
     @Transient var filesDir: File? = null
 ) {
     companion object {
-        fun new(id: String, idStamp: String, idSalt: String, name: String, context: Context): Result<Chat, String> {
+        fun new(id: String, idStamp: String, idSalt: String, name: String, type: ChatType, context: Context): Result<Chat, String> {
             // validate input
             if(id.matches(Regex.ID)) return err("invalid ID")
             if(idStamp.matches(Regex.timestamp)) return err("invalid ID stamp")
@@ -78,7 +79,7 @@ class Chat(
                     if(i == 1000) return err("could not generate data ID")
                 }
             }
-            return ok(Chat(dataId!!.id!!, id, idStamp, idSalt, 0U, name, ArrayList(), filesDir))
+            return ok(Chat(dataId!!.id!!, id, idStamp, idSalt, 0U, name, ArrayList(), type, filesDir))
         }
 
         fun load(dataId: String, context: Context): Result<Chat, String> {
@@ -106,6 +107,7 @@ class Chat(
                 idSalt = ser.idSalt,
                 lastMessageId = ser.lastMessageId,
                 name = ser.name,
+                type = ser.type,
                 messages = messages
             )
         }

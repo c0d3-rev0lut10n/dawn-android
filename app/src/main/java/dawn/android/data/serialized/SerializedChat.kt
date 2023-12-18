@@ -18,6 +18,7 @@
 
 package dawn.android.data.serialized
 
+import dawn.android.data.ChatType
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -28,5 +29,6 @@ data class SerializedChat(
     var idSalt: String,
     var lastMessageId: UShort,
     var name: String,
+    var type: ChatType,
     val messages: ArrayList<SerializedMessage>
 )
