@@ -132,7 +132,7 @@ class Chat(
         val time: String = if(messageForPreview.received != null)
            messageForPreview.received!!.toTimestampForChatPreview()
         else if(messageForPreview.sent != null)
-            messageForPreview.sent.toTimestampForChatPreview()
+            messageForPreview.sent!!.toTimestampForChatPreview()
         else
             ""
         return ChatPreviewData(
