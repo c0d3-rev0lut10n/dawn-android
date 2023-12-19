@@ -41,15 +41,15 @@ import dawn.android.data.HandlePrivateInfo
 import dawn.android.data.Ok
 import dawn.android.data.Preferences
 import dawn.android.data.Result
-import dawn.android.data.Result.Companion.ok
 import dawn.android.data.Result.Companion.err
+import dawn.android.data.Result.Companion.ok
 import dawn.android.data.SentInitRequest
 import dawn.android.util.DataManager
 import dawn.android.util.PreferenceManager
 import dawn.android.util.RequestFactory
 import dawn.android.util.TorReceiver
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -116,7 +116,7 @@ class ReceiveMessagesService: Service() {
 
         if(useTor) startTor()
 
-        val serverAddress = PreferenceManager.get("server").unwrap()
+        val serverAddress = PreferenceManager.get(Preferences.server).unwrap()
         RequestFactory.setMessageServerAddress(serverAddress)
         chats = DataManager.getAllChats()
 

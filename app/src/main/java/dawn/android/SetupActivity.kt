@@ -44,7 +44,6 @@ import dawn.android.data.Theme
 import dawn.android.databinding.ActivitySetupBinding
 import dawn.android.util.DataManager
 import dawn.android.util.PreferenceManager
-import dawn.android.util.RequestFactory
 import dawn.android.util.ThemeLoader
 import java.io.File
 
@@ -221,7 +220,7 @@ class SetupActivity : AppCompatActivity() {
         val signatureKeypair = signatureKeypairResult.unwrap()
 
         PreferenceManager.new(filesDir)
-        PreferenceManager.set("server", serverAddress)
+        PreferenceManager.set(Preferences.server, serverAddress)
         PreferenceManager.set("profileName", profileName)
         PreferenceManager.set("profileBio", profileBio)
         PreferenceManager.set("initId", initId)

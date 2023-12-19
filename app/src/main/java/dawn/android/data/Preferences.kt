@@ -26,4 +26,5 @@ object Preferences {
     const val THEME_EXTRADARK = 3
     const val THEME_LIGHT = 4
     const val profileHandle = "profileHandle"
+    const val server = "server"
 }
