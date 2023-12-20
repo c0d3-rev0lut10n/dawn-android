@@ -82,6 +82,7 @@ class Chat(
             return ok(Chat(dataId!!.id!!, id, idStamp, idSalt, 0U, name, ArrayList(), type, filesDir))
         }
 
+        // LEGACY, will be removed
         fun load(dataId: String, context: Context): Result<Chat, String> {
             if(!DataManager.isInitialized()) return err("DataManager uninitialized")
             val chatsDir = File(context.filesDir, "chats")
@@ -148,6 +149,7 @@ class Chat(
         )
     }
 
+    // LEGACY, will be removed
     fun save(): Result<Ok, String> {
         val fileContent = Json.encodeToString(this).toByteArray(Charsets.UTF_8)
         val result = DataManager.writeFile("chat", filesDir!!, fileContent, true)
