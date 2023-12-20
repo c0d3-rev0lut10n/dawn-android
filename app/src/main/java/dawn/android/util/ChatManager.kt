@@ -31,14 +31,10 @@ object ChatManager {
     private var chatCache: HashMap<String, Chat> = HashMap()
     private var profileCache: HashMap<String, Profile> = HashMap()
     private lateinit var chatsPath: File
-    private lateinit var sentRequestsPath: File
-    private lateinit var receivedRequestsPath: File
     private lateinit var profilePath: File
 
     fun init(storageRoot: File) {
         chatsPath = File(storageRoot, "chats")
-        sentRequestsPath = File(storageRoot, "sentRequests")
-        receivedRequestsPath = File(storageRoot, "receivedRequests")
         profilePath = File(storageRoot, "profiles")
     }
 
