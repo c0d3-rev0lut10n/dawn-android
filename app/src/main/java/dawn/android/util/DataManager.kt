@@ -436,12 +436,6 @@ object DataManager {
         return ok(Ok)
     }
 
-    fun getOwnProfileName(): Result<String, String> {
-        val profileName = PreferenceManager.get("profileName")
-        if(profileName.isErr()) return err(profileName.unwrapErr())
-        return ok(profileName.unwrap())
-    }
-
     fun getOwnProfileSignKeys(): Result<Keypair, String> {
         val pubKey = PreferenceManager.get("pubkeySig")
         val secKey = PreferenceManager.get("seckeySig")

@@ -303,7 +303,7 @@ class ReceiveMessagesService: Service() {
                 if(initKeysKyberSaltResult.isErr()) return err(initKeysKyberSaltResult.unwrapErr())
                 val initKeysCurveSaltResult = LibraryConnector.mCurveKeygen()
                 if(initKeysCurveSaltResult.isErr()) return err(initKeysCurveSaltResult.unwrapErr())
-                val nameResult = DataManager.getOwnProfileName()
+                val nameResult = PreferenceManager.get(Preferences.profileName)
                 if(nameResult.isErr()) return err(nameResult.unwrapErr())
 
                 val kyberKeys = initKeysKyberResult.unwrap()
@@ -432,7 +432,7 @@ class ReceiveMessagesService: Service() {
 
             val ownSignKeypair = ownSignKeypairResult.unwrap()
 
-            val profileNameResult = DataManager.getOwnProfileName()
+            val profileNameResult = PreferenceManager.get("profileName")
             if(profileNameResult.isErr()) return err("could not get profile name: ${profileNameResult.unwrapErr()}")
 
             val initRequestResult = LibraryConnector.mGenInitRequest(
