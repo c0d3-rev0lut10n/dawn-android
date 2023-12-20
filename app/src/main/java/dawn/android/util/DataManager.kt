@@ -282,6 +282,7 @@ object DataManager {
         return true
     }
 
+    // LEGACY, needs to get implemented via ChatManager
     fun getAllChats(): ArrayList<Chat> {
         if(!initialized) return ArrayList()
         val chatsDir = File(mContext.filesDir, "chats")
@@ -342,6 +343,7 @@ object DataManager {
         //return Chat(dataId, chatId, chatIdStamp, chatIdSalt, chatMessageId, chatName, mContext.filesDir)
     }
 
+    // LEGACY, needs to get implemented via Chat/ChatManager
     // save a new chat and return the associated internal data ID
     fun saveNewChat(id: String, idStamp: String, idSalt: String, name: String): String {
         if(id.contains("\n", true)) return ""
@@ -384,6 +386,7 @@ object DataManager {
         return dataId.id!!
     }
 
+    // LEGACY, needs to get implemented via Chat/ChatManager
     fun saveChatId(dataId: String, id: String, idStamp: String): Boolean {
         val chatDir = File(File(mContext.filesDir, "chats"), dataId)
         if(dataId.contains("\n", true) || dataId == "") return false
@@ -396,6 +399,7 @@ object DataManager {
         return true
     }
 
+    // LEGACY, needs to get implemented via Chat/ChatManager
     fun saveChatMessageId(dataId: String, messageId: UShort): Boolean {
         if(dataId.contains("\n", true) || dataId == "") return false
         val chatDir = File(File(mContext.filesDir, "chats"), dataId)
@@ -406,6 +410,7 @@ object DataManager {
         return true
     }
 
+    // LEGACY, needs to get implemented via Chat/ChatManager
     fun saveChatMessage(dataId: String, message: Message): Result<Ok, String> {
         if(dataId.contains("\n", true) || dataId == "") return err("invalid dataID")
         val chatDir = File(File(mContext.filesDir, "chats"), dataId)
