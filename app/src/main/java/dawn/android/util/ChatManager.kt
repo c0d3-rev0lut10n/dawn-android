@@ -53,7 +53,7 @@ object ChatManager {
                 return err("getProfile: Error getting profile $id: $e")
             }
         }
-        return ok(profileCache[id]?: return err("getProfile: Profile disappeared from cache"))
+        return ok(profileCache[id]?: return err("getProfile: Profile $id disappeared from cache"))
     }
 
     fun getChat(id: String): Result<Chat, String> {
