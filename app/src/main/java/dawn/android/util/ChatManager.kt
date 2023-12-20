@@ -23,6 +23,7 @@ import dawn.android.data.Profile
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
+import dawn.android.data.serialized.SerializedChat
 import kotlinx.serialization.json.Json
 import java.io.File
 
@@ -53,5 +54,20 @@ object ChatManager {
             }
         }
         return ok(profileCache[id]?: return err("getProfile: Profile disappeared from cache"))
+    }
+
+    fun getChat(id: String): Result<Chat, String> {
+        if(!chatCache.contains(id)) {
+            try {
+                val serializedChatString = String(DataManager.readFile(id, chatsPath)!!, Charsets.UTF_8)
+                val serializedChat: SerializedChat = Json.decodeFromString(serializedChatString)
+                val chat = Chat.fromSerialized(serializedChat)
+                chatCache[id] = chat
+            }
+            catch (e: Exception) {
+                return err("getChat: Error getting chat $id: $e")
+            }
+        }
+        return ok(chatCache[id]?: return err("getChat: Chat $id disappeared from cache"))
     }
 }
