@@ -20,18 +20,14 @@ package dawn.android.util
 
 import dawn.android.data.Chat
 import dawn.android.data.Profile
-import dawn.android.data.ReceivedInitRequest
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
-import dawn.android.data.SentInitRequest
 import kotlinx.serialization.json.Json
 import java.io.File
 
 object ChatManager {
     private var chatCache: HashMap<String, Chat> = HashMap()
-    private var sentRequestsCache: HashMap<String, SentInitRequest> = HashMap()
-    private var receivedRequestsCache: HashMap<String, ReceivedInitRequest> = HashMap()
     private var profileCache: HashMap<String, Profile> = HashMap()
     private lateinit var chatsPath: File
     private lateinit var sentRequestsPath: File
