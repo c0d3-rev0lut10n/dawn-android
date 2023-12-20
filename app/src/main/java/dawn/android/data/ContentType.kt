@@ -22,5 +22,7 @@ enum class ContentType {
     TEXT,
     PICTURE,
     VOICE,
-    LINKED_MEDIA
+    LINKED_MEDIA,
+    SENT_INIT,
+    RECEIVED_INIT
 }
