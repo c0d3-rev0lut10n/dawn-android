@@ -40,6 +40,11 @@ class Result<T, E>(private val ok: T?, private val err: E?) {
         return this.err
     }
 
+    fun print(): String {
+        return if(isErr()) "Err($err)"
+        else "Ok($ok)"
+    }
+
     fun isErr(): Boolean {
         return this.ok == null
     }
