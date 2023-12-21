@@ -18,15 +18,7 @@
 
 package dawn.android.data
 
-object Preferences {
-    // useful constants for other classes
-    const val THEME_USE_SYSTEM = true
-    const val THEME_MANUAL = false
-    const val THEME_DARK = 2
-    const val THEME_EXTRADARK = 3
-    const val THEME_LIGHT = 4
-    const val profileHandle = "profileHandle"
-    const val profileName = "profileName"
-    const val profileBio = "profileBio"
-    const val server = "server"
-}
+data class Subscription(
+    val id: String,
+    val associatedIds: ArrayList<String>
+)

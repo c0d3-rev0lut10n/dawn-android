@@ -48,7 +48,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivitySettingsBinding
-import dawn.android.util.DataManager
 import dawn.android.util.PreferenceManager
 import dawn.android.util.RequestFactory
 import dawn.android.util.ThemeLoader
@@ -152,7 +151,7 @@ class SettingsActivity : AppCompatActivity() {
 
         currentProfileName = PreferenceManager.get("profileName").unwrap()
 
-        currentProfileBio = PreferenceManager.get("profileBio").unwrap()
+        currentProfileBio = PreferenceManager.get(Preferences.profileBio).unwrap()
 
         val profileHandleResult = PreferenceManager.get(Preferences.profileHandle)
         currentProfileHandle = if(profileHandleResult.isErr()) "" else profileHandleResult.unwrap()
@@ -315,11 +314,11 @@ class SettingsActivity : AppCompatActivity() {
         var error = false
 
         if(profileNameChanges) {
-            PreferenceManager.set("profileName", binding.etProfileName.text.toString())
+            PreferenceManager.set(Preferences.profileName, binding.etProfileName.text.toString())
         }
 
         if(profileBioChanges) {
-            PreferenceManager.set("profileBio", binding.etProfileBio.text.toString())
+            PreferenceManager.set(Preferences.profileBio, binding.etProfileBio.text.toString())
         }
 
         if(profileHandleChanges && checkHandle(binding.etProfileHandle.text.toString())) {

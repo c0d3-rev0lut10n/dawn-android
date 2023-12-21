@@ -221,8 +221,8 @@ class SetupActivity : AppCompatActivity() {
 
         PreferenceManager.new(filesDir)
         PreferenceManager.set(Preferences.server, serverAddress)
-        PreferenceManager.set("profileName", profileName)
-        PreferenceManager.set("profileBio", profileBio)
+        PreferenceManager.set(Preferences.profileName, profileName)
+        PreferenceManager.set(Preferences.profileBio, profileBio)
         PreferenceManager.set("initId", initId)
         PreferenceManager.set("initMdc", LibraryConnector.mMdcGen().unwrap().mdc!!)
         PreferenceManager.set("pubkeySig", signatureKeypair.own_pubkey_sig!!)
