@@ -391,7 +391,7 @@ class ReceiveMessagesService: Service() {
         return ok(Ok)
     }
 
-    fun searchHandleAndInit(handle: String, initSecret: String, comment: String): Result<String, String> {
+    fun searchHandleAndInit(handle: String, initSecret: String, comment: String): Result<Ok, String> {
         val request = RequestFactory.buildWhoRequest(handle, initSecret)
         val response = client.newCall(request).execute()
         if(!response.isSuccessful) {
@@ -478,7 +478,7 @@ class ReceiveMessagesService: Service() {
             if(!DataManager.writeFile(sentInitRequest.id, initRequestDirectory, requestBytes, false)) return err("could not write file")
         }
 
-        return ok("success")
+        return ok(Ok)
     }
 
     fun makeRequest(request: Request): Result<Response, String> {
