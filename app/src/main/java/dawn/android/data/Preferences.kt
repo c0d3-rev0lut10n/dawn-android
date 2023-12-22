@@ -29,4 +29,10 @@ object Preferences {
     const val profileName = "profileName"
     const val profileBio = "profileBio"
     const val server = "server"
+    val sign = Sign
+}
+
+object Sign {
+    const val ownPrivateKey = "seckeySig"
+    const val ownPublicKey = "pubkeySig"
 }

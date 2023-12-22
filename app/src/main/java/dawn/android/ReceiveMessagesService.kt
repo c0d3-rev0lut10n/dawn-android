@@ -427,12 +427,11 @@ class ReceiveMessagesService: Service() {
             }
             val handleInfo = handleInfoResult.unwrap()
 
-            val ownSignKeypairResult = DataManager.getOwnProfileSignKeys()
-            if(ownSignKeypairResult.isErr()) return err("could not get signature keypair: ${ownSignKeypairResult.unwrapErr()}")
+            val ownSignPublicKey = PreferenceManager.get(Preferences.sign.ownPublicKey)
+            val ownSignSecretKey = PreferenceManager.get(Preferences.sign.ownPrivateKey)
+            if(ownSignPublicKey.isErr()) return err("searchHandleAndInit: could not get own keys: public key: ${ownSignPublicKey.print()}; private key: ${ownSignSecretKey.print()}")
 
-            val ownSignKeypair = ownSignKeypairResult.unwrap()
-
-            val profileNameResult = PreferenceManager.get("profileName")
+            val profileNameResult = PreferenceManager.get(Preferences.profileName)
             if(profileNameResult.isErr()) return err("could not get profile name: ${profileNameResult.unwrapErr()}")
 
             val initRequestResult = LibraryConnector.mGenInitRequest(
@@ -441,8 +440,8 @@ class ReceiveMessagesService: Service() {
                 handleInfo.init_pk_curve!!,
                 handleInfo.init_pk_curve_pfs_2!!,
                 handleInfo.init_pk_curve_for_salt!!,
-                ownSignKeypair.publicKey,
-                ownSignKeypair.privateKey,
+                ownSignPublicKey.unwrap(),
+                ownSignSecretKey.unwrap(),
                 profileNameResult.unwrap(),
                 comment,
                 handleInfo.mdc!!
