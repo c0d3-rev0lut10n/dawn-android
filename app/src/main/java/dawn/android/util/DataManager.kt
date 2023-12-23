@@ -62,7 +62,7 @@ object DataManager {
         else initializing = true
         if (initialized) return true
         mContext = context.applicationContext
-        logTag = "${mContext.packageName}.DataManager"
+        logTag = this.javaClass.name
         dataDirectory = mContext.filesDir
         messagesDirectory = File(dataDirectory, "messages")
 

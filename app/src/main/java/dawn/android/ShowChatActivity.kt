@@ -1,7 +1,6 @@
 package dawn.android
 
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -9,6 +8,7 @@ import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import dawn.android.data.Chat
@@ -56,7 +56,7 @@ class ShowChatActivity : AppCompatActivity() {
             }
         }
 
-        logTag = "$packageName.ShowChatActivity"
+        logTag = this.javaClass.name
 
         val extras = intent.extras
         val dataId = extras?.getString("dataId")?: ""

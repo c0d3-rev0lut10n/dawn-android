@@ -104,7 +104,7 @@ class ReceiveMessagesService: Service() {
 
         initKeyDirectory = File(filesDir, "initKeys")
 
-        logTag = "$packageName.ReceiveMessagesService"
+        logTag = this.javaClass.name
 
         torProxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress("localhost", 19050)) // planned to be configurable
         client = if(useTor)

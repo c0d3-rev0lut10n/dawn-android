@@ -124,7 +124,7 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
-        logTag = "$packageName.SettingsActivity"
+        logTag = this.javaClass.name
 
         bindService(
             Intent(this, ReceiveMessagesService::class.java),

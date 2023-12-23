@@ -92,7 +92,7 @@ class InitiateChatActivity : AppCompatActivity() {
             }
         }
 
-        logTag = "$packageName.InitiateChatActivity"
+        logTag = this.javaClass.name
 
         bindService(
             Intent(this, ReceiveMessagesService::class.java),

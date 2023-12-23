@@ -2,13 +2,13 @@ package dawn.android
 
 import android.content.DialogInterface
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -58,7 +58,7 @@ class DebugActivity : AppCompatActivity() {
             }
         }
 
-        logTag = "$packageName.DebugActivity"
+        logTag = this.javaClass.name
         binding = ActivityDebugBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

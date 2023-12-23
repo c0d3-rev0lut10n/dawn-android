@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         mLibraryConnector = LibraryConnector
 
         super.onCreate(savedInstanceState)
-        logTag = "$packageName.MainActivity"
+        logTag = this.javaClass.name
 
         // load theme
         val mThemeLoader = ThemeLoader(this)
