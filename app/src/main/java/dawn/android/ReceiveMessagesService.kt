@@ -29,7 +29,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.os.Binder
-import android.os.Build
 import android.os.IBinder
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
@@ -501,30 +500,18 @@ class ReceiveMessagesService: Service() {
 
         val notificationPendingIntent = PendingIntent.getActivity(this, 0, notificationSettingsIntent, PendingIntent.FLAG_IMMUTABLE)
 
-        if(Build.VERSION.SDK_INT >= 26) {
-            val notificationChannel = NotificationChannel("BG_KEEPALIVE", getString(R.string.notification_channel_bg), NotificationManager.IMPORTANCE_LOW)
-            notificationChannel.enableVibration(false)
-            notificationChannel.enableLights(false)
-            notificationManager.createNotificationChannel(notificationChannel)
-            val notification = Notification.Builder(this, "BG_KEEPALIVE")
-                .setOngoing(true)
-                .setSmallIcon(R.drawable.notification)
-                .setContentText(getString(R.string.notification_bg_content))
-                .setContentTitle(getString(R.string.app_name))
-                .setContentIntent(notificationPendingIntent)
-                .build()
-            startForeground(1, notification)
-        }
-        else {
-            val notification = Notification.Builder(this)
-                .setOngoing(true)
-                .setSmallIcon(R.drawable.notification)
-                .setContentText(getString(R.string.notification_bg_content))
-                .setContentTitle(getString(R.string.app_name))
-                .setContentIntent(notificationPendingIntent)
-                .build()
-            startForeground(1, notification)
-        }
+        val notificationChannel = NotificationChannel("BG_KEEPALIVE", getString(R.string.notification_channel_bg), NotificationManager.IMPORTANCE_LOW)
+        notificationChannel.enableVibration(false)
+        notificationChannel.enableLights(false)
+        notificationManager.createNotificationChannel(notificationChannel)
+        val notification = Notification.Builder(this, "BG_KEEPALIVE")
+            .setOngoing(true)
+            .setSmallIcon(R.drawable.notification)
+            .setContentText(getString(R.string.notification_bg_content))
+            .setContentTitle(getString(R.string.app_name))
+            .setContentIntent(notificationPendingIntent)
+            .build()
+        startForeground(1, notification)
     }
 
     private fun startTor() {
