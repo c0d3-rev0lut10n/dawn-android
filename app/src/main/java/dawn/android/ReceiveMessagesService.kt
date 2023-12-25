@@ -18,6 +18,7 @@
 
 package dawn.android
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -515,6 +516,7 @@ class ReceiveMessagesService: Service() {
         startForeground(1, notification)
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private fun startTor() {
         if (Build.VERSION.SDK_INT >= 33) {
             registerReceiver(mTorReceiver, IntentFilter(TorService.ACTION_STATUS),
