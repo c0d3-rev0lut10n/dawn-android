@@ -29,6 +29,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.os.Binder
+import android.os.Build
 import android.os.IBinder
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
@@ -515,7 +516,14 @@ class ReceiveMessagesService: Service() {
     }
 
     private fun startTor() {
-        registerReceiver(mTorReceiver, IntentFilter(TorService.ACTION_STATUS))
+        if (Build.VERSION.SDK_INT >= 33) {
+            registerReceiver(mTorReceiver, IntentFilter(TorService.ACTION_STATUS),
+                RECEIVER_NOT_EXPORTED
+            )
+        }
+        else {
+            registerReceiver(mTorReceiver, IntentFilter(TorService.ACTION_STATUS))
+        }
 
         bindService(Intent(this, TorService::class.java), object: ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
