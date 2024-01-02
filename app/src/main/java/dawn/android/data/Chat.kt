@@ -23,8 +23,6 @@ import dawn.android.data.serialized.SerializedChat
 import dawn.android.data.serialized.SerializedMessage
 import dawn.android.ui.data.ChatPreviewData
 import dawn.android.util.TimestampUtil.toTimestampForChatPreview
-import kotlinx.serialization.Transient
-import java.io.File
 
 class Chat(
     val dataId: String,
@@ -35,7 +33,6 @@ class Chat(
     var name: String,
     val messages: ArrayList<Message>,
     var type: ChatType,
-    @Transient var filesDir: File? = null
 ) {
     companion object {
 
