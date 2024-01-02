@@ -18,18 +18,12 @@
 
 package dawn.android.data
 
-import android.content.Context
 import android.util.Log
-import dawn.android.data.Result.Companion.err
-import dawn.android.data.Result.Companion.ok
 import dawn.android.data.serialized.SerializedChat
 import dawn.android.data.serialized.SerializedMessage
 import dawn.android.ui.data.ChatPreviewData
-import dawn.android.util.DataManager
 import dawn.android.util.TimestampUtil.toTimestampForChatPreview
 import kotlinx.serialization.Transient
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.io.File
 
 class Chat(
@@ -44,18 +38,6 @@ class Chat(
     @Transient var filesDir: File? = null
 ) {
     companion object {
-
-        // LEGACY, will be removed
-        fun load(dataId: String, context: Context): Result<Chat, String> {
-            if(!DataManager.isInitialized()) return err("DataManager uninitialized")
-            val chatsDir = File(context.filesDir, "chats")
-            val chatDir = File(chatsDir, dataId)
-            if(!chatDir.isDirectory) return err("not found")
-            val chatContent = DataManager.readFile("chat", chatDir)?: return err("not found")
-            val chat = Json.decodeFromString<Chat>(String(chatContent, Charsets.UTF_8))
-            chat.filesDir = context.filesDir
-            return ok(chat)
-        }
 
         fun fromSerialized(ser: SerializedChat): Chat {
             val messages = ArrayList<Message>()
@@ -128,13 +110,5 @@ class Chat(
             isRead = messageForPreview.received != null,
             dataId = dataId
         )
-    }
-
-    // LEGACY, will be removed
-    fun save(): Result<Ok, String> {
-        val fileContent = Json.encodeToString(this).toByteArray(Charsets.UTF_8)
-        val result = DataManager.writeFile("chat", filesDir!!, fileContent, true)
-        return if(!result) err("@$this: could not save chat")
-        else ok(Ok)
     }
 }
