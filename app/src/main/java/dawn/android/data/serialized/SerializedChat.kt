@@ -19,6 +19,7 @@
 package dawn.android.data.serialized
 
 import dawn.android.data.ChatType
+import dawn.android.data.Keypair
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -30,5 +31,10 @@ data class SerializedChat(
     var lastMessageId: UShort,
     var name: String,
     var type: ChatType,
-    val messages: ArrayList<SerializedMessage>
+    val messages: ArrayList<SerializedMessage>,
+    var ownKyber: Keypair,
+    var ownCurve: Keypair,
+    var ownPFS: String,
+    var remotePFS: String,
+    var pfsSalt: String,
 )

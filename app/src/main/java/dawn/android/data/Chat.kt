@@ -33,6 +33,11 @@ class Chat(
     var name: String,
     val messages: ArrayList<Message>,
     var type: ChatType,
+    var ownKyber: Keypair,
+    var ownCurve: Keypair,
+    var ownPFS: String,
+    var remotePFS: String,
+    var pfsSalt: String,
 ) {
     companion object {
 
@@ -51,7 +56,12 @@ class Chat(
                 lastMessageId = ser.lastMessageId,
                 name = ser.name,
                 type = ser.type,
-                messages = messages
+                messages = messages,
+                ownKyber = ser.ownKyber,
+                ownCurve = ser.ownCurve,
+                ownPFS = ser.ownPFS,
+                remotePFS = ser.remotePFS,
+                pfsSalt = ser.pfsSalt
             )
         }
     }
@@ -70,7 +80,12 @@ class Chat(
             lastMessageId = lastMessageId,
             name = name,
             type = type,
-            messages = serializedMessages
+            messages = serializedMessages,
+            ownKyber = ownKyber,
+            ownCurve = ownCurve,
+            ownPFS = ownPFS,
+            remotePFS = remotePFS,
+            pfsSalt = pfsSalt
         )
     }
 
