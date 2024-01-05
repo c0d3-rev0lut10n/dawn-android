@@ -22,7 +22,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import dawn.android.data.Chat
-import dawn.android.data.Keypair
 import dawn.android.data.Message
 import dawn.android.data.Ok
 import dawn.android.data.Result
@@ -394,21 +393,6 @@ object DataManager {
         if(!writeFile(messageNumber.toString(), messagesDir, Json.encodeToString(message.intoSerializable()).toByteArray(Charsets.UTF_8), false)) return err("Could not write to message file")
 
         return ok(Ok)
-    }
-
-    fun getOwnProfileSignKeys(): Result<Keypair, String> {
-        val pubKey = PreferenceManager.get("pubkeySig")
-        val secKey = PreferenceManager.get("seckeySig")
-
-        if(pubKey.isErr() || secKey.isErr()) {
-            return err("could not read keys")
-        }
-
-        val keypair = Keypair(
-            publicKey = pubKey.unwrap(),
-            privateKey = secKey.unwrap()
-        )
-        return ok(keypair)
     }
 
     private fun deleteRecursive(directory: File) {
