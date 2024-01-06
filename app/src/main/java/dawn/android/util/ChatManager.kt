@@ -18,11 +18,11 @@
 
 package dawn.android.util
 
-import android.content.Context
 import dawn.android.GenId
 import dawn.android.LibraryConnector
 import dawn.android.data.Chat
 import dawn.android.data.ChatType
+import dawn.android.data.Keypair
 import dawn.android.data.Profile
 import dawn.android.data.Regex
 import dawn.android.data.Result
@@ -73,12 +73,11 @@ object ChatManager {
         return ok(chatCache[id]?: return err("getChat: Chat $id disappeared from cache"))
     }
 
-    fun newChat(id: String, idStamp: String, idSalt: String, name: String, type: ChatType, context: Context): Result<Chat, String> {
+    fun newChat(id: String, idStamp: String, idSalt: String, name: String, type: ChatType, ownKyber: Keypair, ownCurve: Keypair, ownPFS: String, remotePFS: String, pfsSalt: String): Result<Chat, String> {
         if(id.matches(Regex.ID)) return err("invalid ID")
         if(idStamp.matches(Regex.timestamp)) return err("invalid ID stamp")
         if(idSalt.matches(Regex.IdSalt)) return err("invalid ID salt")
         if(name.contains("\n", true) || name.isEmpty()) return err("invalid name")
-        val filesDir = context.filesDir
         var dataId: GenId? = null // we have to initialize with null because the compiler will complain otherwise (even though dataId will be always initialized when the chatDir File gets constructed
 
         val chatDirs = chatsPath.listFiles()
@@ -102,7 +101,20 @@ object ChatManager {
                 if(i == 100) return err("could not generate data ID")
             }
         }
-        val chat = Chat(dataId!!.id!!, id, idStamp, idSalt, 0U, name, ArrayList(), type)
+        val chat = Chat(
+            dataId = dataId!!.id!!,
+            id = id,
+            idStamp = idStamp,
+            idSalt = idSalt,
+            lastMessageId = 0U,
+            name = name,
+            messages = ArrayList(),
+            type = type,
+            ownKyber = ownKyber,
+            ownCurve = ownCurve,
+            ownPFS = ownPFS,
+            remotePFS = remotePFS,
+            pfsSalt = pfsSalt)
         try {
             val serializedChat = chat.intoSerializable()
             DataManager.writeFile(dataId.id!!, chatsPath, Json.encodeToString(serializedChat).toByteArray(Charsets.UTF_8), false)
