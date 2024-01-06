@@ -22,6 +22,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import dawn.android.data.Chat
+import dawn.android.data.Location
 import dawn.android.data.Message
 import dawn.android.data.Ok
 import dawn.android.data.Result
@@ -387,12 +388,17 @@ object DataManager {
             }
         }
         if(!writeFile("messageNumber", messagesDir, messageNumber.toString().toByteArray(Charsets.UTF_8), true)) return err("Could not save message number")
-
-
-
         if(!writeFile(messageNumber.toString(), messagesDir, Json.encodeToString(message.intoSerializable()).toByteArray(Charsets.UTF_8), false)) return err("Could not write to message file")
 
         return ok(Ok)
+    }
+
+    fun getLocation(loc: Location): File {
+        return when(loc) {
+            Location.ROOT -> mContext.filesDir
+            Location.CHATS -> File(mContext.filesDir, "chats")
+            Location.PROFILES -> File(mContext.filesDir, "profiles")
+        }
     }
 
     private fun deleteRecursive(directory: File) {
