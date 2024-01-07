@@ -23,6 +23,7 @@ import dawn.android.LibraryConnector
 import dawn.android.data.Chat
 import dawn.android.data.ChatType
 import dawn.android.data.Keypair
+import dawn.android.data.Location
 import dawn.android.data.Profile
 import dawn.android.data.Regex
 import dawn.android.data.Result
@@ -39,9 +40,9 @@ object ChatManager {
     private lateinit var chatsPath: File
     private lateinit var profilePath: File
 
-    fun init(storageRoot: File) {
-        chatsPath = File(storageRoot, "chats")
-        profilePath = File(storageRoot, "profiles")
+    fun init() {
+        chatsPath = DataManager.getLocation(Location.CHATS)
+        profilePath = DataManager.getLocation(Location.PROFILES)
     }
 
     fun getProfile(id: String): Result<Profile, String> {
