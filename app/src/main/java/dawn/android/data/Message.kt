@@ -24,6 +24,8 @@ import dawn.android.data.serialized.SerializedMessage
 import dawn.android.util.ChatManager
 
 class Message(
+    val chatDataId: String,
+    val id: String,
     val sender: Profile,
     var sent: Long?,
     var received: Long?,
@@ -38,12 +40,14 @@ class Message(
                 return err("Message.fromSerialized: Unknown profile")
             return ok(
                 Message(
+                    chatDataId = ser.chatDataId,
+                    id = ser.id,
                     sender = profile.unwrap(),
                     sent = ser.sent,
                     received = ser.received,
                     contentType = ser.contentType,
                     text = ser.text,
-                    media = null // media is lazy-loaded for applicable message types to save memory
+                    media = null // media is lazy-loaded for applicable message types to save memory,
                 )
             )
         }
@@ -51,6 +55,8 @@ class Message(
 
     fun intoSerializable(): SerializedMessage {
         return SerializedMessage(
+            chatDataId = chatDataId,
+            id = id,
             sender = sender.dataId,
             sent!!,
             received!!,
