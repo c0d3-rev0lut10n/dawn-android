@@ -22,6 +22,8 @@ import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
 import dawn.android.data.serialized.SerializedMessage
 import dawn.android.util.ChatManager
+import dawn.android.util.DataManager
+import java.io.File
 
 class Message(
     val chatDataId: String,
@@ -31,7 +33,7 @@ class Message(
     var received: Long?,
     val contentType: ContentType,
     val text: String,
-    val media: ByteArray?
+    var media: ByteArray?
 ) {
     companion object {
         fun fromSerialized(ser: SerializedMessage): Result<Message, String> {
@@ -63,5 +65,17 @@ class Message(
             contentType,
             text
         )
+    }
+
+    fun media(): ByteArray? {
+        if(media != null) return media
+        if(contentType == ContentType.LINKED_MEDIA || contentType == ContentType.PICTURE || contentType == ContentType.VOICE) {
+            val chatsDir = DataManager.getLocation(Location.CHATS)
+            val chatDir = File(chatsDir, chatDataId)
+            val content = DataManager.readFile(id, chatDir)
+            if(content != null) media = content
+            return content
+        }
+        return null
     }
 }
