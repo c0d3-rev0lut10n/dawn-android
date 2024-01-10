@@ -33,7 +33,7 @@ class Message(
     var received: Long?,
     val contentType: ContentType,
     val text: String,
-    var media: ByteArray?
+    private var media: ByteArray?
 ) {
     companion object {
         fun fromSerialized(ser: SerializedMessage): Result<Message, String> {
