@@ -26,5 +26,6 @@ data class Profile(
     val name: String,
     val handle: String,
     val bio: String,
-    val pictureBase64: String?
+    val pictureBase64: String?,
+    val pubkeySig: String,
 )
