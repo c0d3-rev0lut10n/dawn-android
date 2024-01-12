@@ -20,7 +20,7 @@ package dawn.android.data
 
 object Regex {
     val ID = "^[0-9a-f]{64}$".toRegex()
-    val IdSalt = "^[0-9a-f]{64}$]".toRegex()
+    val IdSalt = "^[0-9a-f]{64}$".toRegex()
     val timestamp = "^[0-9]{9}$".toRegex()
     val handle = "^[a-zA-Z0-9-_]+$".toRegex()
 }
