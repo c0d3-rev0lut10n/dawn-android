@@ -28,9 +28,9 @@ class SentInitRequest (
     val ownSeckeyCurve: String,
     val ownPFSKey: String,
     val remotePFSKey: String,
-    val pfsSalt: String,
-    val id: String,
-    val idSalt: String,
-    val mdc: String,
-    val ciphertext: String
+    val pfsSalt: String, // move to: Chat object
+    val id: String, // move to: Chat object
+    val idSalt: String, // move to: Chat object
+    val mdc: String, // move to: first message of Chat
+    val ciphertext: String // move to: first message of Chat
 )
