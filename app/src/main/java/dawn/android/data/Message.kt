@@ -27,7 +27,7 @@ import java.io.File
 
 class Message(
     val chatDataId: String,
-    val id: String,
+    val id: ULong,
     val sender: Profile,
     var sent: Long?,
     var received: Long?,
@@ -72,7 +72,7 @@ class Message(
         if(contentType == ContentType.LINKED_MEDIA || contentType == ContentType.PICTURE || contentType == ContentType.VOICE) {
             val chatsDir = DataManager.getLocation(Location.CHATS)
             val chatDir = File(chatsDir, chatDataId)
-            val content = DataManager.readFile(id, chatDir)
+            val content = DataManager.readFile(id.toString(), chatDir)
             if(content != null) media = content
             return content
         }

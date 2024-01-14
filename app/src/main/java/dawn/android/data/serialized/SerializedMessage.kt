@@ -24,7 +24,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 class SerializedMessage(
     val chatDataId: String,
-    val id: String,
+    val id: ULong,
     val sender: String, // use the data ID of the profile for this attribute
     val sent: Long,
     var received: Long,
