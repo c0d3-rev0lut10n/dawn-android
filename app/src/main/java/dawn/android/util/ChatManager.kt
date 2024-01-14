@@ -75,10 +75,10 @@ object ChatManager {
     }
 
     fun newChat(id: String, idStamp: String, idSalt: String, name: String, type: ChatType, ownKyber: Keypair, ownCurve: Keypair, ownPFS: String, remotePFS: String, pfsSalt: String): Result<Chat, String> {
-        if(id.matches(Regex.ID)) return err("invalid ID")
-        if(idStamp.matches(Regex.timestamp)) return err("invalid ID stamp")
-        if(idSalt.matches(Regex.IdSalt)) return err("invalid ID salt")
-        if(name.contains("\n", true) || name.isEmpty()) return err("invalid name")
+        if(!id.matches(Regex.ID)) return err("invalid ID $id")
+        if(!idStamp.matches(Regex.timestamp)) return err("invalid ID stamp $idStamp")
+        if(!idSalt.matches(Regex.IdSalt)) return err("invalid ID salt $idSalt")
+        if(name.contains("\n", true) || name.isEmpty()) return err("invalid name $name")
         var dataId: GenId? = null // we have to initialize with null because the compiler will complain otherwise (even though dataId will be always initialized when the chatDir File gets constructed
 
         val chatDirs = chatsPath.listFiles()
