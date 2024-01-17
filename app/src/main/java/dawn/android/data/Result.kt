@@ -31,12 +31,12 @@ class Result<T, E>(private val ok: T?, private val err: E?) {
     }
 
     fun unwrap(): T {
-        if(this.ok == null) throw Exception("Called unwrap() on an Err value!")
+        if(this.ok == null) throw Exception("Called unwrap() on an Err value: ${this.err}")
         return this.ok
     }
 
     fun unwrapErr(): E {
-        if(this.err == null) throw Exception("Called unwrapErr() on an Ok value!")
+        if(this.err == null) throw Exception("Called unwrapErr() on an Ok value: ${this.ok}")
         return this.err
     }
 
