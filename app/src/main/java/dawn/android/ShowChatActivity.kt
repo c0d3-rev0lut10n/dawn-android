@@ -15,7 +15,7 @@ import dawn.android.data.Chat
 import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivityShowChatBinding
-import dawn.android.util.DataManager
+import dawn.android.util.ChatManager
 import dawn.android.util.ThemeLoader
 
 class ShowChatActivity : AppCompatActivity() {
@@ -66,14 +66,14 @@ class ShowChatActivity : AppCompatActivity() {
             return
         }
 
-        val getChat = DataManager.getChat(dataId)
-        if(getChat == null) {
-            Log.e(logTag, "failed to chat from dataId")
+        val getChat = ChatManager.getChat(dataId)
+        if(getChat.isErr()) {
+            Log.e(logTag, "failed to chat from dataId: ${getChat.print()}")
             finish()
             return
         }
 
-        chat = getChat
+        chat = getChat.unwrap()
 
         binding = ActivityShowChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
