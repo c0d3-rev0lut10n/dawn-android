@@ -313,34 +313,6 @@ object DataManager {
         return chats
     }
 
-    // get a chat by data ID
-    fun getChat(dataId: String): Chat? {
-        if(!initialized) return null
-        val chatsDir = File(mContext.filesDir, "chats")
-        val chatDir = File(chatsDir, dataId)
-        if(!chatDir.isDirectory) return null
-        val chatContent = readFile("chatId", chatDir)?: return null
-        val chatContentString = String(chatContent, Charsets.UTF_8)
-        val chatId = chatContentString.substringBefore("\n")
-        val chatIdStamp = chatContentString.substringAfter("\n")
-        val chatIdSalt = String(readFile("chatIdSalt", chatDir)?: return null, Charsets.UTF_8)
-        val chatMessageId: UShort
-        try {
-            chatMessageId = String(
-                readFile("chatMessageId", chatDir) ?: return null,
-                Charsets.UTF_8
-            ).toUShort()
-        }
-        catch(e: Exception) {
-            Log.e(mContext.packageName, "Could not parse chatMessageId", e)
-            return null
-        }
-        val chatName = String(readFile("chatName", chatDir)?: return null, Charsets.UTF_8)
-        // TODO: se new API and transfer functionality to ChatManager
-        return null
-        //return Chat(dataId, chatId, chatIdStamp, chatIdSalt, chatMessageId, chatName, mContext.filesDir)
-    }
-
     // LEGACY, needs to get implemented via Chat/ChatManager
     fun saveChatId(dataId: String, id: String, idStamp: String): Boolean {
         val chatDir = File(File(mContext.filesDir, "chats"), dataId)
