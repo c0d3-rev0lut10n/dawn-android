@@ -69,7 +69,6 @@ object DataManager {
         val testFile = File(dataDirectory, "check")
 
         try {
-
             // check if files exist
             if (!isStorageInitialized(context)) return false
             val mFileInputStream = FileInputStream(saltFile)
@@ -129,6 +128,7 @@ object DataManager {
             if (!encodedHash.contentEquals(derivedEncodedHash)) return false
 
             initialized = true
+            ChatManager.init()
             if(initPreferences)
                 PreferenceManager.init(mContext.filesDir)
             return true
