@@ -37,13 +37,8 @@ import java.io.File
 object ChatManager {
     private var chatCache: HashMap<String, Chat> = HashMap()
     private var profileCache: HashMap<String, Profile> = HashMap()
-    private lateinit var chatsPath: File
-    private lateinit var profilePath: File
-
-    init {
-        chatsPath = DataManager.getLocation(Location.CHATS)
-        profilePath = DataManager.getLocation(Location.PROFILES)
-    }
+    private var chatsPath: File = DataManager.getLocation(Location.CHATS)
+    private var profilePath: File = DataManager.getLocation(Location.PROFILES)
 
     fun getProfile(id: String): Result<Profile, String> {
         if(!profileCache.contains(id)) {
