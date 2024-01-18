@@ -40,7 +40,7 @@ object ChatManager {
     private lateinit var chatsPath: File
     private lateinit var profilePath: File
 
-    fun init() {
+    init {
         chatsPath = DataManager.getLocation(Location.CHATS)
         profilePath = DataManager.getLocation(Location.PROFILES)
     }

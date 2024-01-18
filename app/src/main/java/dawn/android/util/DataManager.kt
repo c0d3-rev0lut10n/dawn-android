@@ -128,7 +128,6 @@ object DataManager {
             if (!encodedHash.contentEquals(derivedEncodedHash)) return false
 
             initialized = true
-            ChatManager.init()
             if(initPreferences)
                 PreferenceManager.init(mContext.filesDir)
             return true
