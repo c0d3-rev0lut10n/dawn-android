@@ -22,6 +22,7 @@ import dawn.android.GenId
 import dawn.android.LibraryConnector
 import dawn.android.data.Chat
 import dawn.android.data.ChatType
+import dawn.android.data.Default
 import dawn.android.data.Keypair
 import dawn.android.data.Location
 import dawn.android.data.Profile
@@ -120,5 +121,10 @@ object ChatManager {
             return err("getChat: Error saving chat $id: $e")
         }
         return ok(chat)
+    }
+
+    fun setOwnProfile(profile: Profile) {
+        profileCache[Default.ProfileSelfDataId] = profile
+        DataManager.writeFile(Default.ProfileSelfDataId, profilePath, Json.encodeToString(profile).toByteArray(Charsets.UTF_8), false)
     }
 }
