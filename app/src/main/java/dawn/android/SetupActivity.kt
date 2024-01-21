@@ -39,9 +39,13 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dawn.android.data.Default
+import dawn.android.data.Location
 import dawn.android.data.Preferences
+import dawn.android.data.Profile
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivitySetupBinding
+import dawn.android.util.ChatManager
 import dawn.android.util.DataManager
 import dawn.android.util.PreferenceManager
 import dawn.android.util.ThemeLoader
@@ -219,13 +223,26 @@ class SetupActivity : AppCompatActivity() {
         }
         val signatureKeypair = signatureKeypairResult.unwrap()
 
+        val profilesDir = DataManager.getLocation(Location.PROFILES)
+        profilesDir.mkdir()
+
+        val ownProfile = Profile(
+            dataId = Default.ProfileSelfDataId,
+            name = profileName,
+            handle = "",
+            bio = profileBio,
+            pictureBase64 = null,
+            pubkeySig = signatureKeypair.own_pubkey_sig!!
+        )
+        ChatManager.setOwnProfile(ownProfile)
+
         PreferenceManager.new(filesDir)
         PreferenceManager.set(Preferences.server, serverAddress)
         PreferenceManager.set(Preferences.profileName, profileName)
         PreferenceManager.set(Preferences.profileBio, profileBio)
         PreferenceManager.set("initId", initId)
         PreferenceManager.set("initMdc", LibraryConnector.mMdcGen().unwrap().mdc!!)
-        PreferenceManager.set("pubkeySig", signatureKeypair.own_pubkey_sig!!)
+        PreferenceManager.set("pubkeySig", signatureKeypair.own_pubkey_sig)
         PreferenceManager.set("seckeySig", signatureKeypair.own_seckey_sig!!)
 
         val chatsDir = File(filesDir, "chats")
