@@ -20,11 +20,13 @@ package dawn.android.util
 
 import dawn.android.GenId
 import dawn.android.LibraryConnector
+import dawn.android.annotation.ConcurrentAnnotation
 import dawn.android.data.Chat
 import dawn.android.data.ChatType
 import dawn.android.data.Default
 import dawn.android.data.Keypair
 import dawn.android.data.Location
+import dawn.android.data.Ok
 import dawn.android.data.Profile
 import dawn.android.data.Regex
 import dawn.android.data.Result
@@ -68,6 +70,19 @@ object ChatManager {
             }
         }
         return ok(chatCache[id]?: return err("getChat: Chat $id disappeared from cache"))
+    }
+
+    @ConcurrentAnnotation
+    fun updateChat(chat: Chat): Result<Ok, String> {
+        chatCache[chat.dataId] = chat
+        try {
+            val serializedChat = chat.intoSerializable()
+            DataManager.writeFile(chat.dataId, chatsPath, Json.encodeToString(serializedChat).toByteArray(Charsets.UTF_8), false)
+        }
+        catch (e: Exception) {
+            return err("getChat: Error saving chat ${chat.dataId}: $e")
+        }
+        return ok(Ok)
     }
 
     fun newChat(id: String, idStamp: String, idSalt: String, name: String, type: ChatType, ownKyber: Keypair, ownCurve: Keypair, ownPFS: String, remotePFS: String, pfsSalt: String): Result<Chat, String> {
