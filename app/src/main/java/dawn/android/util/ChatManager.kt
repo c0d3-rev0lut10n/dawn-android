@@ -89,7 +89,7 @@ object ChatManager {
             DataManager.writeFile(chat.dataId, chatsPath, Json.encodeToString(serializedChat).toByteArray(Charsets.UTF_8), false)
         }
         catch (e: Exception) {
-            return err("getChat: Error saving chat ${chat.dataId}: $e")
+            return err("getChat: Error saving chat ${chat.dataId}: ${e.printStackTrace()}")
         }
         return ok(Ok)
     }
