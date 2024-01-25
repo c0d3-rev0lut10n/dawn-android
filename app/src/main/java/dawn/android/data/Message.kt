@@ -60,8 +60,8 @@ class Message(
             chatDataId = chatDataId,
             id = id,
             sender = sender.dataId,
-            sent!!,
-            received!!,
+            sent,
+            received,
             contentType,
             text
         )
