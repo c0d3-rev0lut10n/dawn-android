@@ -276,11 +276,7 @@ class MainActivity : AppCompatActivity() {
         // start ReceiveMessagesService
         if(!ReceiveMessagesService.isRunning) {
             val startServiceIntent = Intent(this, ReceiveMessagesService::class.java)
-            if (Build.VERSION.SDK_INT >= 26) {
-                startForegroundService(startServiceIntent)
-            } else {
-                startService(startServiceIntent)
-            }
+            startForegroundService(startServiceIntent)
         }
         bindService(
             Intent(this, ReceiveMessagesService::class.java),
