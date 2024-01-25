@@ -20,4 +20,5 @@ package dawn.android.data
 
 object Default {
     const val ProfileSelfDataId = "42"
+    const val ToBeDeterminedDataId = "-1"
 }
