@@ -145,6 +145,7 @@ class InitiateChatActivity : AppCompatActivity() {
         if(initResult.isOk()) {
             val toast = Toast.makeText(this, getString(R.string.initiate_init_request_sent), Toast.LENGTH_LONG)
             toast.show()
+            finish()
         }
         else {
             Log.e(logTag, "Error during init: ${initResult.unwrapErr()}")
