@@ -58,7 +58,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var mLibraryConnector: LibraryConnector
-    private lateinit var mDataManager: DataManager
     private lateinit var mTheme: Theme
     private lateinit var actionBarText: SpannableString
     private val sizeFactor = 3 // this will be configurable
@@ -155,16 +154,14 @@ class MainActivity : AppCompatActivity() {
         val navHeaderTitle = navHeader.findViewById<TextView>(R.id.nav_header_title)
         navHeaderTitle.setTextColor(mTheme.primaryTextColor)
 
-        mDataManager = DataManager
-
-        if(!mDataManager.isStorageInitialized(this.applicationContext)) {
+        if(!DataManager.isStorageInitialized(this.applicationContext)) {
             // start setup if necessary
             val setupIntent = Intent(this, SetupActivity::class.java)
             startActivity(setupIntent)
         }
 
         else {
-            if (!mDataManager.isInitialized()) {
+            if (!DataManager.isInitialized()) {
                 askForPassword()
             }
             else onCreateAfterUnlock()
@@ -263,7 +260,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun unlockDataManager(password: String) {
-        if(!mDataManager.init(this, password)) {
+        if(!DataManager.init(this, password)) {
             val wrongPasswordDialog = MaterialAlertDialogBuilder(this)
 
             wrongPasswordDialog.setTitle(R.string.title_password_dialog)
