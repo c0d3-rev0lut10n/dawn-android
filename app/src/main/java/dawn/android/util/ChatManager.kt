@@ -72,6 +72,15 @@ object ChatManager {
         return ok(chatCache[id]?: return err("getChat: Chat $id disappeared from cache"))
     }
 
+    fun getAllChats(): HashMap<String, Chat> {
+        val chatDirs = chatsPath.listFiles() ?: return HashMap()
+        for(dir in chatDirs) {
+            if(!chatCache.contains(dir.name))
+                getChat(dir.name)
+        }
+        return chatCache
+    }
+
     @ConcurrentAnnotation
     fun updateChat(chat: Chat): Result<Ok, String> {
         chatCache[chat.dataId] = chat
