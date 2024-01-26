@@ -41,7 +41,7 @@ class ChatPreviewAdapter(
             mConvertView = layoutInflater.inflate(resource, parent, false)
         }
 
-        val layout = mConvertView!!.findViewById<RelativeLayout>(R.id.chatPreview)
+        val layout = mConvertView!!.findViewById<RelativeLayout>(R.id.chatListItem)
         val tvChatName = mConvertView.findViewById<TextView>(R.id.chatName)
         val tvChatPreview = mConvertView.findViewById<TextView>(R.id.chatPreview)
         val tvTime = mConvertView.findViewById<TextView>(R.id.time)
