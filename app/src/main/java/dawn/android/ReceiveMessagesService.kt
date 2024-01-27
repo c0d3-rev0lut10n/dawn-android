@@ -37,14 +37,20 @@ import android.os.StrictMode.ThreadPolicy
 import android.util.Base64
 import android.util.Log
 import android.widget.Toast
+import dawn.android.annotation.ConcurrentAnnotation
 import dawn.android.data.Chat
+import dawn.android.data.ChatType
+import dawn.android.data.ContentType
+import dawn.android.data.Default
 import dawn.android.data.HandlePrivateInfo
+import dawn.android.data.Keypair
+import dawn.android.data.Message
 import dawn.android.data.Ok
 import dawn.android.data.Preferences
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
-import dawn.android.data.SentInitRequest
+import dawn.android.util.ChatManager
 import dawn.android.util.DataManager
 import dawn.android.util.PreferenceManager
 import dawn.android.util.RequestFactory
@@ -392,6 +398,7 @@ class ReceiveMessagesService: Service() {
         return ok(Ok)
     }
 
+    @OptIn(ConcurrentAnnotation::class)
     fun searchHandleAndInit(handle: String, initSecret: String, comment: String): Result<Ok, String> {
         val request = RequestFactory.buildWhoRequest(handle, initSecret)
         val response = client.newCall(request).execute()
@@ -458,25 +465,35 @@ class ReceiveMessagesService: Service() {
 
             if(!sentInitResponse.isSuccessful) return err("could not send init request: ${sentInitResponse.code}; ${sentInitResponse.body}")
 
-            val sentInitRequest = SentInitRequest(
-                ownPubkeyKyber = initRequest.own_pubkey_kyber!!,
-                ownSeckeyKyber = initRequest.own_seckey_kyber!!,
-                ownPubkeyCurve = initRequest.own_pubkey_curve!!,
-                ownSeckeyCurve = initRequest.own_seckey_curve!!,
-                ownPFSKey = initRequest.own_pfs_key!!,
-                remotePFSKey = initRequest.remote_pfs_key!!,
-                pfsSalt = initRequest.pfs_salt!!,
+            val chatResult = ChatManager.newChat(
                 id = initRequest.id!!,
+                idStamp = LibraryConnector.mGetCurrentTimestamp().unwrap().timestamp!!,
                 idSalt = initRequest.id_salt!!,
-                mdc = initRequest.mdc,
-                ciphertext = initRequest.ciphertext!!
+                name = handleInfo.name!!,
+                type = ChatType.SENT_INIT,
+                ownKyber = Keypair(publicKey = initRequest.own_pubkey_kyber!!, privateKey = initRequest.own_seckey_kyber!!),
+                ownCurve = Keypair(publicKey = initRequest.own_pubkey_curve!!, privateKey = initRequest.own_seckey_curve!!),
+                ownPFS = initRequest.own_pfs_key!!,
+                remotePFS = initRequest.remote_pfs_key!!,
+                pfsSalt = initRequest.pfs_salt!!,
+                )
+            if(chatResult.isErr())
+                return err(chatResult.unwrapErr())
+            val chat = chatResult.unwrap()
+
+            val initMessage = Message(
+                id = 0U,
+                chatDataId = chat.dataId,
+                sender = ChatManager.getProfile(Default.ProfileSelfDataId).unwrap(),
+                sent = System.currentTimeMillis() / 1000,
+                received = null,
+                contentType = ContentType.SENT_INIT,
+                text = comment,
+                media = Base64.decode(initRequest.ciphertext!!, Base64.NO_WRAP),
             )
 
-            val initRequestDirectory = File(filesDir, "sentRequests")
-            if(!initRequestDirectory.isDirectory) initRequestDirectory.mkdir()
-
-            val requestBytes = Json.encodeToString(sentInitRequest).toByteArray(Charsets.UTF_8)
-            if(!DataManager.writeFile(sentInitRequest.id, initRequestDirectory, requestBytes, false)) return err("could not write file")
+            chat.messages.add(initMessage)
+            ChatManager.updateChat(chat)
         }
 
         return ok(Ok)
