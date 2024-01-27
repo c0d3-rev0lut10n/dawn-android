@@ -81,6 +81,11 @@ object RequestFactory {
         return request.build()
     }
 
+    fun buildGetHandleStatusRequest(handle: String, password: String): Request {
+        val request = Request.Builder().url("$serverBaseAddress/handle_state/$handle?password=$password")
+        return request.build()
+    }
+
     fun buildAddKeyRequest(handle: String, password: String, key: ByteArray): Request {
         val request = Request.Builder().url("$serverBaseAddress/addkey/$handle?password=$password")
             .post(
