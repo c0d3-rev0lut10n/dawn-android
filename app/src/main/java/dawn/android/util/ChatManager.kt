@@ -86,7 +86,7 @@ object ChatManager {
         chatCache[chat.dataId] = chat
         try {
             val serializedChat = chat.intoSerializable()
-            DataManager.writeFile(chat.dataId, chatsPath, Json.encodeToString(serializedChat).toByteArray(Charsets.UTF_8), false)
+            DataManager.writeFile(chat.dataId, chatsPath, Json.encodeToString(serializedChat).toByteArray(Charsets.UTF_8), true)
         }
         catch (e: Exception) {
             return err("getChat: Error saving chat ${chat.dataId}: ${e.printStackTrace()}")
