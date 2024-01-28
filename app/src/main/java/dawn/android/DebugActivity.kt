@@ -8,6 +8,7 @@ import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -114,9 +115,11 @@ class DebugActivity : AppCompatActivity() {
         val fileAtPath = File(filesDir.path + path)
         val dialog = MaterialAlertDialogBuilder(this)
         dialog.setTitle(R.string.debug_dialog_list_files_heading)
+        val dialogContent = TextView(this)
+        dialogContent.setTextIsSelectable(true)
         if(fileAtPath.isDirectory) {
             val filesInDirectory = fileAtPath.listFiles()
-            if(filesInDirectory.isNullOrEmpty()) dialog.setMessage(R.string.debug_dialog_list_files_empty)
+            if(filesInDirectory.isNullOrEmpty()) dialogContent.text = getString(R.string.debug_dialog_list_files_empty)
             else {
                 var directoryContent = ""
                 for(file in filesInDirectory) {
@@ -125,12 +128,13 @@ class DebugActivity : AppCompatActivity() {
                     else getString(R.string.debug_dialog_list_files_file)
                     directoryContent += file.name + " " + type + "\n"
                 }
-                dialog.setMessage(directoryContent)
+                dialogContent.text = directoryContent
             }
         }
         else {
-            dialog.setMessage(R.string.debug_dialog_list_files_not_directory)
+            dialogContent.text = getString(R.string.debug_dialog_list_files_not_directory)
         }
+        dialog.setView(dialogContent)
         dialog.setCancelable(true)
         dialog.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> }
         dialog.create().show()
