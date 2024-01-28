@@ -461,7 +461,13 @@ class ReceiveMessagesService: Service() {
             val referrer = deriveReferrer(responseBody)
             val initRequestToSend = RequestFactory.buildSndRequest(id, Base64.decode(initRequest.ciphertext, Base64.NO_WRAP), initRequest.mdc!!, referrer)
 
-            val sentInitResponse = client.newCall(initRequestToSend).execute()
+            val sentInitResponse: Response
+            try {
+                sentInitResponse = client.newCall(initRequestToSend).execute()
+            }
+            catch(e: Exception) {
+                return err("could not send init request: ${e.printStackTrace()}")
+            }
 
             if(!sentInitResponse.isSuccessful) return err("could not send init request: ${sentInitResponse.code}; ${sentInitResponse.body}")
 
