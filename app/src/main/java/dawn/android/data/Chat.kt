@@ -18,7 +18,6 @@
 
 package dawn.android.data
 
-import android.util.Log
 import dawn.android.data.serialized.SerializedChat
 import dawn.android.data.serialized.SerializedMessage
 import dawn.android.ui.data.ChatPreviewData
@@ -102,7 +101,6 @@ class Chat(
 
         }
         catch(e: Exception) {
-            Log.w(this.javaClass.name, "Chat preview generation failed: no message yet")
             return ChatPreviewData(
                 "UNKNOWN", null, "COULD NOT LOAD CHAT", "", false, false, dataId
             )
