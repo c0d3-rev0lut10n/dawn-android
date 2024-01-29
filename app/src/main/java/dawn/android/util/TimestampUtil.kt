@@ -25,6 +25,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.TimeZone
 
 object TimestampUtil {
     private var monday = "Mo."
@@ -34,7 +35,7 @@ object TimestampUtil {
     private var friday = "Fr."
     private var saturday = "Sa."
     private var sunday = "Su."
-    private var zone = ZoneId.of("UTC")
+    private var zone = TimeZone.getDefault().toZoneId()
     private val weekDayPattern = DateTimeFormatter.ofPattern("EEE")
     private val timeOnlyPattern = DateTimeFormatter.ofPattern("HH:mm")
     private val dateOnlyPattern = DateTimeFormatter.ofPattern("dd.MM.")
