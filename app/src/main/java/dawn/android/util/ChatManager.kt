@@ -139,7 +139,7 @@ object ChatManager {
         try {
             val serializedChat = chat.intoSerializable()
             DataManager.writeFile(dataId.id!!, chatsPath, Json.encodeToString(serializedChat).toByteArray(Charsets.UTF_8), false)
-            chatCache[id] = chat
+            chatCache[dataId.id!!] = chat
         }
         catch (e: Exception) {
             return err("getChat: Error saving chat $id: $e")
