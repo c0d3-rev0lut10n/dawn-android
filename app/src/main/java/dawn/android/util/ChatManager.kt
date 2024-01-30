@@ -149,6 +149,6 @@ object ChatManager {
 
     fun setOwnProfile(profile: Profile) {
         profileCache[Default.ProfileSelfDataId] = profile
-        DataManager.writeFile(Default.ProfileSelfDataId, profilePath, Json.encodeToString(profile).toByteArray(Charsets.UTF_8), false)
+        DataManager.writeFile(Default.ProfileSelfDataId, profilePath, Json.encodeToString(profile).toByteArray(Charsets.UTF_8), true)
     }
 }
