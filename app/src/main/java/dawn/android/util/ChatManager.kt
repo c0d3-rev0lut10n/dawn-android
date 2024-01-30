@@ -57,6 +57,40 @@ object ChatManager {
         return ok(profileCache[id]?: return err("getProfile: Profile $id disappeared from cache"))
     }
 
+    fun newProfile(profilePrototype: Profile): Result<Profile, String> {
+        // validate profile data
+        if(profilePrototype.dataId != Default.ToBeDeterminedDataId) return err("dataId must be Default.ToBeDeterminedDataId, got ${profilePrototype.dataId}")
+        if(profilePrototype.name.contains("\n", true) || profilePrototype.name.isEmpty()) return err("invalid name ${profilePrototype.name}")
+        if(!Regex.handle.matches(profilePrototype.handle)) return err("handle invalid, got ${profilePrototype.handle}")
+
+        // generate data ID
+        var dataId: GenId? = null
+        val profileDirs = profilePath.listFiles() // is not null since at least the own profile exists
+        val profileDirNames = ArrayList<String>()
+        for (profile in profileDirs!!) {
+            profileDirNames.add(profile.name)
+        }
+        for (i in 1..100) {
+            // choose a random ID that is not used
+            val dataIdResult = LibraryConnector.mGenId()
+            if (dataIdResult.isErr()) return err("could not generate data ID")
+            dataId = dataIdResult.unwrap()
+            if (dataId.id!! !in profileDirNames) break
+            if (i == 100) return err("could not generate data ID")
+        }
+        profilePrototype.dataId = dataId!!.id!!
+
+        try {
+            profileCache[dataId.id!!] = profilePrototype
+            DataManager.writeFile(dataId.id!!, profilePath, Json.encodeToString(profilePrototype).toByteArray(Charsets.UTF_8), false)
+        }
+        catch (e: Exception) {
+            return err("newProfile: Error saving chat ${dataId.id}: $e")
+        }
+
+        return ok(profilePrototype)
+    }
+
     fun getChat(id: String): Result<Chat, String> {
         if(!chatCache.contains(id)) {
             try {
