@@ -22,10 +22,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Profile(
-    val dataId: String,
-    val name: String,
-    val handle: String,
-    val bio: String,
-    val pictureBase64: String?,
-    val pubkeySig: String,
+    var dataId: String,
+    var name: String,
+    var handle: String,
+    var bio: String,
+    var pictureBase64: String?,
+    var pubkeySig: String,
 )
