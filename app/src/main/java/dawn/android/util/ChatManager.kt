@@ -92,6 +92,18 @@ object ChatManager {
         return ok(profilePrototype)
     }
 
+    @ConcurrentAnnotation
+    fun updateProfile(profile: Profile): Result<Ok, String> {
+        profileCache[profile.dataId] = profile
+        try {
+            DataManager.writeFile(profile.dataId, profilePath, Json.encodeToString(profile).toByteArray(Charsets.UTF_8), true)
+        }
+        catch (e: Exception) {
+            return err("updateProfile: Error saving profile ${profile.dataId}: ${e.printStackTrace()}")
+        }
+        return ok(Ok)
+    }
+
     fun getChat(id: String): Result<Chat, String> {
         if(!chatCache.contains(id)) {
             try {
