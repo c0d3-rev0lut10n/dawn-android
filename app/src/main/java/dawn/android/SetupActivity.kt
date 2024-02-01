@@ -40,6 +40,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.color.MaterialColors
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dawn.android.annotation.ConcurrentAnnotation
 import dawn.android.data.Default
 import dawn.android.data.Location
 import dawn.android.data.Preferences
@@ -206,6 +207,7 @@ class SetupActivity : AppCompatActivity() {
         saveProfileData(password, serverAddress, profileName, profileBio)
     }
 
+    @OptIn(ConcurrentAnnotation::class)
     private fun saveProfileData(password: String, serverAddress: String, profileName: String, profileBio: String) {
         DataManager.init(this.applicationContext, password, false)
 
@@ -235,7 +237,7 @@ class SetupActivity : AppCompatActivity() {
             pictureBase64 = null,
             pubkeySig = signatureKeypair.own_pubkey_sig!!
         )
-        ChatManager.setOwnProfile(ownProfile)
+        ChatManager.updateProfile(ownProfile)
 
         PreferenceManager.new(filesDir)
         PreferenceManager.set(Preferences.server, serverAddress)
