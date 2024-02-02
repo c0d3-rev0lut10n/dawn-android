@@ -25,7 +25,7 @@ import dawn.android.ui.data.ChatPreviewData
 import dawn.android.util.TimestampUtil.toTimestampForChatPreview
 
 class Chat(
-    val dataId: String,
+    var dataId: String,
     var id: String,
     var idStamp: String,
     var idSalt: String,
