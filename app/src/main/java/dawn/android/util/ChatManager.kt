@@ -141,6 +141,47 @@ object ChatManager {
         return ok(Ok)
     }
 
+    fun newChat(chatPrototype: Chat): Result<Chat, String> {
+        if(!chatPrototype.id.matches(Regex.ID)) return err("invalid ID ${chatPrototype.id}")
+        if(!chatPrototype.idStamp.matches(Regex.timestamp)) return err("invalid ID stamp ${chatPrototype.idStamp}")
+        if(!chatPrototype.idSalt.matches(Regex.IdSalt)) return err("invalid ID salt ${chatPrototype.idSalt}")
+        if(chatPrototype.name.contains("\n", true) || chatPrototype.name.isEmpty()) return err("invalid name ${chatPrototype.name}")
+        if(chatPrototype.dataId != Default.ToBeDeterminedDataId) return err("dataId must be Default.ToBeDeterminedDataId, got ${chatPrototype.dataId}")
+        var dataId: GenId? = null // we have to initialize with null because the compiler will complain otherwise (even though dataId will be always initialized when the chatDir File gets constructed
+
+        val chatDirs = chatsPath.listFiles()
+        if(chatDirs == null) {
+            // there are no chats, we can freely choose an ID
+            val dataIdResult = LibraryConnector.mGenId()
+            if(dataIdResult.isErr()) return err("could not generate data ID")
+            dataId = dataIdResult.unwrap()
+        }
+        else {
+            val chatDirNames = ArrayList<String>()
+            for(chat in chatDirs) {
+                chatDirNames.add(chat.name)
+            }
+            for (i in 1..100) {
+                // choose a random ID that is not used
+                val dataIdResult = LibraryConnector.mGenId()
+                if (dataIdResult.isErr()) return err("could not generate data ID")
+                dataId = dataIdResult.unwrap()
+                if (dataId.id!! !in chatDirNames) break
+                if(i == 100) return err("could not generate data ID")
+            }
+        }
+        chatPrototype.dataId = dataId!!.id!!
+        try {
+            val serializedChat = chatPrototype.intoSerializable()
+            DataManager.writeFile(dataId.id!!, chatsPath, Json.encodeToString(serializedChat).toByteArray(Charsets.UTF_8), false)
+            chatCache[dataId.id!!] = chatPrototype
+        }
+        catch (e: Exception) {
+            return err("newChat: Error saving chat ${chatPrototype.id}: $e")
+        }
+        return ok(chatPrototype)
+    }
+
     fun newChat(id: String, idStamp: String, idSalt: String, name: String, type: ChatType, ownKyber: Keypair, ownCurve: Keypair, ownPFS: String, remotePFS: String, pfsSalt: String): Result<Chat, String> {
         if(!id.matches(Regex.ID)) return err("invalid ID $id")
         if(!idStamp.matches(Regex.timestamp)) return err("invalid ID stamp $idStamp")
