@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Laurenz Werner
+ * Copyright (c) 2023-2024  Laurenz Werner
  *
  * This file is part of Dawn.
  *
@@ -20,6 +20,7 @@
 package dawn.android.ui.component
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import dawn.android.R
+import dawn.android.ShowChatActivity
 import dawn.android.ui.data.ChatPreviewData
 
 class ChatPreviewAdapter(
@@ -50,6 +52,12 @@ class ChatPreviewAdapter(
         val ivSentReceived = mConvertView.findViewById<ImageView>(R.id.sentReceived)
 
         val item = getItem(position) ?: return mConvertView
+
+        layout.setOnClickListener {
+            val intent = Intent(context, ShowChatActivity::class.java)
+            intent.putExtra("dataId", item.getDataId())
+            context.startActivity(intent)
+        }
 
         tvChatName.text = item.getChatName()
         tvChatPreview.text = item.getMessagePreview()
