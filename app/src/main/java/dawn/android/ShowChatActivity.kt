@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Laurenz Werner
+ * Copyright (c) 2024  Laurenz Werner
  *
  * This file is part of Dawn.
  *
@@ -110,5 +110,10 @@ class ShowChatActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(mTheme.backButtonIcon)
+    }
+
+    override fun onResume() {
+        binding.toolbar.title = actionBarText
+        super.onResume()
     }
 }
