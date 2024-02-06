@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Laurenz Werner
+ * Copyright (c) 2023-2024  Laurenz Werner
  *
  * This file is part of Dawn.
  *
@@ -240,7 +240,12 @@ class ReceiveMessagesService: Service() {
                 val getInitRequestResult = makeRequest(RequestFactory.buildRcvRequest(initId, initMessageNumber, initMdc))
                 if(getInitRequestResult.isErr()) return err("Could not download new init request: ${getInitRequestResult.unwrapErr()}")
                 val getInitRequestResponse = getInitRequestResult.unwrap()
-                if(getInitRequestResponse.code != 200) return err("Could not download new init request: ${getInitRequestResponse.code}\n${getInitRequestResponse.body?.string()}")
+                if(getInitRequestResponse.code != 200) {
+                    val responseBody = getInitRequestResponse.body
+                    val responseString = responseBody?.string()
+                    responseBody?.close()
+                    return err("Could not download new init request: ${getInitRequestResponse.code}\n$responseString")
+                }
                 val initRequestBytesStream = getInitRequestResponse.body?: return err("Could not download new init request: could not get response body")
                 val initRequestBytes = initRequestBytesStream.bytes()
                 initRequestBytesStream.close()
@@ -279,7 +284,10 @@ class ReceiveMessagesService: Service() {
             }
             else -> {
                 // either an error or an unrecognized status
-                return err("Could not poll init ID: invalid response ${initIdResponse.code}\n${initIdResponse.body?.string()}")
+                val responseBody = initIdResponse.body
+                val responseString = responseBody?.string()
+                responseBody?.close()
+                return err("Could not poll init ID: invalid response ${initIdResponse.code}\n$responseString")
             }
         }
         return ok(Ok)
@@ -364,8 +372,12 @@ class ReceiveMessagesService: Service() {
                     File(handleDir, "$i.uploaded").createNewFile()
                 }
                 else {
-                    if(response.isOk())
-                        Log.w(logTag, "Could not upload new handle key: ${request.url} returned response: ${response.unwrap().body?.string()}")
+                    if(response.isOk()) {
+                        val responseBody = response.unwrap().body
+                        val responseString = responseBody?.string()
+                        responseBody?.close()
+                        Log.w(logTag, "Could not upload new handle key: ${request.url} returned response: $responseString")
+                    }
                     else
                         Log.w(logTag, "Could not upload new handle key: ${request.url} call failed: ${response.unwrapErr()}")
                 }
@@ -388,8 +400,12 @@ class ReceiveMessagesService: Service() {
                         File(handleDir, "$i.uploaded").createNewFile()
                     }
                     else {
-                        if(response.isOk())
-                            Log.w(logTag, "Could not upload new handle key: ${request.url} returned response: ${response.unwrap().body?.string()}")
+                        if(response.isOk()) {
+                            val responseBody = response.unwrap().body
+                            val responseString = responseBody?.string()
+                            responseBody?.close()
+                            Log.w(logTag, "Could not upload new handle key: ${request.url} returned response: $responseString")
+                        }
                         else
                             Log.w(logTag, "Could not upload new handle key: ${request.url} call failed: ${response.unwrapErr()}")
                     }
@@ -406,21 +422,20 @@ class ReceiveMessagesService: Service() {
         if(!response.isSuccessful) {
             Log.w(logTag, "Request $request failed, response: ${response.code}")
             val body = response.body
-            if(body != null) {
-                val bodyString = body.string()
-                println(bodyString)
-                when(bodyString) {
-                    "init not allowed" -> {
+            val bodyString = body?.string()
+            body?.close()
+            when (bodyString) {
+                "init not allowed" -> {
                     Toast.makeText(this, R.string.receive_text_wrong_init_secret, Toast.LENGTH_LONG)
                         .show()
-                    }
-                    "all key slots empty" -> {
+                }
+
+                "all key slots empty" -> {
                     Toast.makeText(this, R.string.receive_text_key_slots_empty, Toast.LENGTH_LONG)
                         .show()
-                    }
                 }
             }
-            return err("Request $request failed, response: ${response.code}; ${response.body}")
+            return err("Request $request failed, response: ${response.code}; $bodyString")
         }
         if(response.code == 204) return err("handle not found")
 
@@ -470,7 +485,12 @@ class ReceiveMessagesService: Service() {
                 return err("could not send init request: ${e.printStackTrace()}")
             }
 
-            if(!sentInitResponse.isSuccessful) return err("could not send init request: ${sentInitResponse.code}; ${sentInitResponse.body}")
+            if(!sentInitResponse.isSuccessful) {
+                val sentInitResponseBody = sentInitResponse.body
+                val responseString = sentInitResponseBody?.string()
+                sentInitResponseBody?.close()
+                return err("could not send init request: ${sentInitResponse.code}; $responseString")
+            }
 
             val chatResult = ChatManager.newChat(
                 id = initRequest.id!!,
