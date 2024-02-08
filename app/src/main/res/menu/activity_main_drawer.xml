@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2023 Laurenz Werner
+  ~ Copyright (c) 2023-2024  Laurenz Werner
   ~
   ~ This file is part of Dawn.
   ~
@@ -31,6 +31,11 @@
             android:id="@+id/nav_new_chat"
             android:icon="@drawable/baseline_person_add_24"
             android:title="@string/initiate_app_bar"
+            />
+        <item
+            android:id="@+id/nav_requests"
+            android:icon="@drawable/baseline_person_add_24"
+            android:title="@string/requests"
             />
         <item
             android:id="@+id/settings"
