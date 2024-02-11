@@ -75,7 +75,7 @@ class ReceiveMessagesService: Service() {
     private val bindInterface : IBinder = BindInterface()
     private val mTorReceiver = TorReceiver
     private lateinit var notificationManager: NotificationManager
-    private lateinit var chats: ArrayList<Chat>
+    private lateinit var chats: HashMap<String, Chat>
     private lateinit var initKeyDirectory: File
     private val useTor = true
     private lateinit var torProxy: Proxy
@@ -126,7 +126,7 @@ class ReceiveMessagesService: Service() {
 
         val serverAddress = PreferenceManager.get(Preferences.server).unwrap()
         RequestFactory.setMessageServerAddress(serverAddress)
-        chats = DataManager.getAllChats()
+        chats = ChatManager.getAllChats()
 
         pollHandleAddKeyTimer = timer(null, false, 5000, 30000) {
             if (!handleAddKeyActive) {
@@ -161,16 +161,9 @@ class ReceiveMessagesService: Service() {
         tickInProgress = false
     }
 
-    fun addChat(chat: Chat): Boolean {
-        for(chatToCheck in chats) {
-            if(chatToCheck.dataId == chat.dataId || chatToCheck.id == chat.id) return false
-        }
-        chats.add(chat)
-        return true
-    }
-
     private fun pollChats() {
-        for(chat in chats) {
+        for(entry in chats) {
+            val chat = entry.value
             val timestampsToCheckResult = LibraryConnector.mGetAllTimestampsSince(chat.idStamp)
             if(timestampsToCheckResult.isErr()) {
                 Log.e(logTag, "Deriving timestamps failed: ${timestampsToCheckResult.unwrapErr()}")
