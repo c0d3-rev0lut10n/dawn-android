@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Laurenz Werner
+ * Copyright (c) 2023-2024  Laurenz Werner
  *
  * This file is part of Dawn.
  *
@@ -22,7 +22,6 @@ package dawn.android.util
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
-import dawn.android.data.Chat
 import dawn.android.data.Location
 import dawn.android.data.Message
 import dawn.android.data.Ok
@@ -267,39 +266,6 @@ object DataManager {
         mEncryptedFileOutputStream.close()
 
         return true
-    }
-
-    // LEGACY, needs to get implemented via ChatManager
-    fun getAllChats(): ArrayList<Chat> {
-        if(!initialized) return ArrayList()
-        val chatsDir = File(mContext.filesDir, "chats")
-        if(!chatsDir.isDirectory) return ArrayList()
-        val chatDirs = chatsDir.listFiles()?: return ArrayList()
-        val chats = ArrayList<Chat>()
-        for(chatDir in chatDirs) {
-            // ignore any entries that are not directories
-            if(!chatDir.isDirectory) continue
-            val chatContent = readFile("chatId", chatDir)?: continue
-            val chatContentString = String(chatContent, Charsets.UTF_8)
-            val chatId = chatContentString.substringBefore("\n")
-            val chatIdStamp = chatContentString.substringAfter("\n")
-            val chatIdSalt = String(readFile("chatIdSalt", chatDir)?: continue, Charsets.UTF_8)
-            val chatMessageId: UShort
-            try {
-                chatMessageId = String(
-                    readFile("chatMessageId", chatDir) ?: continue,
-                    Charsets.UTF_8
-                ).toUShort()
-            }
-            catch(e: Exception) {
-                Log.e(mContext.packageName, "Could not parse chatMessageId", e)
-                continue
-            }
-            val chatName = String(readFile("chatName", chatDir)?: continue, Charsets.UTF_8)
-            // TODO: use new API and transfer functionality to ChatManager
-            //chats.add(Chat(chatDir.name, chatId, chatIdStamp, chatIdSalt, chatMessageId, chatName, mContext.filesDir))
-        }
-        return chats
     }
 
     // LEGACY, needs to get implemented via Chat/ChatManager
