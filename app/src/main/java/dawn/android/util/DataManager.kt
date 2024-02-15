@@ -23,13 +23,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import dawn.android.data.Location
-import dawn.android.data.Message
-import dawn.android.data.Ok
-import dawn.android.data.Result
-import dawn.android.data.Result.Companion.err
-import dawn.android.data.Result.Companion.ok
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.io.*
 import java.security.MessageDigest
 import java.security.SecureRandom
@@ -290,34 +283,6 @@ object DataManager {
         if(!writeFile("chatMessageId", chatDir, messageIdFileContent.toByteArray(Charsets.UTF_8), true)) return false
 
         return true
-    }
-
-    // LEGACY, needs to get implemented via Chat/ChatManager
-    fun saveChatMessage(dataId: String, message: Message): Result<Ok, String> {
-        if(dataId.contains("\n", true) || dataId == "") return err("invalid dataID")
-        val chatDir = File(File(mContext.filesDir, "chats"), dataId)
-        val messagesDir = File(chatDir, "messages")
-        val messageNumber: UShort
-        if(!messagesDir.isDirectory) {
-            // this is the first message, create directory and message number file
-            messageNumber = 0U
-            if(!messagesDir.mkdir()) return err("Could not create messages directory")
-            if(!writeFile("messageNumber", messagesDir, "0".toByteArray(Charsets.UTF_8), true)) return err("Could not create message number file")
-        }
-        else {
-            val messageNumberFileContent = readFile("messageNumber", messagesDir)
-                ?: return err("Could not read message number file")
-            try {
-                messageNumber = String(messageNumberFileContent, Charsets.UTF_8).toUShort()
-            }
-            catch(e: Exception) {
-                return err("Could not parse message number")
-            }
-        }
-        if(!writeFile("messageNumber", messagesDir, messageNumber.toString().toByteArray(Charsets.UTF_8), true)) return err("Could not save message number")
-        if(!writeFile(messageNumber.toString(), messagesDir, Json.encodeToString(message.intoSerializable()).toByteArray(Charsets.UTF_8), false)) return err("Could not write to message file")
-
-        return ok(Ok)
     }
 
     fun getLocation(loc: Location): File {
