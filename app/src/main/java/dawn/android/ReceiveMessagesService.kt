@@ -161,6 +161,7 @@ class ReceiveMessagesService: Service() {
         tickInProgress = false
     }
 
+    @OptIn(ConcurrentAnnotation::class)
     private fun pollChats() {
         for(entry in chats) {
             val chat = entry.value
@@ -188,7 +189,7 @@ class ReceiveMessagesService: Service() {
                     // save the message and increment messageId
                     // TODO: save the message and build notification
                     chat.lastMessageId++
-                    DataManager.saveChatMessageId(chat.dataId, chat.lastMessageId)
+                    ChatManager.updateChat(chat)
                 }
                 val currentTimestamp = LibraryConnector.mGetCurrentTimestamp()
                 if(currentTimestamp.isErr()) return
@@ -199,8 +200,8 @@ class ReceiveMessagesService: Service() {
                     Log.e(logTag, "Deriving next ID for chat $chat failed: ${nextId.unwrapErr()}")
                 }
                 chat.id = nextId.unwrap().id!!
-                DataManager.saveChatMessageId(chat.dataId, 0U)
-                DataManager.saveChatId(chat.dataId, chat.id, timestamp)
+                chat.lastMessageId = 0U
+                ChatManager.updateChat(chat)
             }
         }
     }
