@@ -261,30 +261,6 @@ object DataManager {
         return true
     }
 
-    // LEGACY, needs to get implemented via Chat/ChatManager
-    fun saveChatId(dataId: String, id: String, idStamp: String): Boolean {
-        val chatDir = File(File(mContext.filesDir, "chats"), dataId)
-        if(dataId.contains("\n", true) || dataId == "") return false
-        if(id.contains("\n", true) || id == "") return false
-        if(idStamp.contains("\n", true) || idStamp == "") return false
-        val idFileContent = id + "\n" + idStamp
-
-        if(!writeFile("chatId", chatDir, idFileContent.toByteArray(Charsets.UTF_8), false)) return false
-
-        return true
-    }
-
-    // LEGACY, needs to get implemented via Chat/ChatManager
-    fun saveChatMessageId(dataId: String, messageId: UShort): Boolean {
-        if(dataId.contains("\n", true) || dataId == "") return false
-        val chatDir = File(File(mContext.filesDir, "chats"), dataId)
-        val messageIdFileContent = messageId.toString()
-
-        if(!writeFile("chatMessageId", chatDir, messageIdFileContent.toByteArray(Charsets.UTF_8), true)) return false
-
-        return true
-    }
-
     fun getLocation(loc: Location): File {
         return when(loc) {
             Location.ROOT -> mContext.filesDir
