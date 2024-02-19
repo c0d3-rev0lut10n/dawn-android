@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Laurenz Werner
+ * Copyright (c) 2023-2024  Laurenz Werner
  *
  * This file is part of Dawn.
  *
@@ -338,7 +338,7 @@ class MainActivity : AppCompatActivity() {
         else {
             if(noChatsYetTextView.parent != null)
                 binding.appBarMain.content.contentLayoutParent.removeView(noChatsYetTextView)
-            val previews: ArrayList<ChatPreviewData?> = ArrayList()
+            val previews: ArrayList<ChatPreviewData> = ArrayList()
             for(chat in chats) {
                 previews.add(chat.toPreview())
             }

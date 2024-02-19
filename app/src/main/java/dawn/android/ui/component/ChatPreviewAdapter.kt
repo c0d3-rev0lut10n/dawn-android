@@ -36,7 +36,7 @@ import dawn.android.ui.data.ChatPreviewData
 class ChatPreviewAdapter(
     private val context: Context,
     private val resource: Int,
-    objects: ArrayList<ChatPreviewData?>): ArrayAdapter<ChatPreviewData?>(context, resource, objects) {
+    objects: ArrayList<ChatPreviewData>): ArrayAdapter<ChatPreviewData>(context, resource, objects) {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var mConvertView = convertView
         val layoutInflater = LayoutInflater.from(context)
