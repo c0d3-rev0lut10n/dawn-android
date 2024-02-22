@@ -42,7 +42,7 @@
     <string name="save">Save</string>
     <string name="discard">Discard</string>
 
-    <!-- Strings fur the entire app -->
+    <!-- Strings for the entire app -->
     <string name="default_server_address">https://messageserver.dawn-privacy.org</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_extradark">Extra Dark (Stargazer)</string>
