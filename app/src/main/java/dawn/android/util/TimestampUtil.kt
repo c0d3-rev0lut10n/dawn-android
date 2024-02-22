@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Laurenz Werner
+ * Copyright (c) 2023-2024  Laurenz Werner
  *
  * This file is part of Dawn.
  *
@@ -55,6 +55,11 @@ object TimestampUtil {
         val date = Instant.ofEpochSecond(this)
         val currentDate = Instant.now()
         return deriveHumanReadableTimestamp(currentDate, date, zone)
+    }
+
+    fun Long.toTimeOnly(): String {
+        val date = Instant.ofEpochSecond(this)
+        return timeOnlyPattern.format(date)
     }
 
     fun deriveHumanReadableTimestamp(dateNow: Instant, dateForTimestamp: Instant, zone: ZoneId): String {
