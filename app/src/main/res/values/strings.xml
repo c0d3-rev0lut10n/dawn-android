@@ -70,6 +70,9 @@
     <string name="main_text_profile_picture">Profile picture</string>
     <string name="main_text_sent_read">main</string>
 
+    <!-- Texts for ShowChatActivity -->
+    <string name="showchat_text_unknown_message_type">Unknown message type. Maybe an update of the app will enable showing this message.</string>
+
     <!-- Texts for SetupActivity -->
     <string name="text_welcome">Welcome to Dawn!</string>
     <string name="heading_server">Select a server (optional)</string>
