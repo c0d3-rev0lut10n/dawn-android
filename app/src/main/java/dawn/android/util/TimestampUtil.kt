@@ -58,7 +58,7 @@ object TimestampUtil {
     }
 
     fun Long.toTimeOnly(): String {
-        val date = Instant.ofEpochSecond(this)
+        val date = Instant.ofEpochSecond(this).atZone(zone)
         return timeOnlyPattern.format(date)
     }
 
