@@ -30,6 +30,7 @@ import android.widget.TextView
 import dawn.android.R
 import dawn.android.data.ContentType
 import dawn.android.data.Message
+import dawn.android.util.TimestampUtil.toTimeOnly
 
 class ChatMessagesAdapter(
     private val context: Context,
@@ -44,8 +45,10 @@ class ChatMessagesAdapter(
         }
 
         val layout = mConvertView!!.findViewById<RelativeLayout>(R.id.messageView)
+        val time = mConvertView.findViewById<TextView>(R.id.time)!!
 
         val item = getItem(position)?: return mConvertView
+        time.text = item.sent?.toTimeOnly()
         when(item.contentType) {
             ContentType.TEXT -> {
                 val contentView = TextView(context)
@@ -59,6 +62,7 @@ class ChatMessagesAdapter(
             }
             else -> {
                 val contentView = TextView(context)
+                layout.addView(contentView)
             }
         }
 
