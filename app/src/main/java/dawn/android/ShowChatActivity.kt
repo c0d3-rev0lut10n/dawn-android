@@ -34,6 +34,7 @@ import dawn.android.data.Chat
 import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivityShowChatBinding
+import dawn.android.ui.component.ChatMessagesAdapter
 import dawn.android.util.ChatManager
 import dawn.android.util.ThemeLoader
 
@@ -110,6 +111,7 @@ class ShowChatActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(mTheme.backButtonIcon)
+        binding.contentLayout.adapter = ChatMessagesAdapter(this, R.layout.own_message_view, chat.messages)
     }
 
     override fun onResume() {
