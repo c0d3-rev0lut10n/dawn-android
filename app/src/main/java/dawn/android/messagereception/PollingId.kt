@@ -21,5 +21,6 @@ package dawn.android.messagereception
 
 data class PollingId(
     var chatDataId: String,
-    var id: String
+    var id: String,
+    var mdc: String
 )
