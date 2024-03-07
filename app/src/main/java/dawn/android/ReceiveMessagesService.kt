@@ -76,6 +76,7 @@ class ReceiveMessagesService: Service() {
     private val mTorReceiver = TorReceiver
     private lateinit var notificationManager: NotificationManager
     private lateinit var chats: HashMap<String, Chat>
+    private lateinit var idRelations: HashMap<String, String>
     private lateinit var initKeyDirectory: File
     private val useTor = true
     private lateinit var torProxy: Proxy
