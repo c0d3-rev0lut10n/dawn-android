@@ -39,7 +39,6 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import dawn.android.annotation.ConcurrentAnnotation
-import dawn.android.data.Chat
 import dawn.android.data.ChatType
 import dawn.android.data.ContentType
 import dawn.android.data.Default
@@ -75,7 +74,6 @@ class ReceiveMessagesService: Service() {
     private val bindInterface : IBinder = BindInterface()
     private val mTorReceiver = TorReceiver
     private lateinit var notificationManager: NotificationManager
-    private lateinit var chats: HashMap<String, Chat>
     private lateinit var idRelations: HashMap<String, String>
     private lateinit var initKeyDirectory: File
     private val useTor = true
@@ -127,7 +125,6 @@ class ReceiveMessagesService: Service() {
 
         val serverAddress = PreferenceManager.get(Preferences.server).unwrap()
         RequestFactory.setMessageServerAddress(serverAddress)
-        chats = ChatManager.getAllChats()
 
         pollHandleAddKeyTimer = timer(null, false, 5000, 30000) {
             if (!handleAddKeyActive) {
@@ -164,6 +161,7 @@ class ReceiveMessagesService: Service() {
 
     @OptIn(ConcurrentAnnotation::class)
     private fun pollChats() {
+        val chats = ChatManager.getAllChats()
         for(entry in chats) {
             val chat = entry.value
             val timestampsToCheckResult = LibraryConnector.mGetAllTimestampsSince(chat.idStamp)
