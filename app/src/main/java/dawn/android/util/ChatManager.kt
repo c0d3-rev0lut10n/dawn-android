@@ -128,6 +128,28 @@ object ChatManager {
         return chatCache
     }
 
+    fun getChatsToPoll(timestamp: String): HashMap<String, Chat> {
+        val chatsToPoll = HashMap<String, Chat>()
+        getAllChats()
+        for(chat in chatCache) {
+            if(chat.value.idStamp == timestamp) {
+                chatsToPoll[chat.key] = chat.value
+            }
+        }
+        return chatsToPoll
+    }
+
+    fun getOldestIdStampToPoll(): String {
+        getAllChats()
+        var oldestStamp = LibraryConnector.mGetCurrentTimestamp().unwrap().timestamp!!
+        for(chat in chatCache) {
+            if(chat.value.idStamp.toUInt() < oldestStamp.toUInt()) {
+                oldestStamp = chat.value.idStamp
+            }
+        }
+        return oldestStamp
+    }
+
     @ConcurrentAnnotation
     fun updateChat(chat: Chat): Result<Ok, String> {
         chatCache[chat.dataId] = chat
