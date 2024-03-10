@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Laurenz Werner
+ * Copyright (c) 2023-2024  Laurenz Werner
  *
  * This file is part of Dawn.
  *
@@ -38,6 +38,7 @@ class Chat(
     var ownPFS: String,
     var remotePFS: String,
     var pfsSalt: String,
+    var mdcSeed: String,
 ) {
     companion object {
 
@@ -61,7 +62,8 @@ class Chat(
                 ownCurve = ser.ownCurve,
                 ownPFS = ser.ownPFS,
                 remotePFS = ser.remotePFS,
-                pfsSalt = ser.pfsSalt
+                pfsSalt = ser.pfsSalt,
+                mdcSeed = ser.mdcSeed
             )
         }
     }
@@ -85,7 +87,8 @@ class Chat(
             ownCurve = ownCurve,
             ownPFS = ownPFS,
             remotePFS = remotePFS,
-            pfsSalt = pfsSalt
+            pfsSalt = pfsSalt,
+            mdcSeed = mdcSeed
         )
     }
 

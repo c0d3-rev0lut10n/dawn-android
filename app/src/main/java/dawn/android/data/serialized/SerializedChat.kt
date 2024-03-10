@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Laurenz Werner
+ * Copyright (c) 2023-2024  Laurenz Werner
  *
  * This file is part of Dawn.
  *
@@ -38,4 +38,5 @@ data class SerializedChat(
     var ownPFS: String,
     var remotePFS: String,
     var pfsSalt: String,
+    var mdcSeed: String
 )
