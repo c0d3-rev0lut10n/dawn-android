@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Laurenz Werner
+ * Copyright (c) 2023-2024  Laurenz Werner
  *
  * This file is part of Dawn.
  *
@@ -19,6 +19,7 @@
 
 package dawn.android.util
 
+import dawn.android.messagereception.Subscription
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -100,6 +101,18 @@ object RequestFactory {
     fun buildWhoRequest(handle: String, initSecret: String?): Request {
         val initSecretParameter = initSecret?: ""
         val request = Request.Builder().url("$serverBaseAddress/who/$handle?init_secret=$initSecretParameter")
+        return request.build()
+    }
+
+    fun buildCreateSubscriptionRequest(subscription: Subscription): Request {
+        var postBody = String()
+        for(pollingId in subscription.associatedChats) {
+            postBody += "${pollingId.id} ${pollingId.mdc} ${pollingId.startId}\n"
+        }
+        val request = Request.Builder().url("$serverBaseAddress/subscribe")
+        request.post(postBody.toRequestBody(
+            "text/plain".toMediaTypeOrNull()
+        ))
         return request.build()
     }
 }
