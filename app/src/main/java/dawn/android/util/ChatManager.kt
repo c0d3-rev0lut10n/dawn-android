@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Laurenz Werner
+ * Copyright (c) 2023-2024  Laurenz Werner
  *
  * This file is part of Dawn.
  *
@@ -143,7 +143,6 @@ object ChatManager {
 
     fun newChat(chatPrototype: Chat): Result<Chat, String> {
         if(!chatPrototype.id.matches(Regex.ID)) return err("invalid ID ${chatPrototype.id}")
-        if(!chatPrototype.idStamp.matches(Regex.timestamp)) return err("invalid ID stamp ${chatPrototype.idStamp}")
         if(!chatPrototype.idSalt.matches(Regex.IdSalt)) return err("invalid ID salt ${chatPrototype.idSalt}")
         if(chatPrototype.name.contains("\n", true) || chatPrototype.name.isEmpty()) return err("invalid name ${chatPrototype.name}")
         if(chatPrototype.dataId != Default.ToBeDeterminedDataId) return err("dataId must be Default.ToBeDeterminedDataId, got ${chatPrototype.dataId}")
@@ -182,9 +181,8 @@ object ChatManager {
         return ok(chatPrototype)
     }
 
-    fun newChat(id: String, idStamp: String, idSalt: String, name: String, type: ChatType, ownKyber: Keypair, ownCurve: Keypair, ownPFS: String, remotePFS: String, pfsSalt: String): Result<Chat, String> {
+    fun newChat(id: String, idStamp: String, idSalt: String, name: String, type: ChatType, ownKyber: Keypair, ownCurve: Keypair, ownPFS: String, remotePFS: String, pfsSalt: String, mdcSeed: String): Result<Chat, String> {
         if(!id.matches(Regex.ID)) return err("invalid ID $id")
-        if(!idStamp.matches(Regex.timestamp)) return err("invalid ID stamp $idStamp")
         if(!idSalt.matches(Regex.IdSalt)) return err("invalid ID salt $idSalt")
         if(name.contains("\n", true) || name.isEmpty()) return err("invalid name $name")
         var dataId: GenId? = null // we have to initialize with null because the compiler will complain otherwise (even though dataId will be always initialized when the chatDir File gets constructed
@@ -223,7 +221,9 @@ object ChatManager {
             ownCurve = ownCurve,
             ownPFS = ownPFS,
             remotePFS = remotePFS,
-            pfsSalt = pfsSalt)
+            pfsSalt = pfsSalt,
+            mdcSeed = mdcSeed
+        )
         try {
             val serializedChat = chat.intoSerializable()
             DataManager.writeFile(dataId.id!!, chatsPath, Json.encodeToString(serializedChat).toByteArray(Charsets.UTF_8), false)
