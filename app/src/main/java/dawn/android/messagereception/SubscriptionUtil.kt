@@ -28,7 +28,7 @@ object SubscriptionUtil {
         val subCount = subscriptionCount.toInt()
         if(subCount == 0) return subscriptions
         for(i in 0..subCount) {
-            subscriptions.add(Subscription("", ArrayList()))
+            subscriptions.add(Subscription("", ArrayList(), 0U))
         }
         for(id in ids) {
             val subscriptionToUse = rng.nextInt(subCount)

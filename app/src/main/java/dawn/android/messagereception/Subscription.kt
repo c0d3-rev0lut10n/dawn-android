@@ -22,7 +22,8 @@ package dawn.android.messagereception
 
 class Subscription(
     var id: String,
-    var associatedChats: ArrayList<PollingId>
+    var associatedChats: ArrayList<PollingId>,
+    var messageNumber: UInt
 ) {
 
 }
