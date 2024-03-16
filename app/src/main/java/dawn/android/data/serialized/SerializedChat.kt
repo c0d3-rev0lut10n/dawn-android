@@ -38,5 +38,6 @@ data class SerializedChat(
     var ownPFS: String,
     var remotePFS: String,
     var pfsSalt: String,
-    var mdcSeed: String
+    var mdcSeed: String,
+    var associatedProfileId: String?
 )

@@ -39,6 +39,7 @@ class Chat(
     var remotePFS: String,
     var pfsSalt: String,
     var mdcSeed: String,
+    var associatedProfileId: String?
 ) {
     companion object {
 
@@ -63,7 +64,8 @@ class Chat(
                 ownPFS = ser.ownPFS,
                 remotePFS = ser.remotePFS,
                 pfsSalt = ser.pfsSalt,
-                mdcSeed = ser.mdcSeed
+                mdcSeed = ser.mdcSeed,
+                associatedProfileId = ser.associatedProfileId
             )
         }
     }
@@ -88,7 +90,8 @@ class Chat(
             ownPFS = ownPFS,
             remotePFS = remotePFS,
             pfsSalt = pfsSalt,
-            mdcSeed = mdcSeed
+            mdcSeed = mdcSeed,
+            associatedProfileId = associatedProfileId
         )
     }
 
