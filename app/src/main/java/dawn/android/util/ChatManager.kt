@@ -203,7 +203,7 @@ object ChatManager {
         return ok(chatPrototype)
     }
 
-    fun newChat(id: String, idStamp: String, idSalt: String, name: String, type: ChatType, ownKyber: Keypair, ownCurve: Keypair, ownPFS: String, remotePFS: String, pfsSalt: String, mdcSeed: String): Result<Chat, String> {
+    fun newChat(id: String, idStamp: String, idSalt: String, name: String, type: ChatType, ownKyber: Keypair, ownCurve: Keypair, ownPFS: String, remotePFS: String, pfsSalt: String, mdcSeed: String, associatedProfileId: String?): Result<Chat, String> {
         if(!id.matches(Regex.ID)) return err("invalid ID $id")
         if(!idSalt.matches(Regex.IdSalt)) return err("invalid ID salt $idSalt")
         if(name.contains("\n", true) || name.isEmpty()) return err("invalid name $name")
@@ -244,7 +244,8 @@ object ChatManager {
             ownPFS = ownPFS,
             remotePFS = remotePFS,
             pfsSalt = pfsSalt,
-            mdcSeed = mdcSeed
+            mdcSeed = mdcSeed,
+            associatedProfileId = associatedProfileId
         )
         try {
             val serializedChat = chat.intoSerializable()
