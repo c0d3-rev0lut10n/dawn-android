@@ -115,4 +115,9 @@ object RequestFactory {
         ))
         return request.build()
     }
+
+    fun buildSubRequest(subscription: Subscription): Request {
+        val request = Request.Builder().url("$serverBaseAddress/sub/${subscription.id}/${subscription.messageNumber}")
+        return request.build()
+    }
 }
