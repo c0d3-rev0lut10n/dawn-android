@@ -72,6 +72,7 @@
 
     <!-- Texts for ShowChatActivity -->
     <string name="showchat_text_unknown_message_type">Unknown message type. Maybe an update of the app will enable showing this message.</string>
+    <string name="showchat_hint_message">Type your message…</string>
 
     <!-- Texts for SetupActivity -->
     <string name="text_welcome">Welcome to Dawn!</string>
