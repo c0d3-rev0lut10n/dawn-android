@@ -47,9 +47,11 @@ import dawn.android.data.Keypair
 import dawn.android.data.Message
 import dawn.android.data.Ok
 import dawn.android.data.Preferences
+import dawn.android.data.Profile
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
+import dawn.android.messagereception.Subscription
 import dawn.android.util.ChatManager
 import dawn.android.util.DataManager
 import dawn.android.util.PreferenceManager
@@ -75,6 +77,7 @@ class ReceiveMessagesService: Service() {
     private val mTorReceiver = TorReceiver
     private lateinit var notificationManager: NotificationManager
     private lateinit var idRelations: HashMap<String, String>
+    private lateinit var subscriptions: ArrayList<Subscription>
     private lateinit var initKeyDirectory: File
     private val useTor = true
     private lateinit var torProxy: Proxy
@@ -112,6 +115,9 @@ class ReceiveMessagesService: Service() {
         initKeyDirectory = File(filesDir, "initKeys")
 
         logTag = this.javaClass.name
+
+        subscriptions = ArrayList()
+        idRelations = HashMap()
 
         torProxy = Proxy(Proxy.Type.SOCKS, InetSocketAddress("localhost", 19050)) // planned to be configurable
         client = if(useTor)
@@ -485,18 +491,33 @@ class ReceiveMessagesService: Service() {
                 return err("could not send init request: ${sentInitResponse.code}; $responseString")
             }
 
+            val profilePrototype = Profile(
+                dataId = Default.ToBeDeterminedDataId,
+                name = handleInfo.name!!,
+                handle = handle,
+                bio = "",
+                pictureBase64 = null,
+                pubkeySig = ""
+            )
+            val profileResult = ChatManager.newProfile(profilePrototype)
+            if(profileResult.isErr())
+                return err(profileResult.unwrapErr())
+            val profile = profileResult.unwrap()
+
             val chatResult = ChatManager.newChat(
                 id = initRequest.id!!,
                 idStamp = LibraryConnector.mGetCurrentTimestamp().unwrap().timestamp!!,
                 idSalt = initRequest.id_salt!!,
-                name = handleInfo.name!!,
+                name = handleInfo.name,
                 type = ChatType.SENT_INIT,
                 ownKyber = Keypair(publicKey = initRequest.own_pubkey_kyber!!, privateKey = initRequest.own_seckey_kyber!!),
                 ownCurve = Keypair(publicKey = initRequest.own_pubkey_curve!!, privateKey = initRequest.own_seckey_curve!!),
                 ownPFS = initRequest.own_pfs_key!!,
                 remotePFS = initRequest.remote_pfs_key!!,
                 pfsSalt = initRequest.pfs_salt!!,
-                )
+                mdcSeed = initRequest.mdc_seed!!,
+                associatedProfileId = profile.dataId
+            )
             if(chatResult.isErr())
                 return err(chatResult.unwrapErr())
             val chat = chatResult.unwrap()
