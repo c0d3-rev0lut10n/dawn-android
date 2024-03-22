@@ -51,7 +51,10 @@ import dawn.android.data.Profile
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
+import dawn.android.messagereception.PollingId
 import dawn.android.messagereception.Subscription
+import dawn.android.messagereception.SubscriptionUpdates
+import dawn.android.messagereception.SubscriptionUtil
 import dawn.android.util.ChatManager
 import dawn.android.util.DataManager
 import dawn.android.util.PreferenceManager
@@ -160,13 +163,111 @@ class ReceiveMessagesService: Service() {
         tickInProgress = true
         // here happens everything that gets executed during a tick
         Log.i(logTag, "Starting tick")
+        val pollChatResults = pollChats()
+        if(pollChatResults.isErr()) Log.e(logTag, pollChatResults.print())
         val result = pollInitID() // commented out because it is not ready yet
         if(result.isErr()) Log.e(logTag, result.unwrapErr())
         tickInProgress = false
     }
 
+    private fun pollChats(): Result<Ok, String> {
+        val timestamp = ChatManager.getOldestIdStampToPoll()
+        val chatsToPoll = ChatManager.getChatsToPoll(timestamp)
+        val missingChats: ArrayList<PollingId> = ArrayList()
+
+        // get all chats that are not part of a subscription yet
+        for(chat in chatsToPoll.values) {
+            if(chat.id !in idRelations.keys) {
+                val mdc = LibraryConnector.mPredictableMdcGen(chat.mdcSeed, chat.id).unwrap().mdc!!
+                missingChats.add(
+                    PollingId(
+                        chatDataId = chat.dataId,
+                        id = chat.id,
+                        mdc = mdc,
+                        startId = chat.lastMessageId
+                    )
+                )
+            }
+        }
+
+        // prepare subscriptions
+        // TODO: let the user choose how many subscriptions should be created
+        val generatedSubscriptions = SubscriptionUtil.createSubscriptions(missingChats, 10U)
+
+        // actually create the subscriptions
+        for(generatedSubscription in generatedSubscriptions) {
+            if(generatedSubscription.associatedChats.isEmpty()) continue
+            val request = RequestFactory.buildCreateSubscriptionRequest(generatedSubscription)
+            val response = makeRequest(request)
+            if(response.isErr()) return err("Creating a subscription failed: ${response.print()}\nSTOPPING FURTHER TICK WORK")
+            val createSubscriptionResponse = response.unwrap()
+            val body = createSubscriptionResponse.body
+            val responseString = body?.string()
+            body?.close()
+            if(createSubscriptionResponse.code != 200) {
+                return err("Creating a subscription failed: $responseString\nSTOPPING FURTHER TICK WORK")
+            }
+            generatedSubscription.id = responseString!!
+            for(chat in generatedSubscription.associatedChats) {
+                idRelations[chat.id] = chat.chatDataId
+            }
+            subscriptions.add(generatedSubscription)
+        }
+
+        // poll all subscriptions
+        for(subscription in subscriptions) {
+            val request = RequestFactory.buildSubRequest(subscription)
+            val response = makeRequest(request)
+            if(response.isErr()) {
+                Log.w(logTag, "Polling a subscription failed: ${response.print()}\nSkipping this subscription.")
+                continue
+            }
+            val subscriptionResponse = response.unwrap()
+            val body = subscriptionResponse.body
+            val responseString = body?.string()
+            body?.close()
+            when(subscriptionResponse.code) {
+                400 -> {
+                    // the subscription does not exist on the server anymore. Remove it and all ID relations and recreate it next tick
+                    Log.i(logTag, "Subscription expired, removing it")
+                    for(chat in subscription.associatedChats) {
+                        idRelations.remove(chat.id)
+                    }
+                    subscriptions.remove(subscription)
+                    continue
+                }
+                500 -> {
+                    Log.w(logTag, "Polling a subscription failed: $responseString\nSkipping this subscription")
+                    continue
+                }
+            }
+            val update = Json.decodeFromString<SubscriptionUpdates>(responseString!!)
+            for(messageInfo in update.messages) {
+                if(messageInfo.status != "ok") continue
+                val message = messageInfo.message!!
+                val dataId = idRelations[message.id]?: continue
+                val getChat = ChatManager.getChat(dataId)
+                if(getChat.isErr()) continue
+                val chat = getChat.unwrap()
+
+                // skip groups for now
+                // TODO: remove this once groups are supported
+                if(chat.type == ChatType.GROUP) continue
+
+                val profileResult = ChatManager.getProfile(chat.associatedProfileId!!)
+                if(profileResult.isErr()) continue
+
+                val profile = profileResult.unwrap()
+
+                val messageContent = Base64.decode(message.content, Base64.NO_WRAP)
+                val messageResult = LibraryConnector.mParseMsg(messageContent, chat.ownKyber.privateKey, profile.pubkeySig, chat.remotePFS, chat.pfsSalt)
+            }
+        }
+        return err("not implemented")
+    }
+
     @OptIn(ConcurrentAnnotation::class)
-    private fun pollChats() {
+    private fun pollChatsLegacy() {
         val chats = ChatManager.getAllChats()
         for(entry in chats) {
             val chat = entry.value
