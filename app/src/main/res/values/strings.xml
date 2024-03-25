@@ -162,4 +162,7 @@
     <string name="debug_dialog_show_content_not_file">Error: Not a file</string>
     <string name="debug_dialog_show_content_read_fail">Error: Could not read file</string>
 
+    <!-- Texts for InitRequestsActivity -->
+    <string name="initrequests_app_bar">Init Requests</string>
+
 </resources>

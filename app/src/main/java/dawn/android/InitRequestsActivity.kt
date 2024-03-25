@@ -82,7 +82,7 @@ class InitRequestsActivity : AppCompatActivity() {
         window.navigationBarColor = mTheme.primaryBackgroundColor
 
         val actionBarTextColor = mTheme.secondaryTextColor
-        val actionBarString = ""
+        val actionBarString = getString(R.string.initrequests_app_bar)
         actionBarText = SpannableString(actionBarString)
         actionBarText.setSpan(ForegroundColorSpan(actionBarTextColor), 0, actionBarString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
 
