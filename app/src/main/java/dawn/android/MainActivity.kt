@@ -214,6 +214,10 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this, InitiateChatActivity::class.java)
                 startActivity(intent)
             }
+            R.id.nav_requests -> {
+                val intent = Intent(this, InitRequestsActivity::class.java)
+                startActivity(intent)
+            }
         }
         return true
     }
