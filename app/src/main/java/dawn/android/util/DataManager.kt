@@ -23,7 +23,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import dawn.android.data.Location
-import java.io.*
+import java.io.BufferedInputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.security.MessageDigest
 import java.security.SecureRandom
 import javax.crypto.Cipher
@@ -266,6 +269,7 @@ object DataManager {
             Location.ROOT -> mContext.filesDir
             Location.CHATS -> File(mContext.filesDir, "chats")
             Location.PROFILES -> File(mContext.filesDir, "profiles")
+            Location.RECEIVED_REQUESTS -> File(mContext.filesDir, "receivedRequests")
         }
     }
 

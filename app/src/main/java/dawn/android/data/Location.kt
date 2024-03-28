@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Laurenz Werner
+ * Copyright (c) 2023-2024  Laurenz Werner
  *
  * This file is part of Dawn.
  *
@@ -22,5 +22,6 @@ package dawn.android.data
 enum class Location {
     ROOT,
     CHATS,
-    PROFILES
+    PROFILES,
+    RECEIVED_REQUESTS
 }
