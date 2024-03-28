@@ -363,7 +363,7 @@ class ReceiveMessagesService: Service() {
                 val handlePrivateInfoResult = HandlePrivateInfo.fromString(String(handlePrivateInfoFile, Charsets.UTF_8))
                 if(handlePrivateInfoResult.isErr()) return err("Could not read handle private info: ${handlePrivateInfoResult.unwrapErr()}")
                 val handlePrivateInfo = handlePrivateInfoResult.unwrap()
-                val initRequest = LibraryConnector.mParseInitRequest(
+                val initRequestResult = LibraryConnector.mParseInitRequest(
                     initRequestBytes,
                     handlePrivateInfo.initKeypairKyber.own_seckey_kyber!!,
                     handlePrivateInfo.initKeypairCurve.own_seckey_curve!!,
@@ -371,12 +371,14 @@ class ReceiveMessagesService: Service() {
                     handlePrivateInfo.initKeypairKyberSalt.own_seckey_kyber!!,
                     handlePrivateInfo.initKeypairCurveSalt.own_seckey_curve!!
                     )
-                if(initRequest.isErr()) return err("Could not parse init request: ${initRequest.unwrapErr()}")
+                if(initRequestResult.isErr()) return err("Could not parse init request: ${initRequestResult.unwrapErr()}")
+                val initRequest = initRequestResult.unwrap()
+                if(initRequest.status != "ok") return err("Could not parse init request: ${initRequest.status}")
                 val receivedRequestsDirectory = File(filesDir, "receivedRequests")
                 if(!receivedRequestsDirectory.isDirectory) receivedRequestsDirectory.mkdir()
 
-                val requestBytes = Json.encodeToString(initRequest.unwrap()).toByteArray(Charsets.UTF_8)
-                if(!DataManager.writeFile(initRequest.unwrap().id!!, receivedRequestsDirectory, requestBytes, false)) return err("could not write file")
+                val requestBytes = Json.encodeToString(initRequest).toByteArray(Charsets.UTF_8)
+                if(!DataManager.writeFile(initRequest.id!!, receivedRequestsDirectory, requestBytes, false)) return err("could not write file")
             }
             204 -> {
                 // no new init request
