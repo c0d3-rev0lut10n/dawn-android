@@ -48,6 +48,7 @@ import dawn.android.data.Message
 import dawn.android.data.Ok
 import dawn.android.data.Preferences
 import dawn.android.data.Profile
+import dawn.android.data.ReceivedInitRequest
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
@@ -349,6 +350,7 @@ class ReceiveMessagesService: Service() {
                 val initRequestBytesStream = getInitRequestResponse.body?: return err("Could not download new init request: could not get response body")
                 val initRequestBytes = initRequestBytesStream.bytes()
                 initRequestBytesStream.close()
+                val time = getInitRequestResponse.headers["X-Sent"]
 
                 initMessageNumber = (initMessageNumber+1U).toUShort()
                 PreferenceManager.set("initMessageNumber", initMessageNumber.toString())
@@ -377,8 +379,23 @@ class ReceiveMessagesService: Service() {
                 val receivedRequestsDirectory = File(filesDir, "receivedRequests")
                 if(!receivedRequestsDirectory.isDirectory) receivedRequestsDirectory.mkdir()
 
-                val requestBytes = Json.encodeToString(initRequest).toByteArray(Charsets.UTF_8)
-                if(!DataManager.writeFile(initRequest.id!!, receivedRequestsDirectory, requestBytes, false)) return err("could not write file")
+                val serializableRequest = ReceivedInitRequest(
+                    remotePubkeyKyber = initRequest.remote_pubkey_kyber!!,
+                    remotePubkeySig = initRequest.remote_pubkey_sig!!,
+                    ownPFSKey = initRequest.own_pfs_key!!,
+                    remotePFSKey = initRequest.remote_pfs_key!!,
+                    pfsSalt = initRequest.pfs_salt!!,
+                    id = initRequest.id!!,
+                    idSalt = initRequest.id_salt!!,
+                    mdc = initRequest.mdc!!,
+                    mdcSeed = initRequest.mdc_seed!!,
+                    name = initRequest.name!!,
+                    comment = initRequest.comment!!,
+                    time = time?: ""
+                )
+
+                val requestBytes = Json.encodeToString(serializableRequest).toByteArray(Charsets.UTF_8)
+                if(!DataManager.writeFile(initRequest.id, receivedRequestsDirectory, requestBytes, false)) return err("could not write file")
             }
             204 -> {
                 // no new init request
