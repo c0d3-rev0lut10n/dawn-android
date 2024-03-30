@@ -350,7 +350,7 @@ class ReceiveMessagesService: Service() {
                 val initRequestBytesStream = getInitRequestResponse.body?: return err("Could not download new init request: could not get response body")
                 val initRequestBytes = initRequestBytesStream.bytes()
                 initRequestBytesStream.close()
-                val time = getInitRequestResponse.headers["X-Sent"]
+                val time = getInitRequestResponse.headers["X-Sent"]?.toLongOrNull()
 
                 initMessageNumber = (initMessageNumber+1U).toUShort()
                 PreferenceManager.set("initMessageNumber", initMessageNumber.toString())
@@ -391,7 +391,7 @@ class ReceiveMessagesService: Service() {
                     mdcSeed = initRequest.mdc_seed!!,
                     name = initRequest.name!!,
                     comment = initRequest.comment!!,
-                    time = time?: ""
+                    time = time?: 0L
                 )
 
                 val requestBytes = Json.encodeToString(serializableRequest).toByteArray(Charsets.UTF_8)
