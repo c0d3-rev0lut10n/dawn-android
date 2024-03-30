@@ -182,6 +182,8 @@ class MainActivity : AppCompatActivity() {
         binding.navView.setCheckedItem(R.id.nav_home)
 
         binding.appBarMain.toolbar.title = actionBarText
+        if(DataManager.isInitialized())
+            makeChatlist()
         super.onResume()
     }
 
