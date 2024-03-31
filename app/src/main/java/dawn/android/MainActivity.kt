@@ -159,6 +159,10 @@ class MainActivity : AppCompatActivity() {
         val navHeaderTitle = navHeader.findViewById<TextView>(R.id.nav_header_title)
         navHeaderTitle.setTextColor(mTheme.primaryTextColor)
 
+        chatPreviewLayoutParams = ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, sizeFactor * 32)
+        chatPreviewLayoutParams.setMargins(30, 30, 30, 0)
+        noChatsYetTextView = TextView(this)
+
         if(!DataManager.isStorageInitialized(this.applicationContext)) {
             // start setup if necessary
             val setupIntent = Intent(this, SetupActivity::class.java)
@@ -296,10 +300,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         // setup layout
-        chatPreviewLayoutParams = ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, sizeFactor * 32)
-        chatPreviewLayoutParams.setMargins(30, 30, 30, 0)
 
-        noChatsYetTextView = TextView(this)
         makeChatlist()
 
         binding.appBarMain.toolbar.setOnClickListener { thread {launchDebugActivity()} }
