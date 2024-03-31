@@ -51,6 +51,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dawn.android.data.Preferences
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivityMainBinding
+import dawn.android.ui.component.AdapterScope
 import dawn.android.ui.component.ChatPreviewAdapter
 import dawn.android.ui.data.ChatPreviewData
 import dawn.android.util.ChatManager
@@ -348,7 +349,7 @@ class MainActivity : AppCompatActivity() {
             for(chat in chats) {
                 previews.add(chat.toPreview())
             }
-            binding.appBarMain.content.contentLayout.adapter = ChatPreviewAdapter(this, R.layout.chat_list_item, previews)
+            binding.appBarMain.content.contentLayout.adapter = ChatPreviewAdapter(this, R.layout.chat_list_item, previews, AdapterScope.CHAT_LIST)
         }
     }
 

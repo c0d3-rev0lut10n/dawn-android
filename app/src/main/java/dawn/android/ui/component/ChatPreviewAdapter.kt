@@ -36,7 +36,8 @@ import dawn.android.ui.data.ChatPreviewData
 class ChatPreviewAdapter(
     private val context: Context,
     private val resource: Int,
-    objects: ArrayList<ChatPreviewData>): ArrayAdapter<ChatPreviewData>(context, resource, objects) {
+    objects: ArrayList<ChatPreviewData>,
+    private val scope: AdapterScope): ArrayAdapter<ChatPreviewData>(context, resource, objects) {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         var mConvertView = convertView
         val layoutInflater = LayoutInflater.from(context)
@@ -54,7 +55,11 @@ class ChatPreviewAdapter(
         val item = getItem(position) ?: return mConvertView
 
         layout.setOnClickListener {
-            val intent = Intent(context, ShowChatActivity::class.java)
+            val intent = when(scope) {
+                AdapterScope.CHAT_LIST -> Intent(context, ShowChatActivity::class.java)
+                AdapterScope.INIT_REQUEST_LIST -> Intent(context, ShowChatActivity::class.java) // TODO: change this to the proper activity once a dedicated one exists
+            }
+
             intent.putExtra("dataId", item.getDataId())
             context.startActivity(intent)
         }
