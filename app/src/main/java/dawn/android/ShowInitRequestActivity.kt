@@ -28,10 +28,14 @@ import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import dawn.android.data.Location
 import dawn.android.data.Preferences
+import dawn.android.data.ReceivedInitRequest
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivityShowChatBinding
+import dawn.android.util.DataManager
 import dawn.android.util.ThemeLoader
+import kotlinx.serialization.json.Json
 
 class ShowInitRequestActivity : AppCompatActivity() {
 
@@ -78,6 +82,21 @@ class ShowInitRequestActivity : AppCompatActivity() {
             Log.e(logTag, "failed to get dataId for init request from intent extras")
             finish()
             return
+        }
+
+        val initRequestDir = DataManager.getLocation(Location.RECEIVED_REQUESTS)
+        val fileContent = DataManager.readFile(dataId, initRequestDir)
+        if (fileContent == null) {
+            finish()
+            return
+        }
+        val request: ReceivedInitRequest
+        try {
+            request =
+                Json.decodeFromString<ReceivedInitRequest>(String(fileContent, Charsets.UTF_8))
+        }
+        catch (e: Exception) {
+            Log.e(logTag, "failed to deserialize init request: ${e.printStackTrace()}")
         }
     }
 }
