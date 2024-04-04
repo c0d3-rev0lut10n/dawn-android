@@ -21,7 +21,9 @@ package dawn.android
 
 import android.os.Build
 import android.os.Bundle
+import android.text.Spannable
 import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowInsetsController
@@ -32,14 +34,14 @@ import dawn.android.data.Location
 import dawn.android.data.Preferences
 import dawn.android.data.ReceivedInitRequest
 import dawn.android.data.Theme
-import dawn.android.databinding.ActivityShowChatBinding
+import dawn.android.databinding.ActivityShowInitRequestBinding
 import dawn.android.util.DataManager
 import dawn.android.util.ThemeLoader
 import kotlinx.serialization.json.Json
 
 class ShowInitRequestActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityShowChatBinding
+    private lateinit var binding: ActivityShowInitRequestBinding
     private lateinit var mTheme: Theme
     private var androidTheme: Int = 0
     private lateinit var actionBarText: SpannableString
@@ -97,6 +99,30 @@ class ShowInitRequestActivity : AppCompatActivity() {
         }
         catch (e: Exception) {
             Log.e(logTag, "failed to deserialize init request: ${e.printStackTrace()}")
+            finish()
+            return
         }
+
+        binding = ActivityShowInitRequestBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setSupportActionBar(binding.toolbar)
+
+        window.statusBarColor = mTheme.primaryUIColor
+        window.navigationBarColor = mTheme.primaryBackgroundColor
+
+        val actionBarTextColor = mTheme.secondaryTextColor
+        val actionBarString = request.name
+        actionBarText = SpannableString(actionBarString)
+        actionBarText.setSpan(ForegroundColorSpan(actionBarTextColor), 0, actionBarString.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeAsUpIndicator(mTheme.backButtonIcon)
+    }
+
+    override fun onResume() {
+        binding.toolbar.title = actionBarText
+        super.onResume()
     }
 }
