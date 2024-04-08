@@ -119,6 +119,8 @@ class ShowInitRequestActivity : AppCompatActivity() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(mTheme.backButtonIcon)
+
+        binding.tvInitRequestMessage.text = request.comment
     }
 
     override fun onResume() {
