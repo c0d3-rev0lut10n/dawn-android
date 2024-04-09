@@ -167,5 +167,7 @@
 
     <!-- Texts for ShowInitRequestActivity -->
     <string name="showinitrequest_main_info">If you accept this request, a chat with the requesting person will be initiated.\nYour public signature key will be transmitted and the person will know you read the request.\nIf you don\'t accept the request, no data will be transmitted.</string>
+    <string name="showinitrequest_btn_accept">Accept</string>
+    <string name="showinitrequest_btn_reject">Reject</string>
 
 </resources>
