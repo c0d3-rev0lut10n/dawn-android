@@ -195,6 +195,16 @@ data class ParseInitRequest(
     val mdc_seed: String? = null
 )
 
+@Serializable
+data class AcceptInitRequest(
+    val status: String,
+    val new_pfs_key: String?,
+    val own_pubkey_kyber: String?,
+    val own_seckey_kyber: String?,
+    val mdc: String?,
+    val ciphertext: String?
+)
+
 object LibraryConnector {
 
     init {
@@ -356,6 +366,12 @@ object LibraryConnector {
         return ok(libraryResponse)
     }
 
+    fun mAcceptInitRequest(own_seckey_sig: String, own_pubkey_sig: String, remote_pubkey_kyber: String, own_pfs_key: String, pfs_salt: String, id: String, mdc_seed: String): Result<AcceptInitRequest, String> {
+        val libraryResponse: AcceptInitRequest = Json.decodeFromString(acceptInitRequest(own_seckey_sig, own_pubkey_sig, remote_pubkey_kyber, own_pfs_key, pfs_salt, id, mdc_seed))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
+    }
+
     private external fun initCrypto(): String
     private external fun kyberKeygen(): String
     private external fun curveKeygen(): String
@@ -380,4 +396,5 @@ object LibraryConnector {
     private external fun parseHandle(handle: ByteArray): String
     private external fun genInitRequest(remote_pubkey_kyber: String, remote_pubkey_kyber_for_salt: String, remote_pubkey_curve: String, remote_pubkey_curve_pfs_2: String, remote_pubkey_curve_for_salt: String, own_pubkey_sig: String, own_seckey_sig: String, name: String, comment: String, mdc: String): String
     private external fun parseInitRequest(ciphertext: ByteArray, own_seckey_kyber: String, own_seckey_curve: String, own_seckey_curve_pfs_2: String, own_seckey_kyber_for_salt: String, own_seckey_curve_for_salt: String): String
+    private external fun acceptInitRequest(own_seckey_sig: String, own_pubkey_sig: String, remote_pubkey_kyber: String, own_pfs_key: String, pfs_salt: String, id: String, mdc_seed: String): String
 }
