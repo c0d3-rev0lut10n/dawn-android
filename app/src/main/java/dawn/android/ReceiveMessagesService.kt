@@ -382,6 +382,7 @@ class ReceiveMessagesService: Service() {
                 val serializableRequest = ReceivedInitRequest(
                     remotePubkeyKyber = initRequest.remote_pubkey_kyber!!,
                     remotePubkeySig = initRequest.remote_pubkey_sig!!,
+                    ownCurve = Keypair(publicKey = handlePrivateInfo.initKeypairCurve.own_pubkey_curve!!, privateKey = handlePrivateInfo.initKeypairCurve.own_seckey_curve),
                     ownPFSKey = initRequest.own_pfs_key!!,
                     remotePFSKey = initRequest.remote_pfs_key!!,
                     pfsSalt = initRequest.pfs_salt!!,
