@@ -392,7 +392,8 @@ class ReceiveMessagesService: Service() {
                     mdcSeed = initRequest.mdc_seed!!,
                     name = initRequest.name!!,
                     comment = initRequest.comment!!,
-                    sent = time?: 0L
+                    sent = time?: 0L,
+                    received = System.currentTimeMillis() / 1000
                 )
 
                 val requestBytes = Json.encodeToString(serializableRequest).toByteArray(Charsets.UTF_8)

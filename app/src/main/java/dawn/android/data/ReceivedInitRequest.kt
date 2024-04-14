@@ -35,5 +35,6 @@ data class ReceivedInitRequest (
     val mdcSeed: String,
     val name: String,
     val comment: String,
-    val sent: Long
+    val sent: Long,
+    val received: Long
 )
