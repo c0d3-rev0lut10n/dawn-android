@@ -56,6 +56,7 @@ import dawn.android.messagereception.PollingId
 import dawn.android.messagereception.Subscription
 import dawn.android.messagereception.SubscriptionUpdates
 import dawn.android.messagereception.SubscriptionUtil
+import dawn.android.messagetransmission.TransmissionQueue
 import dawn.android.util.ChatManager
 import dawn.android.util.DataManager
 import dawn.android.util.PreferenceManager
@@ -90,6 +91,8 @@ class ReceiveMessagesService: Service() {
 
     private var tickTimer: Timer? = null
     private var tickInProgress = false
+
+    private val transmissionQueue = TransmissionQueue()
 
     private var pollHandleAddKeyTimer: Timer? = null
     private var handleAddKeyActive = false
@@ -169,6 +172,10 @@ class ReceiveMessagesService: Service() {
         val result = pollInitID() // commented out because it is not ready yet
         if(result.isErr()) Log.e(logTag, result.unwrapErr())
         tickInProgress = false
+    }
+
+    private fun transmitMessages(): Result<Ok, String> {
+        return err("not implemented")
     }
 
     private fun pollChats(): Result<Ok, String> {
