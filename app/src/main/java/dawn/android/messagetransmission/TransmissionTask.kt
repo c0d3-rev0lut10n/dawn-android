@@ -24,6 +24,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class TransmissionTask(
     val chatDataID: String,
-    val messageID: ULong,
+    val messageID: Int,
     val ciphertextBase64: String
 )
