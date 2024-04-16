@@ -19,11 +19,12 @@
 
 package dawn.android.messagetransmission
 
+import dawn.android.data.serialized.SerializedMessage
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class TransmissionTask(
     val chatDataID: String,
-    val messageID: Int,
+    val message: SerializedMessage,
     val ciphertextBase64: String
 )
