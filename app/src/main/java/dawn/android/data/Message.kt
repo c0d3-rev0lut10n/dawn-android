@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Laurenz Werner
+ * Copyright (c) 2023-2024  Laurenz Werner
  *
  * This file is part of Dawn.
  *
@@ -28,7 +28,7 @@ import java.io.File
 
 class Message(
     val chatDataId: String,
-    val id: ULong,
+    var id: ULong,
     val sender: Profile,
     var sent: Long?,
     var received: Long?,
