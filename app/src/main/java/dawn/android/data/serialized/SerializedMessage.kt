@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023-2024 Laurenz Werner
+ * Copyright (c) 2023-2024  Laurenz Werner
  *
  * This file is part of Dawn.
  *
@@ -27,7 +27,7 @@ class SerializedMessage(
     val chatDataId: String,
     val id: ULong,
     val sender: String, // use the data ID of the profile for this attribute
-    val sent: Long?,
+    var sent: Long?,
     var received: Long?,
     val contentType: ContentType,
     val text: String,
