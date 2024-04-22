@@ -27,5 +27,5 @@ data class TransmissionTask(
     val chatDataID: String,
     val message: SerializedMessage,
     val ciphertextBase64: String,
-    var sent: Boolean
+    var remoteMessageNumber: UInt?
 )
