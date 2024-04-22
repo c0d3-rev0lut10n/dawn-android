@@ -30,6 +30,7 @@ data class SerializedChat(
     var idStamp: String,
     var idSalt: String,
     var lastMessageId: UShort,
+    var lastSuccessfulReception: Long,
     var name: String,
     var type: ChatType,
     val messages: ArrayList<SerializedMessage>,
