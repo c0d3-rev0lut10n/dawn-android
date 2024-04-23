@@ -236,6 +236,7 @@ object ChatManager {
             idStamp = idStamp,
             idSalt = idSalt,
             lastMessageId = 0U,
+            lastSuccessfulReception = Long.MIN_VALUE,
             name = name,
             messages = ArrayList(),
             type = type,
