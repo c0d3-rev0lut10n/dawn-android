@@ -180,6 +180,9 @@ class ReceiveMessagesService: Service() {
             val chatResult = ChatManager.getChat(task.chatDataID)
             if(chatResult.isErr()) continue
             val chat = chatResult.unwrap()
+            if(task.remoteMessageNumber != null) {
+                continue
+            }
             val tempId = LibraryConnector.mGetTempId(chat.id).unwrap().id!!
             val mdc = LibraryConnector.mPredictableMdcGen(chat.mdcSeed, tempId).unwrap().mdc!!
             val ciphertext = Base64.decode(task.ciphertextBase64, Base64.NO_WRAP)
@@ -189,9 +192,16 @@ class ReceiveMessagesService: Service() {
             val response = responseResult.unwrap()
             if(response.code == 200) {
                 val responseBody = response.body
-                val messageId = responseBody!!.string().toUShort()
-                // TODO: check message number and wait for new messages if it is higher than expected
+                val messageId = responseBody!!.string().toUInt()
                 responseBody.close()
+                if(messageId > chat.lastMessageId + 1U) {
+                    val taskId = transmissionQueue.indexOf(task)
+                    task.remoteMessageNumber = messageId
+                    task.message.sent = System.currentTimeMillis() / 1000
+                    transmissionQueue[taskId] = task
+                    continue
+                }
+                transmissionQueue.remove(task)
                 val message = Message.fromSerialized(task.message).unwrap()
                 message.sent = System.currentTimeMillis() / 1000
                 message.id = chat.messages.size.toULong()
