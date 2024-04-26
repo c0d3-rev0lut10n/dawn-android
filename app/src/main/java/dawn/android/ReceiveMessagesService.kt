@@ -181,6 +181,14 @@ class ReceiveMessagesService: Service() {
             if(chatResult.isErr()) continue
             val chat = chatResult.unwrap()
             if(task.remoteMessageNumber != null) {
+                if(task.remoteMessageNumber!! > chat.lastMessageId)
+                    continue
+                transmissionQueue.remove(task)
+                val message = Message.fromSerialized(task.message).unwrap()
+                message.sent = System.currentTimeMillis() / 1000
+                message.id = chat.messages.size.toULong()
+                chat.messages.add(message)
+                ChatManager.updateChat(chat)
                 continue
             }
             val tempId = LibraryConnector.mGetTempId(chat.id).unwrap().id!!
