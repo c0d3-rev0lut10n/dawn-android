@@ -57,6 +57,7 @@ import dawn.android.messagereception.Subscription
 import dawn.android.messagereception.SubscriptionUpdates
 import dawn.android.messagereception.SubscriptionUtil
 import dawn.android.messagetransmission.TransmissionQueue
+import dawn.android.messagetransmission.TransmissionTask
 import dawn.android.util.ChatManager
 import dawn.android.util.DataManager
 import dawn.android.util.PreferenceManager
@@ -218,6 +219,17 @@ class ReceiveMessagesService: Service() {
             }
         }
         return err("not implemented")
+    }
+
+    fun transmitMessage(chatDataID: String, message: Message, ciphertext: ByteArray) {
+        val ciphertextBase64 = Base64.encodeToString(ciphertext, Base64.NO_WRAP)
+        val task = TransmissionTask(
+            chatDataID = chatDataID,
+            message = message.intoSerializable(),
+            ciphertextBase64 = ciphertextBase64,
+            remoteMessageNumber = null
+        )
+        transmissionQueue.add(task)
     }
 
     private fun pollChats(): Result<Ok, String> {
