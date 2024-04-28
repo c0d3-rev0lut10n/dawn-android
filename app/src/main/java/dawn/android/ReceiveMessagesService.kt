@@ -44,6 +44,7 @@ import dawn.android.data.ContentType
 import dawn.android.data.Default
 import dawn.android.data.HandlePrivateInfo
 import dawn.android.data.Keypair
+import dawn.android.data.Location
 import dawn.android.data.Message
 import dawn.android.data.Ok
 import dawn.android.data.Preferences
@@ -93,7 +94,7 @@ class ReceiveMessagesService: Service() {
     private var tickTimer: Timer? = null
     private var tickInProgress = false
 
-    private val transmissionQueue = TransmissionQueue()
+    private var transmissionQueue = TransmissionQueue()
 
     private var pollHandleAddKeyTimer: Timer? = null
     private var handleAddKeyActive = false
@@ -139,6 +140,15 @@ class ReceiveMessagesService: Service() {
 
         val serverAddress = PreferenceManager.get(Preferences.server).unwrap()
         RequestFactory.setMessageServerAddress(serverAddress)
+
+        try {
+            val queueFile = String(DataManager.readFile("transmissionQueue", DataManager.getLocation(Location.ROOT))!!, Charsets.UTF_8)
+            transmissionQueue = Json.decodeFromString<TransmissionQueue>(queueFile)
+        }
+        catch(e: Exception) {
+            // there is no transmission queue or something weird happened
+            Log.w(logTag, "Could not load transmission queue: ${e.stackTraceToString()}")
+        }
 
         pollHandleAddKeyTimer = timer(null, false, 5000, 30000) {
             if (!handleAddKeyActive) {
@@ -190,6 +200,7 @@ class ReceiveMessagesService: Service() {
                 message.id = chat.messages.size.toULong()
                 chat.messages.add(message)
                 ChatManager.updateChat(chat)
+                serializeTransmissionQueue()
                 continue
             }
             val tempId = LibraryConnector.mGetTempId(chat.id).unwrap().id!!
@@ -208,6 +219,7 @@ class ReceiveMessagesService: Service() {
                     task.remoteMessageNumber = messageId
                     task.message.sent = System.currentTimeMillis() / 1000
                     transmissionQueue[taskId] = task
+                    serializeTransmissionQueue()
                     continue
                 }
                 transmissionQueue.remove(task)
@@ -216,6 +228,7 @@ class ReceiveMessagesService: Service() {
                 message.id = chat.messages.size.toULong()
                 chat.messages.add(message)
                 ChatManager.updateChat(chat)
+                serializeTransmissionQueue()
             }
         }
         return err("not implemented")
@@ -793,5 +806,10 @@ class ReceiveMessagesService: Service() {
 
     private fun deriveReferrer(handleCiphertext: ByteArray): String {
         return LibraryConnector.mHash(handleCiphertext).unwrap().hash!!.slice(0..15)
+    }
+
+    private fun serializeTransmissionQueue() {
+        val serializedTransmissionQueue = Json.encodeToString(transmissionQueue)
+        DataManager.writeFile("transmissionQueue", DataManager.getLocation(Location.ROOT), serializedTransmissionQueue.toByteArray(Charsets.UTF_8), true)
     }
 }
