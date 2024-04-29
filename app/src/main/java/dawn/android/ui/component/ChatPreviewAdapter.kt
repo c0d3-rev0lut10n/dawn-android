@@ -31,6 +31,7 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import dawn.android.R
 import dawn.android.ShowChatActivity
+import dawn.android.ShowInitRequestActivity
 import dawn.android.ui.data.ChatPreviewData
 
 class ChatPreviewAdapter(
@@ -57,7 +58,7 @@ class ChatPreviewAdapter(
         layout.setOnClickListener {
             val intent = when(scope) {
                 AdapterScope.CHAT_LIST -> Intent(context, ShowChatActivity::class.java)
-                AdapterScope.INIT_REQUEST_LIST -> Intent(context, ShowChatActivity::class.java) // TODO: change this to the proper activity once a dedicated one exists
+                AdapterScope.INIT_REQUEST_LIST -> Intent(context, ShowInitRequestActivity::class.java)
             }
 
             intent.putExtra("dataId", item.getDataId())
