@@ -19,25 +19,40 @@
 
 package dawn.android
 
+import android.content.ComponentName
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Base64
 import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import dawn.android.data.Chat
+import dawn.android.data.ChatType
+import dawn.android.data.ContentType
+import dawn.android.data.Default
+import dawn.android.data.Keypair
 import dawn.android.data.Location
+import dawn.android.data.Message
 import dawn.android.data.Preferences
+import dawn.android.data.Profile
 import dawn.android.data.ReceivedInitRequest
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivityShowInitRequestBinding
+import dawn.android.util.ChatManager
 import dawn.android.util.DataManager
+import dawn.android.util.PreferenceManager
 import dawn.android.util.ThemeLoader
 import kotlinx.serialization.json.Json
+import java.io.File
 
 class ShowInitRequestActivity : AppCompatActivity() {
 
@@ -47,6 +62,24 @@ class ShowInitRequestActivity : AppCompatActivity() {
     private lateinit var actionBarText: SpannableString
     private lateinit var logTag: String
     private lateinit var mThemeLoader: ThemeLoader
+    private lateinit var dataId: String
+    private lateinit var request: ReceivedInitRequest
+
+    private lateinit var mService: ReceiveMessagesService
+    private var mBound: Boolean = false
+
+    private val connection = object : ServiceConnection {
+
+        override fun onServiceConnected(name: ComponentName, service: IBinder) {
+            val binder = service as ReceiveMessagesService.BindInterface
+            mService = binder.getService()
+            mBound = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName) {
+            mBound = false
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,7 +112,7 @@ class ShowInitRequestActivity : AppCompatActivity() {
         logTag = this.javaClass.name
 
         val extras = intent.extras
-        val dataId = extras?.getString("dataId")?: ""
+        dataId = extras?.getString("dataId")?: ""
         if(dataId == "") {
             Log.e(logTag, "failed to get dataId for init request from intent extras")
             finish()
@@ -92,7 +125,6 @@ class ShowInitRequestActivity : AppCompatActivity() {
             finish()
             return
         }
-        val request: ReceivedInitRequest
         try {
             request =
                 Json.decodeFromString<ReceivedInitRequest>(String(fileContent, Charsets.UTF_8))
@@ -102,6 +134,12 @@ class ShowInitRequestActivity : AppCompatActivity() {
             finish()
             return
         }
+
+        bindService(
+            Intent(this, ReceiveMessagesService::class.java),
+            connection,
+            BIND_AUTO_CREATE
+        )
 
         binding = ActivityShowInitRequestBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -121,6 +159,19 @@ class ShowInitRequestActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(mTheme.backButtonIcon)
 
         binding.tvInitRequestMessage.text = request.comment
+        binding.btnAcceptRequest.setOnClickListener { accept() }
+        binding.btnRejectRequest.setOnClickListener { reject() }
+    }
+
+    private fun accept() {
+
+    }
+
+    private fun reject() {
+        val initRequestDir = DataManager.getLocation(Location.RECEIVED_REQUESTS)
+        val file = File(initRequestDir, dataId)
+        file.delete()
+        finish()
     }
 
     override fun onResume() {
