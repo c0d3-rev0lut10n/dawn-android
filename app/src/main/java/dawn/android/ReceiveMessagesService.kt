@@ -182,6 +182,8 @@ class ReceiveMessagesService: Service() {
         if(pollChatResults.isErr()) Log.e(logTag, pollChatResults.print())
         val result = pollInitID() // commented out because it is not ready yet
         if(result.isErr()) Log.e(logTag, result.unwrapErr())
+        val transmissionResult = transmitMessages()
+        if(transmissionResult.isErr()) Log.e(logTag, transmissionResult.print())
         tickInProgress = false
     }
 
