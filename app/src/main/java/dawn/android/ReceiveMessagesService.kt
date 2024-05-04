@@ -233,7 +233,7 @@ class ReceiveMessagesService: Service() {
                 serializeTransmissionQueue()
             }
         }
-        return err("not implemented")
+        return ok(Ok)
     }
 
     fun transmitMessage(chatDataID: String, message: Message, ciphertext: ByteArray) {
