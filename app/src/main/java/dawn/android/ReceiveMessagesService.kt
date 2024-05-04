@@ -212,10 +212,8 @@ class ReceiveMessagesService: Service() {
             val responseResult = makeRequest(request)
             if(responseResult.isErr()) continue
             val response = responseResult.unwrap()
-            if(response.code == 200) {
-                val responseBody = response.body
-                val messageId = responseBody!!.string().toUInt()
-                responseBody.close()
+            if(response.code == 204) {
+                val messageId = response.headers["X-MessageNumber"]?.toUInt()?: continue
                 if(messageId > chat.lastMessageId + 1U) {
                     val taskId = transmissionQueue.indexOf(task)
                     task.remoteMessageNumber = messageId
