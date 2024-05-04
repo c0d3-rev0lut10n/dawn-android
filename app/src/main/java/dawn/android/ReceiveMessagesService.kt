@@ -245,6 +245,7 @@ class ReceiveMessagesService: Service() {
             remoteMessageNumber = null
         )
         transmissionQueue.add(task)
+        serializeTransmissionQueue()
     }
 
     private fun pollChats(): Result<Ok, String> {
