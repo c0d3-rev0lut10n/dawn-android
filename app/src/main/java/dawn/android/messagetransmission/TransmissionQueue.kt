@@ -22,6 +22,6 @@ package dawn.android.messagetransmission
 import kotlinx.serialization.Serializable
 
 @Serializable
-class TransmissionQueue: ArrayList<TransmissionTask>() {
-
-}
+data class TransmissionQueue(
+    var queue: ArrayList<TransmissionTask>
+)

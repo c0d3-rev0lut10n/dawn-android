@@ -94,7 +94,7 @@ class ReceiveMessagesService: Service() {
     private var tickTimer: Timer? = null
     private var tickInProgress = false
 
-    private var transmissionQueue = TransmissionQueue()
+    private var transmissionQueue = TransmissionQueue(ArrayList())
 
     private var pollHandleAddKeyTimer: Timer? = null
     private var handleAddKeyActive = false
@@ -189,14 +189,14 @@ class ReceiveMessagesService: Service() {
 
     @OptIn(ConcurrentAnnotation::class)
     private fun transmitMessages(): Result<Ok, String> {
-        for(task in transmissionQueue) {
+        for(task in transmissionQueue.queue) {
             val chatResult = ChatManager.getChat(task.chatDataID)
             if(chatResult.isErr()) continue
             val chat = chatResult.unwrap()
             if(task.remoteMessageNumber != null) {
                 if(task.remoteMessageNumber!! > chat.lastMessageId)
                     continue
-                transmissionQueue.remove(task)
+                transmissionQueue.queue.remove(task)
                 val message = Message.fromSerialized(task.message).unwrap()
                 message.sent = System.currentTimeMillis() / 1000
                 message.id = chat.messages.size.toULong()
@@ -215,14 +215,14 @@ class ReceiveMessagesService: Service() {
             if(response.code == 204) {
                 val messageId = response.headers["X-MessageNumber"]?.toUInt()?: continue
                 if(messageId > chat.lastMessageId + 1U) {
-                    val taskId = transmissionQueue.indexOf(task)
+                    val taskId = transmissionQueue.queue.indexOf(task)
                     task.remoteMessageNumber = messageId
                     task.message.sent = System.currentTimeMillis() / 1000
-                    transmissionQueue[taskId] = task
+                    transmissionQueue.queue[taskId] = task
                     serializeTransmissionQueue()
                     continue
                 }
-                transmissionQueue.remove(task)
+                transmissionQueue.queue.remove(task)
                 val message = Message.fromSerialized(task.message).unwrap()
                 message.sent = System.currentTimeMillis() / 1000
                 message.id = chat.messages.size.toULong()
@@ -242,7 +242,7 @@ class ReceiveMessagesService: Service() {
             ciphertextBase64 = ciphertextBase64,
             remoteMessageNumber = null
         )
-        transmissionQueue.add(task)
+        transmissionQueue.queue.add(task)
         serializeTransmissionQueue()
     }
 
