@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2024 Laurenz Werner
+ * Copyright (c) 2024  Laurenz Werner
  *
  * This file is part of Dawn.
  *
@@ -33,6 +33,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dawn.android.data.Preferences
+import dawn.android.data.Result
+import dawn.android.data.Result.Companion.err
+import dawn.android.data.Result.Companion.ok
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivityDebugBinding
 import dawn.android.util.DataManager
@@ -161,16 +164,26 @@ class DebugActivity : AppCompatActivity() {
 
     private fun showContent() {
         val path = binding.etFile.text.toString()
-        val fileAtPath = File(filesDir.path + path)
+        val contentResult = getContent(path)
         val dialog = MaterialAlertDialogBuilder(this)
         dialog.setTitle(R.string.debug_dialog_show_content_heading)
-        if(fileAtPath.isFile) {
-            val fileContent = DataManager.readFile(fileAtPath.name, fileAtPath.parentFile!!)
-            if(fileContent == null) dialog.setMessage(R.string.debug_dialog_show_content_read_fail)
-            else dialog.setMessage(String(fileContent, Charsets.UTF_8))
-        }
+        if(contentResult.isErr())
+            dialog.setMessage(R.string.debug_dialog_show_content_read_fail)
+        else
+            dialog.setMessage(contentResult.unwrap())
+
         dialog.setCancelable(true)
         dialog.setPositiveButton(R.string.ok) { _: DialogInterface, _: Int -> }
         dialog.create().show()
+    }
+
+    private fun getContent(path: String): Result<String, String> {
+        val fileAtPath = File(filesDir.path + path)
+        if(fileAtPath.isFile) {
+            val fileContent = DataManager.readFile(fileAtPath.name, fileAtPath.parentFile!!)
+            return if(fileContent == null) err("file could not be read")
+            else ok(String(fileContent, Charsets.UTF_8))
+        }
+        return err("not found")
     }
 }
