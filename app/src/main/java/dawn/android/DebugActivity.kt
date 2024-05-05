@@ -25,6 +25,7 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowInsetsController
 import android.widget.TextView
@@ -185,5 +186,12 @@ class DebugActivity : AppCompatActivity() {
             else ok(String(fileContent, Charsets.UTF_8))
         }
         return err("not found")
+    }
+
+    private fun printContent() {
+        val path = binding.etFile.text.toString()
+        val contentResult = getContent(path)
+        if(contentResult.isOk()) Log.d(logTag, "Contents of file $path:\n${contentResult.unwrap()}")
+        else Log.e(logTag, "Could not read file $path:\n${contentResult.print()}")
     }
 }
