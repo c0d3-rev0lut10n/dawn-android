@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2023 Laurenz Werner
+  ~ Copyright (c) 2023-2024  Laurenz Werner
   ~
   ~ This file is part of Dawn.
   ~
@@ -246,7 +246,7 @@
                         />
 
                     <Button
-                        android:id="@+id/btnShowRawFileContent"
+                        android:id="@+id/btnPrintFileContent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="30dp"
@@ -255,6 +255,19 @@
                         android:minHeight="48dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/btnShowFileContent"
+                        android:text="@string/debug_btn_show_content"
+                        />
+
+                    <Button
+                        android:id="@+id/btnShowRawFileContent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginEnd="30dp"
+                        android:minHeight="48dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/btnPrintFileContent"
                         android:text="@string/debug_btn_show_raw_content"
                         />
 

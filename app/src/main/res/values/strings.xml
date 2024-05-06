@@ -152,6 +152,7 @@
     <string name="debug_hint_file">/some_file</string>
     <string name="debug_btn_list_files">List files</string>
     <string name="debug_btn_show_content">Show content</string>
+    <string name="debug_btn_print_content">Print content</string>
     <string name="debug_btn_show_raw_content">Show raw content</string>
     <string name="debug_dialog_list_files_heading">List files</string>
     <string name="debug_dialog_list_files_not_directory">Error: Not a directory</string>
