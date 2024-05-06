@@ -47,6 +47,8 @@
     <string name="theme_dark">Dark</string>
     <string name="theme_extradark">Extra Dark (Stargazer)</string>
     <string name="theme_light">Light</string>
+    <string name="user_address_start">You</string>
+    <string name="user_address">you</string>
 
     <!-- day of week: abbreviations -->
     <string name="monday_short">Mo.</string>
@@ -73,6 +75,9 @@
     <!-- Texts for ShowChatActivity -->
     <string name="showchat_text_unknown_message_type">Unknown message type. Maybe an update of the app will enable showing this message.</string>
     <string name="showchat_hint_message">Type your message…</string>
+    
+    <!-- Texts for internal messages (i.e. init) -->
+    <string name="internal_init_accept">%1$s accepted the init request</string>
 
     <!-- Texts for SetupActivity -->
     <string name="text_welcome">Welcome to Dawn!</string>

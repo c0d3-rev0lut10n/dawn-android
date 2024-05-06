@@ -29,6 +29,7 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import dawn.android.R
 import dawn.android.data.ContentType
+import dawn.android.data.Default
 import dawn.android.data.Message
 import dawn.android.util.TimestampUtil.toTimeOnly
 
@@ -58,6 +59,14 @@ class ChatMessagesAdapter(
             ContentType.SENT_INIT -> {
                 val contentView = TextView(context)
                 contentView.text = item.text
+                layout.addView(contentView)
+            }
+            ContentType.ACCEPT_INIT -> {
+                val contentView = TextView(context)
+                contentView.text = if(item.sender.dataId == Default.ProfileSelfDataId)
+                    context.getString(R.string.internal_init_accept, context.getString(R.string.user_address_start))
+                else
+                    context.getString(R.string.internal_init_accept, item.sender.name)
                 layout.addView(contentView)
             }
             else -> {
