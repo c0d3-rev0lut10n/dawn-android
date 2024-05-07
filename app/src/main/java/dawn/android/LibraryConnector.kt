@@ -112,7 +112,7 @@ data class SendMessage(
 @Serializable
 data class ParseMessage(
     val status: String,
-    val msg_type: Short? = null,
+    val msg_type: UShort? = null,
     val msg_text: String? = null,
     val msg_bytes: String? = null,
     val new_pfs_key: String? = null,
