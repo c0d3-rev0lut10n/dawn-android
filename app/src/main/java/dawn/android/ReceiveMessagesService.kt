@@ -228,7 +228,7 @@ class ReceiveMessagesService: Service() {
                 val message = Message.fromSerialized(task.message).unwrap()
                 message.sent = System.currentTimeMillis() / 1000
                 message.id = chat.messages.size.toULong()
-                chat.messages.add(message)
+                chat.addMessage(message)
                 ChatManager.updateChat(chat)
                 serializeTransmissionQueue()
             }
