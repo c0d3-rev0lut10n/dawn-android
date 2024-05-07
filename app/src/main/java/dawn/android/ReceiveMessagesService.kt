@@ -341,6 +341,9 @@ class ReceiveMessagesService: Service() {
             }
 
             // mark reception as successful
+            // commented out because there is no message processing done currently.
+            // TODO enable this code once message processing is implemented
+            /*
             for(id in subscription.associatedChats) {
                 val getChat = ChatManager.getChat(id.chatDataId)
                 if(getChat.isErr()) continue
@@ -348,6 +351,7 @@ class ReceiveMessagesService: Service() {
                 chat.lastSuccessfulReception = System.currentTimeMillis() / 1000
                 ChatManager.updateChat(chat)
             }
+             */
         }
         return err("not implemented")
     }
