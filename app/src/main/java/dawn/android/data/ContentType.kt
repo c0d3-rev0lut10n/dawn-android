@@ -26,5 +26,17 @@ enum class ContentType {
     LINKED_MEDIA,
     SENT_INIT,
     RECEIVED_INIT,
-    ACCEPT_INIT
+    ACCEPT_INIT,
+    UNKNOWN
+}
+
+fun UShort.toContentType(): ContentType {
+    val type = this.toUInt()
+    return when(type) {
+        1U -> ContentType.TEXT
+        2U -> ContentType.VOICE
+        3U -> ContentType.PICTURE
+        200U -> ContentType.LINKED_MEDIA
+        else -> ContentType.UNKNOWN
+    }
 }
