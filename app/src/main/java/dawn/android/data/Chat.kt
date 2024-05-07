@@ -138,6 +138,7 @@ class Chat(
     @OptIn(ConcurrentAnnotation::class)
     fun addMessage(message: Message) {
         messages.add(message)
+        lastMessageId = (lastMessageId + 1U).toUShort()
         ChatManager.updateChat(this)
     }
 }
