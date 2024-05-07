@@ -246,6 +246,7 @@ class ReceiveMessagesService: Service() {
         serializeTransmissionQueue()
     }
 
+    @OptIn(ConcurrentAnnotation::class)
     private fun pollChats(): Result<Ok, String> {
         val timestamp = ChatManager.getOldestIdStampToPoll()
         val chatsToPoll = ChatManager.getChatsToPoll(timestamp)
@@ -337,6 +338,15 @@ class ReceiveMessagesService: Service() {
 
                 val messageContent = Base64.decode(message.content, Base64.NO_WRAP)
                 val messageResult = LibraryConnector.mParseMsg(messageContent, chat.ownKyber.privateKey, profile.pubkeySig, chat.remotePFS, chat.pfsSalt)
+            }
+
+            // mark reception as successful
+            for(id in subscription.associatedChats) {
+                val getChat = ChatManager.getChat(id.chatDataId)
+                if(getChat.isErr()) continue
+                val chat = getChat.unwrap()
+                chat.lastSuccessfulReception = System.currentTimeMillis() / 1000
+                ChatManager.updateChat(chat)
             }
         }
         return err("not implemented")
