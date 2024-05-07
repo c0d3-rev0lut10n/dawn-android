@@ -19,9 +19,11 @@
 
 package dawn.android.data
 
+import dawn.android.annotation.ConcurrentAnnotation
 import dawn.android.data.serialized.SerializedChat
 import dawn.android.data.serialized.SerializedMessage
 import dawn.android.ui.data.ChatPreviewData
+import dawn.android.util.ChatManager
 import dawn.android.util.TimestampUtil.toTimestampForChatPreview
 
 class Chat(
@@ -130,5 +132,12 @@ class Chat(
             isRead = messageForPreview.received != null,
             dataId = dataId
         )
+    }
+
+    @ConcurrentAnnotation
+    @OptIn(ConcurrentAnnotation::class)
+    fun addMessage(message: Message) {
+        messages.add(message)
+        ChatManager.updateChat(this)
     }
 }
