@@ -321,6 +321,12 @@ class ReceiveMessagesService: Service() {
                 }
             }
             val update = Json.decodeFromString<SubscriptionUpdates>(responseString!!)
+
+            val receivedUpdateNumber = update.messages.size
+            val subscriptionId = subscriptions.indexOf(subscription)
+            subscription.messageNumber += receivedUpdateNumber.toUInt()
+            subscriptions[subscriptionId] = subscription
+
             for(messageInfo in update.messages) {
                 if(messageInfo.status != "ok") continue
                 val message = messageInfo.message!!
