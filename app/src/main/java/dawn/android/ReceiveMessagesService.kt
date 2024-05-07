@@ -53,6 +53,7 @@ import dawn.android.data.ReceivedInitRequest
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
+import dawn.android.data.toContentType
 import dawn.android.messagereception.PollingId
 import dawn.android.messagereception.Subscription
 import dawn.android.messagereception.SubscriptionUpdates
@@ -60,6 +61,7 @@ import dawn.android.messagereception.SubscriptionUtil
 import dawn.android.messagetransmission.TransmissionQueue
 import dawn.android.messagetransmission.TransmissionTask
 import dawn.android.util.ChatManager
+import dawn.android.util.Clock
 import dawn.android.util.DataManager
 import dawn.android.util.PreferenceManager
 import dawn.android.util.RequestFactory
@@ -338,6 +340,26 @@ class ReceiveMessagesService: Service() {
 
                 val messageContent = Base64.decode(message.content, Base64.NO_WRAP)
                 val messageResult = LibraryConnector.mParseMsg(messageContent, chat.ownKyber.privateKey, profile.pubkeySig, chat.remotePFS, chat.pfsSalt)
+                if(messageResult.isErr()) {
+                    Log.e(logTag, "Could not parse message: ${messageResult.print()}")
+                    continue
+                }
+                val parsedMessage = messageResult.unwrap()
+                val media = if(parsedMessage.msg_bytes != null) {
+                    Base64.decode(parsedMessage.msg_bytes, Base64.NO_WRAP)
+                }
+                else null
+                val messageInChat = Message(
+                    chatDataId = chat.dataId,
+                    id = chat.messages.size.toULong(),
+                    sender = profile,
+                    sent = messageInfo.message.sent,
+                    received = Clock.now().epochSecond,
+                    contentType = parsedMessage.msg_type!!.toContentType(),
+                    text = parsedMessage.msg_text?: "",
+                    media = media
+                )
+                chat.addMessage(messageInChat)
             }
 
             // mark reception as successful
