@@ -61,6 +61,11 @@ class ChatMessagesAdapter(
                 contentView.text = item.text
                 layout.addView(contentView)
             }
+            ContentType.RECEIVED_INIT -> {
+                val contentView = TextView(context)
+                contentView.text = context.getString(R.string.internal_init_received, item.sender.name, item.text)
+                layout.addView(contentView)
+            }
             ContentType.ACCEPT_INIT -> {
                 val contentView = TextView(context)
                 contentView.text = if(item.sender.dataId == Default.ProfileSelfDataId)
