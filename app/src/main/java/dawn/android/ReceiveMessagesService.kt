@@ -399,52 +399,6 @@ class ReceiveMessagesService: Service() {
         return err("not implemented")
     }
 
-    @OptIn(ConcurrentAnnotation::class)
-    private fun pollChatsLegacy() {
-        val chats = ChatManager.getAllChats()
-        for(entry in chats) {
-            val chat = entry.value
-            val timestampsToCheckResult = LibraryConnector.mGetAllTimestampsSince(chat.idStamp)
-            if(timestampsToCheckResult.isErr()) {
-                Log.e(logTag, "Deriving timestamps failed: ${timestampsToCheckResult.unwrapErr()}")
-                return
-            }
-            val timestampsToCheck = timestampsToCheckResult.unwrap()
-            for(timestamp in timestampsToCheck.timestamps!!) {
-                val temporaryIdResult = LibraryConnector.mGetCustomTempId(chat.id, timestamp)
-                if(temporaryIdResult.isErr()) {
-                    Log.e(logTag, "Getting temporary ID failed: ${temporaryIdResult.unwrapErr()}")
-                    return
-                }
-                val temporaryId = temporaryIdResult.unwrap()
-                while(chat.lastMessageId < 60000U) {
-                    val request = RequestFactory.buildRcvRequest(temporaryId.id!!, chat.lastMessageId)
-                    val response = client.newCall(request).execute()
-                    if(!response.isSuccessful) {
-                        Log.w(logTag, "Request $request failed, response: ${response.code}")
-                        return
-                    }
-                    if (response.code == 204) break // there are no messages left to receive for this ID. Use the next one!
-                    // save the message and increment messageId
-                    // TODO: save the message and build notification
-                    chat.lastMessageId++
-                    ChatManager.updateChat(chat)
-                }
-                val currentTimestamp = LibraryConnector.mGetCurrentTimestamp()
-                if(currentTimestamp.isErr()) return
-                if (chat.idStamp == currentTimestamp.unwrap().timestamp) continue// if the checked ID is the currently used one, we do not need to derive a new one. Therefore, we continue
-                // we are done with this ID, derive and save the new one
-                val nextId = LibraryConnector.mGetNextId(chat.id, chat.idSalt)
-                if(nextId.isErr()) {
-                    Log.e(logTag, "Deriving next ID for chat $chat failed: ${nextId.unwrapErr()}")
-                }
-                chat.id = nextId.unwrap().id!!
-                chat.lastMessageId = 0U
-                ChatManager.updateChat(chat)
-            }
-        }
-    }
-
     private fun pollInitID(): Result<Ok, String> {
         val initIdResult = PreferenceManager.get("initId")
         if(initIdResult.isErr() || initIdResult.unwrap() == "") return err("Could not get init ID")
