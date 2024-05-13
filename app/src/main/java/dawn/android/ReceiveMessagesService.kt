@@ -369,10 +369,29 @@ class ReceiveMessagesService: Service() {
             }
 
             // mark reception as successful
+            val currentIdStamp = LibraryConnector.mGetCurrentTimestamp().unwrap().timestamp!!
             for(id in subscription.associatedChats) {
                 val getChat = ChatManager.getChat(id.chatDataId)
                 if(getChat.isErr()) continue
                 val chat = getChat.unwrap()
+
+                // check id stamp against current time and derive a new ID if necessary
+                if(chat.idStamp != currentIdStamp) {
+                    val nextId = LibraryConnector.mGetNextId(chat.id, chat.idSalt)
+                    if(nextId.isErr()) {
+                        Log.e(logTag, "Deriving next ID for chat ${chat.dataId} failed: ${nextId.print()}")
+                        continue
+                    }
+                    val nextTimestamp = LibraryConnector.mGetNextTimestamp(chat.idStamp)
+                    if(nextTimestamp.isErr()) {
+                        Log.e(logTag, "Deriving next id stamp for chat ${chat.dataId} failed: ${nextTimestamp.print()}")
+                        continue
+                    }
+                    chat.id = nextId.unwrap().id!!
+                    chat.idStamp = nextTimestamp.unwrap().timestamp!!
+                    chat.lastMessageId = 0U
+                }
+
                 chat.lastSuccessfulReception = Clock.now().epochSecond
                 ChatManager.updateChat(chat)
             }
