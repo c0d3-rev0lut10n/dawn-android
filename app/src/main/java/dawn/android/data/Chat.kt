@@ -106,7 +106,9 @@ class Chat(
         val messagePreview: String
         try {
             messageForPreview = messages.last()
-            userName = messageForPreview.sender.name
+            userName = if(type == ChatType.DIRECT || type == ChatType.SENT_INIT)
+                null
+            else messageForPreview.sender.name
             messagePreview = if(messageForPreview.text.length > 42)
                 messageForPreview.text.slice(IntRange(0,42))
             else messageForPreview.text
