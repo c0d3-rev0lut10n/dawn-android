@@ -95,6 +95,8 @@ class ReceiveMessagesService: Service() {
 
     private var tickTimer: Timer? = null
     private var tickInProgress = false
+    private var tickCount = 0
+    private var skipTicks = 0
 
     private var transmissionQueue = TransmissionQueue(ArrayList())
 
@@ -178,6 +180,13 @@ class ReceiveMessagesService: Service() {
     private fun tick() {
         if(tickInProgress) return
         tickInProgress = true
+        tickCount++
+        if(tickCount % (skipTicks + 1) != 0) {
+            Log.i(logTag, "Skipping tick")
+            tickInProgress = false
+            return
+        }
+        else tickCount = 0
         // here happens everything that gets executed during a tick
         Log.i(logTag, "Starting tick")
         val pollChatResults = pollChats()
