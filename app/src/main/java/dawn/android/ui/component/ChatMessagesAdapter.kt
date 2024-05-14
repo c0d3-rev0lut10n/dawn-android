@@ -58,7 +58,7 @@ class ChatMessagesAdapter(
             }
             ContentType.SENT_INIT -> {
                 val contentView = TextView(context)
-                contentView.text = item.text
+                contentView.text = context.getString(R.string.internal_init_sent, context.getString(R.string.user_address_start), item.text)
                 layout.addView(contentView)
             }
             ContentType.RECEIVED_INIT -> {
