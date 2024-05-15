@@ -200,7 +200,8 @@ class ReceiveMessagesService: Service() {
 
     @OptIn(ConcurrentAnnotation::class)
     private fun transmitMessages(): Result<Ok, String> {
-        for(task in transmissionQueue.queue) {
+        val queue = transmissionQueue.queue
+        for(task in queue) {
             val chatResult = ChatManager.getChat(task.chatDataID)
             if(chatResult.isErr()) continue
             val chat = chatResult.unwrap()
