@@ -397,6 +397,7 @@ class ReceiveMessagesService: Service() {
                         Log.e(logTag, "Deriving next id stamp for chat ${chat.dataId} failed: ${nextTimestamp.print()}")
                         continue
                     }
+                    idRelations.remove(chat.id)
                     chat.id = nextId.unwrap().id!!
                     chat.idStamp = nextTimestamp.unwrap().timestamp!!
                     chat.lastMessageId = 0U
