@@ -210,7 +210,7 @@ class ReceiveMessagesService: Service() {
                     continue
                 transmissionQueue.queue.remove(task)
                 val message = Message.fromSerialized(task.message).unwrap()
-                message.sent = System.currentTimeMillis() / 1000
+                message.sent = Clock.now().epochSecond
                 message.id = chat.messages.size.toULong()
                 chat.messages.add(message)
                 ChatManager.updateChat(chat)
@@ -229,14 +229,14 @@ class ReceiveMessagesService: Service() {
                 if(messageId > chat.lastMessageId + 1U) {
                     val taskId = transmissionQueue.queue.indexOf(task)
                     task.remoteMessageNumber = messageId
-                    task.message.sent = System.currentTimeMillis() / 1000
+                    task.message.sent = Clock.now().epochSecond
                     transmissionQueue.queue[taskId] = task
                     serializeTransmissionQueue()
                     continue
                 }
                 transmissionQueue.queue.remove(task)
                 val message = Message.fromSerialized(task.message).unwrap()
-                message.sent = System.currentTimeMillis() / 1000
+                message.sent = Clock.now().epochSecond
                 message.id = chat.messages.size.toULong()
                 chat.addMessage(message)
                 ChatManager.updateChat(chat)
@@ -491,7 +491,7 @@ class ReceiveMessagesService: Service() {
                     name = initRequest.name!!,
                     comment = initRequest.comment!!,
                     sent = time?: 0L,
-                    received = System.currentTimeMillis() / 1000
+                    received = Clock.now().epochSecond
                 )
 
                 val requestBytes = Json.encodeToString(serializableRequest).toByteArray(Charsets.UTF_8)
@@ -746,7 +746,7 @@ class ReceiveMessagesService: Service() {
                 id = 0U,
                 chatDataId = chat.dataId,
                 sender = ChatManager.getProfile(Default.ProfileSelfDataId).unwrap(),
-                sent = System.currentTimeMillis() / 1000,
+                sent = Clock.now().epochSecond,
                 received = null,
                 contentType = ContentType.SENT_INIT,
                 text = comment,
