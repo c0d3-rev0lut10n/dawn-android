@@ -304,7 +304,8 @@ class ReceiveMessagesService: Service() {
         }
 
         // poll all subscriptions
-        for(subscription in subscriptions) {
+        val currentSubs = subscriptions
+        for(subscription in currentSubs) {
             val request = RequestFactory.buildSubRequest(subscription)
             val response = makeRequest(request)
             if(response.isErr()) {
