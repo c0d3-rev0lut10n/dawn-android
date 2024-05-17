@@ -57,6 +57,12 @@ class Message(
     }
 
     fun intoSerializable(): SerializedMessage {
+        if(media != null && (contentType == ContentType.LINKED_MEDIA || contentType == ContentType.PICTURE || contentType == ContentType.VOICE)) {
+            val chatsDir = DataManager.getLocation(Location.CHATS)
+            val chatDir = File(chatsDir, chatDataId)
+            if(!File(chatDir, id.toString()).isFile)
+                DataManager.writeFile(id.toString(), chatDir, media!!, false)
+        }
         return SerializedMessage(
             chatDataId = chatDataId,
             id = id,
