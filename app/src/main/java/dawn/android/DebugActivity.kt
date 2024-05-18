@@ -104,6 +104,7 @@ class DebugActivity : AppCompatActivity() {
         binding.btnSetPreference.setOnClickListener { setPreference() }
         binding.btnListFiles.setOnClickListener { listFiles() }
         binding.btnShowFileContent.setOnClickListener { showContent() }
+        binding.btnPrintFileContent.setOnClickListener { printContent() }
     }
 
     override fun onResume() {
