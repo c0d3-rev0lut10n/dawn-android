@@ -339,8 +339,6 @@ class ReceiveMessagesService: Service() {
             subscriptions[subscriptionId] = subscription
 
             for(messageInfo in update.messages) {
-                println(messageInfo.message?.id)
-                println(messageInfo.message?.sent)
                 if(messageInfo.status != "ok") continue
                 val message = messageInfo.message!!
                 val dataId = idRelations[message.id]?: continue
