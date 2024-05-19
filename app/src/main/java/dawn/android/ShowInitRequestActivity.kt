@@ -35,6 +35,7 @@ import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import dawn.android.annotation.ConcurrentAnnotation
 import dawn.android.data.Chat
 import dawn.android.data.ChatType
 import dawn.android.data.ContentType
@@ -163,8 +164,127 @@ class ShowInitRequestActivity : AppCompatActivity() {
         binding.btnRejectRequest.setOnClickListener { reject() }
     }
 
+    @OptIn(ConcurrentAnnotation::class)
     private fun accept() {
+        val ownPubkeySig = PreferenceManager.get(Preferences.sign.ownPublicKey).unwrap()
+        val ownSeckeySig = PreferenceManager.get(Preferences.sign.ownPrivateKey).unwrap()
 
+        // get the timestamp from when the init request was sent
+        val requestTimestampResult = LibraryConnector.mTimestampFromUnix(request.sent.toString())
+        if(requestTimestampResult.isErr()) {
+            Log.w(logTag, "Could not accept init request: ${requestTimestampResult.print()}")
+            return
+        }
+        val requestTimestamp = requestTimestampResult.unwrap().timestamp!!
+
+        // get all timestamps until now
+        val timestampsToDerive = LibraryConnector.mGetAllTimestampsSince(requestTimestamp)
+        if(timestampsToDerive.isErr()) {
+            Log.e(logTag, "Could not get timestamps between init request and now: ${timestampsToDerive.print()}")
+            return
+        }
+
+        // derive current ID
+        var id = request.id
+        var first = true
+        for(timestamp in timestampsToDerive.unwrap().timestamps!!) {
+            // skip first timestamp since the ID is already valid for it
+            if(first) {
+                first = false
+                continue
+            }
+
+            val nextIdResult = LibraryConnector.mGetNextId(id, request.idSalt)
+            if(nextIdResult.isErr()) {
+                Log.e(logTag, "Could not warp through timestamps: ${nextIdResult.print()}")
+                return
+            }
+            id = nextIdResult.unwrap().id!!
+        }
+
+        val initResponseResult = LibraryConnector.mAcceptInitRequest(
+            own_pubkey_sig = ownPubkeySig,
+            own_seckey_sig = ownSeckeySig,
+            remote_pubkey_kyber = request.remotePubkeyKyber,
+            own_pfs_key = request.ownPFSKey,
+            pfs_salt = request.pfsSalt,
+            id = id,
+            mdc_seed = request.mdcSeed
+        )
+        if(initResponseResult.isErr()) {
+            Log.w(logTag, "Could not accept init request: ${initResponseResult.print()}")
+            return
+        }
+        val initResponse = initResponseResult.unwrap()
+        val ciphertext = Base64.decode(initResponse.ciphertext, Base64.NO_WRAP)
+
+        // for now, create a profile. TODO: get profile based on matching signature key
+        val profilePrototype = Profile(
+            dataId = Default.ToBeDeterminedDataId,
+            name = request.name,
+            handle = "",
+            bio = "",
+            pictureBase64 = null,
+            pubkeySig = request.remotePubkeySig
+        )
+        val profileResult = ChatManager.newProfile(profilePrototype)
+        if(profileResult.isErr()) {
+            Log.e(logTag, "Could not create profile: ${profileResult.print()}")
+            return
+        }
+        val profile = profileResult.unwrap()
+
+        // save chat as of the init request
+        val chatPrototype = Chat(
+            dataId = Default.ToBeDeterminedDataId,
+            id = request.id,
+            idStamp = requestTimestampResult.unwrap().timestamp!!,
+            idSalt = request.idSalt,
+            lastMessageId = 0U,
+            lastSuccessfulReception = Long.MIN_VALUE,
+            name = request.name,
+            type = ChatType.DIRECT,
+            messages = ArrayList(),
+            ownKyber = Keypair(publicKey = initResponse.own_pubkey_kyber!!, privateKey = initResponse.own_seckey_kyber!!),
+            ownCurve = request.ownCurve,
+            ownPFS = request.ownPFSKey,
+            remotePFS = request.remotePFSKey,
+            pfsSalt = request.pfsSalt,
+            mdcSeed = request.mdcSeed,
+            associatedProfileId = profile.dataId
+        )
+        val chatResult = ChatManager.newChat(chatPrototype)
+        if(chatResult.isErr()) {
+            Log.e(logTag, "Could not create chat: ${chatResult.print()}")
+            return
+        }
+        val chat = chatResult.unwrap()
+        chat.messages.add(
+            Message(
+                chatDataId = chat.dataId,
+                id = 0U,
+                sender = profile,
+                sent = request.sent,
+                received = request.received,
+                contentType = ContentType.RECEIVED_INIT,
+                text = request.comment,
+                media = null
+            )
+        )
+        ChatManager.updateChat(chat)
+
+        val message = Message(
+            chatDataId = chat.dataId,
+            id = 1U,
+            sender = ChatManager.getProfile(Default.ProfileSelfDataId).unwrap(),
+            sent = null,
+            received = null,
+            contentType = ContentType.ACCEPT_INIT,
+            text = "",
+            media = null
+        )
+
+        mService.transmitMessage(chat.dataId, message, ciphertext)
     }
 
     private fun reject() {
