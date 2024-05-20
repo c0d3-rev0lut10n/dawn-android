@@ -29,10 +29,18 @@ import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import dawn.android.data.Location
 import dawn.android.data.Preferences
+import dawn.android.data.ReceivedInitRequest
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivityInitRequestsBinding
+import dawn.android.ui.component.AdapterScope
+import dawn.android.ui.component.ChatPreviewAdapter
+import dawn.android.ui.data.ChatPreviewData
+import dawn.android.util.DataManager
 import dawn.android.util.ThemeLoader
+import dawn.android.util.TimestampUtil.toTimestampForChatPreview
+import kotlinx.serialization.json.Json
 
 class InitRequestsActivity : AppCompatActivity() {
 
@@ -91,7 +99,32 @@ class InitRequestsActivity : AppCompatActivity() {
         supportActionBar?.setHomeAsUpIndicator(mTheme.backButtonIcon)
     }
 
+    private fun getInitRequests(): ArrayList<ChatPreviewData> {
+        val list = ArrayList<ChatPreviewData>()
+        val initRequestDirectory = DataManager.getLocation(Location.RECEIVED_REQUESTS)
+        val files = initRequestDirectory.listFiles()
+        if(files.isNullOrEmpty()) return list
+        for(file in files) {
+            val content = DataManager.readFile(file.name, initRequestDirectory)?: continue
+            val request = Json.decodeFromString<ReceivedInitRequest>(String(content, Charsets.UTF_8))
+            val time = if(request.sent == 0L) "" else request.sent.toTimestampForChatPreview()
+            val preview = ChatPreviewData(
+                chatName = request.name,
+                userName = null,
+                messagePreview = request.comment,
+                time = time,
+                isSent = true,
+                isRead = false,
+                dataId = request.id
+            )
+            list.add(preview)
+        }
+        binding.contentLayout.adapter = ChatPreviewAdapter(this, R.layout.chat_list_item, list, AdapterScope.INIT_REQUEST_LIST)
+        return list
+    }
+
     override fun onResume() {
+        getInitRequests()
         binding.toolbar.title = actionBarText
         super.onResume()
     }
