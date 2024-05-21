@@ -285,6 +285,10 @@ class ShowInitRequestActivity : AppCompatActivity() {
         )
 
         mService.transmitMessage(chat.dataId, message, ciphertext)
+
+        val initRequestDir = DataManager.getLocation(Location.RECEIVED_REQUESTS)
+        val requestFile = File(initRequestDir, dataId)
+        requestFile.delete()
     }
 
     private fun reject() {
