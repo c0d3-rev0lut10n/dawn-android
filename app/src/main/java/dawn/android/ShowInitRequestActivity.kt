@@ -289,6 +289,7 @@ class ShowInitRequestActivity : AppCompatActivity() {
         val initRequestDir = DataManager.getLocation(Location.RECEIVED_REQUESTS)
         val requestFile = File(initRequestDir, dataId)
         requestFile.delete()
+        finish()
     }
 
     private fun reject() {
