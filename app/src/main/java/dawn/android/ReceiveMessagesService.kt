@@ -266,12 +266,13 @@ class ReceiveMessagesService: Service() {
 
         // get all chats that are not part of a subscription yet
         for(chat in chatsToPoll.values) {
-            if(chat.id !in idRelations.keys) {
+            if(chat.dataId !in idRelations.values) {
                 val mdc = LibraryConnector.mPredictableMdcGen(chat.mdcSeed, chat.id).unwrap().mdc!!
+                val tempId = LibraryConnector.mGetCustomTempId(chat.id, chat.idStamp).unwrap().id!!
                 missingChats.add(
                     PollingId(
                         chatDataId = chat.dataId,
-                        id = chat.id,
+                        id = tempId,
                         mdc = mdc,
                         startId = chat.lastMessageId
                     )
@@ -723,6 +724,8 @@ class ReceiveMessagesService: Service() {
             if(profileResult.isErr())
                 return err(profileResult.unwrapErr())
             val profile = profileResult.unwrap()
+
+            println("INIT: ${initRequest.id}")
 
             val chatResult = ChatManager.newChat(
                 id = initRequest.id!!,
