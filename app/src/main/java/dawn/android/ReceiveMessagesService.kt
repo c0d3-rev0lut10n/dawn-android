@@ -643,7 +643,12 @@ class ReceiveMessagesService: Service() {
     @OptIn(ConcurrentAnnotation::class)
     fun searchHandleAndInit(handle: String, initSecret: String, comment: String): Result<Ok, String> {
         val request = RequestFactory.buildWhoRequest(handle, initSecret)
-        val response = client.newCall(request).execute()
+        val responseResult = makeRequest(request)
+        if(responseResult.isErr()) {
+            // TODO graphically notify the user
+            return err("Could not send request due to a network error")
+        }
+        val response = responseResult.unwrap()
         if(!response.isSuccessful) {
             Log.w(logTag, "Request $request failed, response: ${response.code}")
             val body = response.body
