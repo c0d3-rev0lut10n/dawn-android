@@ -124,6 +124,7 @@ class InitRequestsActivity : AppCompatActivity() {
     }
 
     override fun onResume() {
+        binding.contentLayout.adapter = null
         getInitRequests()
         binding.toolbar.title = actionBarText
         super.onResume()
