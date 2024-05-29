@@ -329,6 +329,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun makeChatlist() {
+        binding.appBarMain.content.contentLayout.adapter = null
         val chats = ChatManager.getAllChats().values
         if(chats.isEmpty()) {
             // no chats yet, show a notice about that instead
