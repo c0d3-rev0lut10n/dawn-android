@@ -267,8 +267,8 @@ class ReceiveMessagesService: Service() {
         // get all chats that are not part of a subscription yet
         for(chat in chatsToPoll.values) {
             if(chat.dataId !in idRelations.values) {
-                val mdc = LibraryConnector.mPredictableMdcGen(chat.mdcSeed, chat.id).unwrap().mdc!!
                 val tempId = LibraryConnector.mGetCustomTempId(chat.id, chat.idStamp).unwrap().id!!
+                val mdc = LibraryConnector.mPredictableMdcGen(chat.mdcSeed, tempId).unwrap().mdc!!
                 if(idRelations[tempId] != null) {
                     // prevent adding ambiguous data IDs to the relation map indefinitely
                     Log.e(logTag, "CRITICAL: tried adding an ambiguous data ID to an already existing ID relation! This should not happen, therefore no action was executed!\nAlready existing relation: $tempId -> ${idRelations[tempId]}")
