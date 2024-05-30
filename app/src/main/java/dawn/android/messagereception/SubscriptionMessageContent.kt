@@ -26,6 +26,6 @@ data class SubscriptionMessageContent(
     val id: String,
     val msg_number: UShort,
     val sent: Long,
-    val received: Long,
+    val read: Long,
     val content: String
 )
