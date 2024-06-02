@@ -32,6 +32,7 @@ class Message(
     val sender: Profile,
     var sent: Long?,
     var received: Long?,
+    var read: Long?,
     val contentType: ContentType,
     val text: String,
     private var media: ByteArray?
@@ -48,6 +49,7 @@ class Message(
                     sender = profile.unwrap(),
                     sent = ser.sent,
                     received = ser.received,
+                    read = ser.read,
                     contentType = ser.contentType,
                     text = ser.text,
                     media = null // media is lazy-loaded for applicable message types to save memory,
@@ -67,10 +69,11 @@ class Message(
             chatDataId = chatDataId,
             id = id,
             sender = sender.dataId,
-            sent,
-            received,
-            contentType,
-            text
+            sent = sent,
+            received = received,
+            read = read,
+            contentType = contentType,
+            text = text
         )
     }
 

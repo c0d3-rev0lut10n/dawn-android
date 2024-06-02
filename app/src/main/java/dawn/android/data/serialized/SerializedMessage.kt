@@ -29,6 +29,7 @@ class SerializedMessage(
     val sender: String, // use the data ID of the profile for this attribute
     var sent: Long?,
     var received: Long?,
+    var read: Long?,
     val contentType: ContentType,
     val text: String,
 ) {
