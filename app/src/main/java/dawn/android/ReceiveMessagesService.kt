@@ -378,6 +378,7 @@ class ReceiveMessagesService: Service() {
                     sender = profile,
                     sent = messageInfo.message.sent,
                     received = Clock.now().epochSecond,
+                    read = null,
                     contentType = parsedMessage.msg_type!!.toContentType(),
                     text = parsedMessage.msg_text?: "",
                     media = media
@@ -761,6 +762,7 @@ class ReceiveMessagesService: Service() {
                 sender = ChatManager.getProfile(Default.ProfileSelfDataId).unwrap(),
                 sent = Clock.now().epochSecond,
                 received = null,
+                read = null,
                 contentType = ContentType.SENT_INIT,
                 text = comment,
                 media = Base64.decode(initRequest.ciphertext!!, Base64.NO_WRAP),
