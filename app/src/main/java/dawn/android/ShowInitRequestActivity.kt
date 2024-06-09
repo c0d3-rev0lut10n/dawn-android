@@ -49,6 +49,7 @@ import dawn.android.data.ReceivedInitRequest
 import dawn.android.data.Theme
 import dawn.android.databinding.ActivityShowInitRequestBinding
 import dawn.android.util.ChatManager
+import dawn.android.util.Clock
 import dawn.android.util.DataManager
 import dawn.android.util.PreferenceManager
 import dawn.android.util.ThemeLoader
@@ -266,6 +267,7 @@ class ShowInitRequestActivity : AppCompatActivity() {
                 sender = profile,
                 sent = request.sent,
                 received = request.received,
+                read = Clock.now().epochSecond,
                 contentType = ContentType.RECEIVED_INIT,
                 text = request.comment,
                 media = null
@@ -279,6 +281,7 @@ class ShowInitRequestActivity : AppCompatActivity() {
             sender = ChatManager.getProfile(Default.ProfileSelfDataId).unwrap(),
             sent = null,
             received = null,
+            read = null,
             contentType = ContentType.ACCEPT_INIT,
             text = "",
             media = null
