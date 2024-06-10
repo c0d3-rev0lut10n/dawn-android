@@ -208,10 +208,10 @@ data class AcceptInitRequest(
 @Serializable
 data class InitResponse(
     val status: String,
-    val remote_pubkey_kyber: String?,
-    val remote_pubkey_sig: String?,
-    val new_pfs_key: String?,
-    val mdc: String?
+    val remote_pubkey_kyber: String? = null,
+    val remote_pubkey_sig: String? = null,
+    val new_pfs_key: String? = null,
+    val mdc: String? = null
 )
 
 object LibraryConnector {
