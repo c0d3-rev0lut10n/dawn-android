@@ -231,7 +231,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun askForPassword() {
         val passwordField = EditText(this)
-        passwordField.inputType = InputType.TYPE_CLASS_TEXT
+        passwordField.inputType = InputType.TYPE_TEXT_VARIATION_PASSWORD
         passwordField.transformationMethod = PasswordTransformationMethod.getInstance()
         val textColorTypedValue = TypedValue()
         theme.resolveAttribute(android.R.attr.textColor, textColorTypedValue, true)
