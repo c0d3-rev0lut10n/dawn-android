@@ -38,6 +38,7 @@ data class SerializedChat(
     var remoteKyber: String,
     var ownCurve: Keypair,
     var remoteCurve: String,
+    var remoteCurvePfs: String,
     var ownPFS: String,
     var remotePFS: String,
     var pfsSalt: String,
