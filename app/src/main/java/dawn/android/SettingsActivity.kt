@@ -175,7 +175,7 @@ class SettingsActivity : AppCompatActivity() {
         if(initSecretResult.isErr()) {
             // there doesn't exist an init secret yet, therefore create one
             Log.i(logTag, "Creating new init secret")
-            val availableSecretCharacters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            val availableSecretCharacters = "0123456789abcdefghijklmnopqrstuvwxyz"
             val secretLength = 16
             val secret = CharArray(secretLength)
             val stringGenerationRng = SecureRandom()
