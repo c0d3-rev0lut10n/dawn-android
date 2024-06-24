@@ -26,6 +26,8 @@ data class ReceivedInitRequest (
     val remotePubkeyKyber: String,
     val remotePubkeySig: String,
     val ownCurve: Keypair,
+    val remotePubkeyCurve: String,
+    val remotePubkeyCurvePfs: String,
     val ownPFSKey: String,
     val remotePFSKey: String,
     val pfsSalt: String,
