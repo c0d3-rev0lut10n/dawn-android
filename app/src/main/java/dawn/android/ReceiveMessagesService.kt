@@ -39,6 +39,7 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import dawn.android.annotation.ConcurrentAnnotation
+import dawn.android.data.Chat
 import dawn.android.data.ChatType
 import dawn.android.data.ContentType
 import dawn.android.data.Default
@@ -362,28 +363,57 @@ class ReceiveMessagesService: Service() {
                 val profile = profileResult.unwrap()
 
                 val messageContent = Base64.decode(message.content, Base64.NO_WRAP)
-                val messageResult = LibraryConnector.mParseMsg(messageContent, chat.ownKyber.privateKey, profile.pubkeySig, chat.remotePFS, chat.pfsSalt)
-                if(messageResult.isErr()) {
-                    Log.e(logTag, "Could not parse message: ${messageResult.print()}")
-                    continue
+                if(chat.type == ChatType.SENT_INIT) {
+                    println(chat.ownKyber.publicKey)
+                    println(chat.remotePFS)
+                    println(chat.pfsSalt)
+                    val messageResult = LibraryConnector.mParseInitResponse(messageContent, chat.ownKyber.privateKey, chat.remotePFS, chat.pfsSalt)
+                    if(messageResult.isErr()) {
+                        Log.e(logTag, "Could not parse init response: ${messageResult.print()}")
+                        continue
+                    }
+                    val messageInChat = Message(
+                        chatDataId = chat.dataId,
+                        id = chat.messages.size.toULong(),
+                        sender = profile,
+                        sent = messageInfo.message.sent,
+                        received = Clock.now().epochSecond,
+                        read = null,
+                        contentType = ContentType.ACCEPT_INIT,
+                        text = "",
+                        media = null
+                    )
+                    chat.addMessage(messageInChat)
                 }
-                val parsedMessage = messageResult.unwrap()
-                val media = if(parsedMessage.msg_bytes != null) {
-                    Base64.decode(parsedMessage.msg_bytes, Base64.NO_WRAP)
+                else {
+                    val messageResult = LibraryConnector.mParseMsg(
+                        messageContent,
+                        chat.ownKyber.privateKey,
+                        profile.pubkeySig,
+                        chat.remotePFS,
+                        chat.pfsSalt
+                    )
+                    if (messageResult.isErr()) {
+                        Log.e(logTag, "Could not parse message: ${messageResult.print()}")
+                        continue
+                    }
+                    val parsedMessage = messageResult.unwrap()
+                    val media = if (parsedMessage.msg_bytes != null) {
+                        Base64.decode(parsedMessage.msg_bytes, Base64.NO_WRAP)
+                    } else null
+                    val messageInChat = Message(
+                        chatDataId = chat.dataId,
+                        id = chat.messages.size.toULong(),
+                        sender = profile,
+                        sent = messageInfo.message.sent,
+                        received = Clock.now().epochSecond,
+                        read = null,
+                        contentType = parsedMessage.msg_type!!.toContentType(),
+                        text = parsedMessage.msg_text ?: "",
+                        media = media
+                    )
+                    chat.addMessage(messageInChat)
                 }
-                else null
-                val messageInChat = Message(
-                    chatDataId = chat.dataId,
-                    id = chat.messages.size.toULong(),
-                    sender = profile,
-                    sent = messageInfo.message.sent,
-                    received = Clock.now().epochSecond,
-                    read = null,
-                    contentType = parsedMessage.msg_type!!.toContentType(),
-                    text = parsedMessage.msg_text?: "",
-                    media = media
-                )
-                chat.addMessage(messageInChat)
             }
 
             // mark reception as successful
@@ -488,6 +518,8 @@ class ReceiveMessagesService: Service() {
                     remotePubkeyKyber = initRequest.remote_pubkey_kyber!!,
                     remotePubkeySig = initRequest.remote_pubkey_sig!!,
                     ownCurve = Keypair(publicKey = handlePrivateInfo.initKeypairCurve.own_pubkey_curve!!, privateKey = handlePrivateInfo.initKeypairCurve.own_seckey_curve),
+                    remotePubkeyCurve = initRequest.remote_pubkey_curve!!,
+                    remotePubkeyCurvePfs = initRequest.remote_pubkey_curve_pfs!!,
                     ownPFSKey = initRequest.own_pfs_key!!,
                     remotePFSKey = initRequest.remote_pfs_key!!,
                     pfsSalt = initRequest.pfs_salt!!,
@@ -738,20 +770,28 @@ class ReceiveMessagesService: Service() {
 
             println("INIT: ${initRequest.id}")
 
-            val chatResult = ChatManager.newChat(
+            val chatPrototype = Chat(
+                dataId = Default.ToBeDeterminedDataId,
                 id = initRequest.id!!,
                 idStamp = LibraryConnector.mGetCurrentTimestamp().unwrap().timestamp!!,
                 idSalt = initRequest.id_salt!!,
+                lastMessageId = 0U,
+                lastSuccessfulReception = Long.MIN_VALUE,
                 name = handleInfo.name,
                 type = ChatType.SENT_INIT,
+                messages = ArrayList(),
                 ownKyber = Keypair(publicKey = initRequest.own_pubkey_kyber!!, privateKey = initRequest.own_seckey_kyber!!),
+                remoteKyber = "",
                 ownCurve = Keypair(publicKey = initRequest.own_pubkey_curve!!, privateKey = initRequest.own_seckey_curve!!),
+                remoteCurve = handleInfo.init_pk_curve,
+                remoteCurvePfs = handleInfo.init_pk_curve_pfs_2,
                 ownPFS = initRequest.own_pfs_key!!,
                 remotePFS = initRequest.remote_pfs_key!!,
                 pfsSalt = initRequest.pfs_salt!!,
                 mdcSeed = initRequest.mdc_seed!!,
                 associatedProfileId = profile.dataId
             )
+            val chatResult = ChatManager.newChat(chatPrototype)
             if(chatResult.isErr())
                 return err(chatResult.unwrapErr())
             val chat = chatResult.unwrap()
