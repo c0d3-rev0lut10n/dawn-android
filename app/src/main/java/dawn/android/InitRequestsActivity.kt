@@ -115,6 +115,7 @@ class InitRequestsActivity : AppCompatActivity() {
                 time = time,
                 isSent = true,
                 isRead = false,
+                isOwn = false,
                 dataId = request.id
             )
             list.add(preview)
