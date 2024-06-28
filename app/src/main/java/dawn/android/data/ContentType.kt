@@ -19,6 +19,11 @@
 
 package dawn.android.data
 
+import dawn.android.data.ContentType.LINKED_MEDIA
+import dawn.android.data.ContentType.PICTURE
+import dawn.android.data.ContentType.TEXT
+import dawn.android.data.ContentType.VOICE
+
 enum class ContentType {
     TEXT,
     PICTURE,
@@ -38,5 +43,15 @@ fun UShort.toContentType(): ContentType {
         3U -> ContentType.PICTURE
         200U -> ContentType.LINKED_MEDIA
         else -> ContentType.UNKNOWN
+    }
+}
+
+fun ContentType.numeric(): Short {
+    return when(this) {
+        TEXT -> 1
+        VOICE -> 2
+        PICTURE -> 3
+        LINKED_MEDIA -> 200
+        else -> throw Exception("unknown content type is not allowed for conversion")
     }
 }
