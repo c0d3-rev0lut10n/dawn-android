@@ -125,7 +125,7 @@ class Chat(
         }
         catch(e: Exception) {
             return ChatPreviewData(
-                "UNKNOWN", null, "COULD NOT LOAD CHAT", "", false, false, dataId
+                "UNKNOWN", null, "COULD NOT LOAD CHAT", "", false, false, false, dataId
             )
         }
         val time: String = if(messageForPreview.received != null)
@@ -134,6 +134,7 @@ class Chat(
             messageForPreview.sent!!.toTimestampForChatPreview()
         else
             ""
+        val isOwn = messageForPreview.sender.dataId == Default.ProfileSelfDataId
         return ChatPreviewData(
             chatName = name,
             userName = userName,
@@ -141,6 +142,7 @@ class Chat(
             time = time,
             isSent = messageForPreview.sent != null,
             isRead = messageForPreview.received != null,
+            isOwn = isOwn,
             dataId = dataId
         )
     }
