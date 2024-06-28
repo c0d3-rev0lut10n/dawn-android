@@ -768,8 +768,6 @@ class ReceiveMessagesService: Service() {
                 return err(profileResult.unwrapErr())
             val profile = profileResult.unwrap()
 
-            println("INIT: ${initRequest.id}")
-
             val chatPrototype = Chat(
                 dataId = Default.ToBeDeterminedDataId,
                 id = initRequest.id!!,
