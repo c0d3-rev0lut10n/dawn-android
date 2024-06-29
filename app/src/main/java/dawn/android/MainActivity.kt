@@ -335,6 +335,7 @@ class MainActivity : AppCompatActivity() {
             // no chats yet, show a notice about that instead
             if(noChatsYetTextView.parent != null) return
             val layoutParams = chatPreviewLayoutParams
+            layoutParams.height = ConstraintLayout.LayoutParams.WRAP_CONTENT
             layoutParams.leftToLeft = ConstraintLayout.LayoutParams.PARENT_ID
             layoutParams.rightToRight = ConstraintLayout.LayoutParams.PARENT_ID
             layoutParams.topToTop = ConstraintLayout.LayoutParams.PARENT_ID
