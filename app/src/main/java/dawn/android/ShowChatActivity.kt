@@ -203,6 +203,7 @@ class ShowChatActivity : AppCompatActivity() {
             media = null
         )
         mService.transmitMessage(chat.dataId, messageInChat, ciphertext)
+        binding.etChatMessage.editText?.setText("")
         sendLock = false
     }
 }
