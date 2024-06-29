@@ -89,7 +89,7 @@ class ReceiveMessagesService: Service() {
     private lateinit var idRelations: HashMap<String, String>
     private lateinit var subscriptions: ArrayList<Subscription>
     private lateinit var initKeyDirectory: File
-    private val useTor = true
+    private val useTor = false // TODO this is for debugging purposes only
     private lateinit var torProxy: Proxy
     private lateinit var client: OkHttpClient
     private lateinit var logTag: String
@@ -372,6 +372,7 @@ class ReceiveMessagesService: Service() {
                         Log.e(logTag, "Could not parse init response: ${messageResult.print()}")
                         continue
                     }
+                    val initResponse = messageResult.unwrap()
                     val messageInChat = Message(
                         chatDataId = chat.dataId,
                         id = chat.messages.size.toULong(),
@@ -383,7 +384,12 @@ class ReceiveMessagesService: Service() {
                         text = "",
                         media = null
                     )
-                    chat.addMessage(messageInChat)
+                    chat.type = ChatType.DIRECT
+                    chat.remoteKyber = initResponse.remote_pubkey_kyber!!
+                    profile.pubkeySig = initResponse.remote_pubkey_sig!!
+                    ChatManager.updateProfile(profile)
+                    chat.messages.add(messageInChat)
+                    ChatManager.updateChat(chat)
                 }
                 else {
                     val messageResult = LibraryConnector.mParseMsg(
