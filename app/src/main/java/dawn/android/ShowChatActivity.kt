@@ -60,6 +60,7 @@ class ShowChatActivity : AppCompatActivity() {
     private lateinit var logTag: String
     private lateinit var mThemeLoader: ThemeLoader
     private lateinit var chat: Chat
+    private var sendLock = false
 
     private lateinit var mService: ReceiveMessagesService
     private var mBound: Boolean = false
@@ -157,6 +158,8 @@ class ShowChatActivity : AppCompatActivity() {
 
     @OptIn(ConcurrentAnnotation::class)
     private fun send() {
+        if(sendLock) return
+        sendLock = true
         val text = binding.etChatMessage.editText?.text.toString()
         if(text == "") return // don't send empty messages
         if(chat.type == ChatType.SENT_INIT) return // TODO: notify the user that they can't send messages to uninitialized chats
@@ -200,5 +203,6 @@ class ShowChatActivity : AppCompatActivity() {
             media = null
         )
         mService.transmitMessage(chat.dataId, messageInChat, ciphertext)
+        sendLock = false
     }
 }
