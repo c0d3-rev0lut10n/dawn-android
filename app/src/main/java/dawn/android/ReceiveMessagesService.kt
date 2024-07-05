@@ -247,8 +247,10 @@ class ReceiveMessagesService: Service() {
         return ok(Ok)
     }
 
-    fun transmitMessage(chatDataID: String, message: Message, ciphertext: ByteArray) {
-        val ciphertextBase64 = Base64.encodeToString(ciphertext, Base64.NO_WRAP)
+    fun transmitMessage(chatDataID: String, message: Message, ciphertext: ByteArray?) {
+        val ciphertextBase64 = if(ciphertext != null)
+            Base64.encodeToString(ciphertext, Base64.NO_WRAP)
+        else null
         val task = TransmissionTask(
             chatDataID = chatDataID,
             message = message.intoSerializable(),
