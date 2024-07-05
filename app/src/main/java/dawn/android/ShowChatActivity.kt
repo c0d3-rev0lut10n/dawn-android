@@ -28,11 +28,9 @@ import android.os.IBinder
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.util.Base64
 import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowInsetsController
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -44,11 +42,9 @@ import dawn.android.data.Default
 import dawn.android.data.Message
 import dawn.android.data.Preferences
 import dawn.android.data.Theme
-import dawn.android.data.numeric
 import dawn.android.databinding.ActivityShowChatBinding
 import dawn.android.ui.component.ChatMessagesAdapter
 import dawn.android.util.ChatManager
-import dawn.android.util.PreferenceManager
 import dawn.android.util.ThemeLoader
 
 class ShowChatActivity : AppCompatActivity() {
@@ -166,7 +162,7 @@ class ShowChatActivity : AppCompatActivity() {
         if(chat.type == ChatType.GROUP) return // TODO: remove this after groups are fully supported
 
         val contentType = ContentType.TEXT // TODO allow other message types
-        val ownSeckeySig = PreferenceManager.get(Preferences.sign.ownPrivateKey).unwrap()
+        /*val ownSeckeySig = PreferenceManager.get(Preferences.sign.ownPrivateKey).unwrap()
         // encrypt message
         // the ID does not have to be up-to-date as the MDC gets derived by ReceiveMessagesService
         val messageResult = LibraryConnector.mSendMsg(
@@ -189,7 +185,7 @@ class ShowChatActivity : AppCompatActivity() {
         val message = messageResult.unwrap()
         val ciphertext = Base64.decode(message.ciphertext, Base64.NO_WRAP)
         chat.ownPFS = message.new_pfs_key!!
-        ChatManager.updateChat(chat)
+        ChatManager.updateChat(chat)*/
 
         val messageInChat = Message(
             chatDataId = chat.dataId,
@@ -202,7 +198,7 @@ class ShowChatActivity : AppCompatActivity() {
             text = text,
             media = null
         )
-        mService.transmitMessage(chat.dataId, messageInChat, ciphertext)
+        mService.transmitMessage(chat.dataId, messageInChat, null)
         binding.etChatMessage.editText?.setText("")
         sendLock = false
     }

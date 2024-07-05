@@ -54,6 +54,7 @@ import dawn.android.data.ReceivedInitRequest
 import dawn.android.data.Result
 import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
+import dawn.android.data.numeric
 import dawn.android.data.toContentType
 import dawn.android.messagereception.PollingId
 import dawn.android.messagereception.Subscription
@@ -202,6 +203,7 @@ class ReceiveMessagesService: Service() {
     @OptIn(ConcurrentAnnotation::class)
     private fun transmitMessages(): Result<Ok, String> {
         val queue = transmissionQueue.queue.clone() as ArrayList<TransmissionTask>
+        val ownSeckeySig = PreferenceManager.get(Preferences.sign.ownPrivateKey).unwrap()
         for(task in queue) {
             val chatResult = ChatManager.getChat(task.chatDataID)
             if(chatResult.isErr()) continue
@@ -220,7 +222,31 @@ class ReceiveMessagesService: Service() {
             }
             val tempId = LibraryConnector.mGetTempId(chat.id).unwrap().id!!
             val mdc = LibraryConnector.mPredictableMdcGen(chat.mdcSeed, tempId).unwrap().mdc!!
-            val ciphertext = Base64.decode(task.ciphertextBase64, Base64.NO_WRAP)
+            val ciphertext: ByteArray
+            if(task.ciphertextBase64 != null)
+                ciphertext = Base64.decode(task.ciphertextBase64, Base64.NO_WRAP)
+            else {
+                val messageResult = LibraryConnector.mSendMsg(
+                    msg_type = task.message.contentType.numeric(),
+                    msg_string = task.message.text,
+                    msg_bytes = ByteArray(0),
+                    remote_pubkey_kyber = chat.remoteKyber,
+                    own_pubkey_sig = ownSeckeySig,
+                    pfs_key = chat.ownPFS,
+                    pfs_salt = chat.pfsSalt,
+                    id = chat.id,
+                    mdc_seed = chat.mdcSeed
+                )
+                if(messageResult.isErr()) {
+                    val toast = Toast.makeText(this, getString(R.string.showchat_error_encrypting, messageResult.print()), Toast.LENGTH_LONG)
+                    toast.show()
+                    continue
+                }
+                val encryptedMessage = messageResult.unwrap()
+                chat.ownPFS = encryptedMessage.new_pfs_key!!
+                ChatManager.updateChat(chat)
+                ciphertext = Base64.decode(encryptedMessage.ciphertext!!, Base64.NO_WRAP)
+            }
             val request = RequestFactory.buildSndRequest(tempId, ciphertext, mdc)
             val responseResult = makeRequest(request)
             if(responseResult.isErr()) continue
