@@ -446,7 +446,10 @@ class ReceiveMessagesService: Service() {
                         text = parsedMessage.msg_text ?: "",
                         media = media
                     )
-                    chat.addMessage(messageInChat)
+                    chat.remotePFS = parsedMessage.new_pfs_key!!
+                    chat.messages.add(messageInChat)
+                    chat.lastMessageId = (chat.lastMessageId + 1U).toUShort()
+                    ChatManager.updateChat(chat)
                 }
             }
 
