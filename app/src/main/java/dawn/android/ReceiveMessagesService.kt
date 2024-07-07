@@ -482,7 +482,7 @@ class ReceiveMessagesService: Service() {
                 ChatManager.updateChat(chat)
             }
         }
-        return err("not implemented")
+        return ok(Ok)
     }
 
     private fun pollInitID(): Result<Ok, String> {
