@@ -392,9 +392,6 @@ class ReceiveMessagesService: Service() {
 
                 val messageContent = Base64.decode(message.content, Base64.NO_WRAP)
                 if(chat.type == ChatType.SENT_INIT) {
-                    println(chat.ownKyber.publicKey)
-                    println(chat.remotePFS)
-                    println(chat.pfsSalt)
                     val messageResult = LibraryConnector.mParseInitResponse(messageContent, chat.ownKyber.privateKey, chat.remotePFS, chat.pfsSalt)
                     if(messageResult.isErr()) {
                         Log.e(logTag, "Could not parse init response: ${messageResult.print()}")
