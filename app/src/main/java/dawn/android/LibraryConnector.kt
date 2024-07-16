@@ -359,6 +359,12 @@ object LibraryConnector {
         return ok(libraryResponse)
     }
 
+    fun mGetAllTimestamps(timestamp: String, now: String): Result<MultiTimestamp, String> {
+        val libraryResponse: MultiTimestamp = Json.decodeFromString(getAllTimestamps(timestamp, now))
+        if(libraryResponse.status != "ok") return err(libraryResponse.status)
+        return ok(libraryResponse)
+    }
+
     fun mTimestampFromUnix(timestamp: String): Result<Timestamp, String> {
         val libraryResponse: Timestamp = Json.decodeFromString(timestampFromUnix(timestamp))
         if(libraryResponse.status != "ok") return err(libraryResponse.status)
@@ -424,6 +430,7 @@ object LibraryConnector {
     private external fun getCurrentTimestamp(): String
     private external fun getNextTimestamp(timestamp: String): String
     private external fun getAllTimestampsSince(timestamp: String): String
+    private external fun getAllTimestamps(timestamp: String, now: String): String
     private external fun timestampFromUnix(timestamp: String): String
     private external fun genHandle(init_pubkey_kyber: String, init_pubkey_curve: String, init_pubkey_curve_pfs_2: String, init_pubkey_kyber_for_salt: String, init_pubkey_curve_for_salt: String, name: String, mdc: String): String
     private external fun parseHandle(handle: ByteArray): String
