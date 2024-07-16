@@ -179,7 +179,8 @@ class ShowInitRequestActivity : AppCompatActivity() {
         val requestTimestamp = requestTimestampResult.unwrap().timestamp!!
 
         // get all timestamps until now
-        val timestampsToDerive = LibraryConnector.mGetAllTimestampsSince(requestTimestamp)
+        val now = Clock.now().epochSecond
+        val timestampsToDerive = LibraryConnector.mGetAllTimestamps(requestTimestamp, now.toString())
         if(timestampsToDerive.isErr()) {
             Log.e(logTag, "Could not get timestamps between init request and now: ${timestampsToDerive.print()}")
             return
