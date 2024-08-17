@@ -78,6 +78,7 @@ import org.torproject.jni.TorService.LocalBinder
 import java.io.File
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.net.SocketTimeoutException
 import java.util.Timer
 import kotlin.concurrent.timer
 
@@ -244,8 +245,12 @@ class ReceiveMessagesService: Service() {
                 }
                 val encryptedMessage = messageResult.unwrap()
                 chat.ownPFS = encryptedMessage.new_pfs_key!!
-                ChatManager.updateChat(chat)
                 ciphertext = Base64.decode(encryptedMessage.ciphertext!!, Base64.NO_WRAP)
+                val taskId = transmissionQueue.queue.indexOf(task)
+                task.ciphertextBase64 = encryptedMessage.ciphertext
+                transmissionQueue.queue[taskId] = task
+                serializeTransmissionQueue()
+                ChatManager.updateChat(chat)
             }
             val request = RequestFactory.buildSndRequest(tempId, ciphertext, mdc)
             val responseResult = makeRequest(request)
@@ -339,7 +344,7 @@ class ReceiveMessagesService: Service() {
         }
 
         // poll all subscriptions
-        val currentSubs = subscriptions
+        val currentSubs = subscriptions.clone() as ArrayList<Subscription>
         for(subscription in currentSubs) {
             val request = RequestFactory.buildSubRequest(subscription)
             val response = makeRequest(request)
@@ -349,7 +354,13 @@ class ReceiveMessagesService: Service() {
             }
             val subscriptionResponse = response.unwrap()
             val body = subscriptionResponse.body
-            val responseString = body?.string()
+            val responseString: String?
+            try {
+                responseString = body?.string()
+            }
+            catch(e: SocketTimeoutException) {
+                continue
+            }
             body?.close()
             when(subscriptionResponse.code) {
                 400 -> {
@@ -469,7 +480,8 @@ class ReceiveMessagesService: Service() {
                         Log.e(logTag, "Deriving next id stamp for chat ${chat.dataId} failed: ${nextTimestamp.print()}")
                         continue
                     }
-                    idRelations.remove(chat.id)
+                    val tempId = LibraryConnector.mGetCustomTempId(chat.id, chat.idStamp).unwrap().id!!
+                    idRelations.remove(tempId)
                     chat.id = nextId.unwrap().id!!
                     chat.idStamp = nextTimestamp.unwrap().timestamp!!
                     chat.lastMessageId = 0U
