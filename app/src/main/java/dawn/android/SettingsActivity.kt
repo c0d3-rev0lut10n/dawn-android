@@ -334,7 +334,7 @@ class SettingsActivity : AppCompatActivity() {
                     handle = binding.etProfileHandle.text.toString(),
                     password = handlePassword,
                     initSecret = initSecret,
-                    allowPublicInit = binding.cbAllowPublicInit.isActivated
+                    allowPublicInit = binding.cbAllowPublicInit.isChecked
                 )
                 val responseResult = mService.makeRequest(setHandleRequest)
 
