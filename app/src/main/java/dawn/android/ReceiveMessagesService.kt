@@ -597,6 +597,22 @@ class ReceiveMessagesService: Service() {
         return ok(Ok)
     }
 
+    private fun manageHandle(): Result<Ok, String> {
+        val handleNameResult = PreferenceManager.get(Preferences.profileHandle)
+        if(handleNameResult.isErr() || handleNameResult.unwrap() == "") return ok(Ok)
+        val handle = handleNameResult.unwrap()
+        val initMdcResult = PreferenceManager.get("initMdc")
+        if(initMdcResult.isErr()) {
+            return err("Could not get init MDC: ${initMdcResult.unwrapErr()}")
+        }
+        val initMdc = initMdcResult.unwrap()
+        val handleDir = File(filesDir, "handles")
+        if(!handleDir.isDirectory) handleDir.mkdir()
+
+        // TODO: get handle state from server, check referrers, change keys if needed
+        return err("not implemented")
+    }
+
     private fun pollHandleAddKey(): Result<Ok, String> {
         val handleNameResult = PreferenceManager.get(Preferences.profileHandle)
         if(handleNameResult.isErr() || handleNameResult.unwrap() == "") return ok(Ok)
