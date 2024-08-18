@@ -364,8 +364,8 @@ class SettingsActivity : AppCompatActivity() {
                             val keyFile = File(handleDir, i.toString())
                             if (keyFile.isFile) {
                                 keyFile.delete()
-                                val keyPrivateInfoFile = File(handleDir, "$i.private")
-                                keyPrivateInfoFile.delete()
+                                val uploadInfo = File(handleDir, "$i.uploaded")
+                                uploadInfo.delete()
                             }
                         }
                         Log.i(logTag, "Changed handle successfully!")
