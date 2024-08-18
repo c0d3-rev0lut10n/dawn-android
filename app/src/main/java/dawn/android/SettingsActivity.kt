@@ -346,10 +346,6 @@ class SettingsActivity : AppCompatActivity() {
                     val response = responseResult.unwrap()
                     if (response.code == 204) {
                         PreferenceManager.set(
-                            Preferences.profileHandle,
-                            binding.etProfileHandle.text.toString()
-                        )
-                        PreferenceManager.set(
                             "profileHandlePassword",
                             binding.etProfileHandlePassword.text.toString()
                         )
@@ -357,15 +353,23 @@ class SettingsActivity : AppCompatActivity() {
                             "profileHandlePublicInit",
                             binding.cbAllowPublicInit.isChecked.toString()
                         )
-                        val handleDir = File(filesDir, "handles")
-                        if(!handleDir.isDirectory) handleDir.mkdir()
 
-                        for(i in 0..15) {
-                            val keyFile = File(handleDir, i.toString())
-                            if (keyFile.isFile) {
-                                keyFile.delete()
-                                val uploadInfo = File(handleDir, "$i.uploaded")
-                                uploadInfo.delete()
+                        // those steps are unnecessary if the handle name did not change
+                        if(binding.etProfileHandle.text.toString() != currentProfileHandle) {
+                            PreferenceManager.set(
+                                Preferences.profileHandle,
+                                binding.etProfileHandle.text.toString()
+                            )
+                            val handleDir = File(filesDir, "handles")
+                            if (!handleDir.isDirectory) handleDir.mkdir()
+
+                            for (i in 0..15) {
+                                val keyFile = File(handleDir, i.toString())
+                                if (keyFile.isFile) {
+                                    keyFile.delete()
+                                    val uploadInfo = File(handleDir, "$i.uploaded")
+                                    uploadInfo.delete()
+                                }
                             }
                         }
                         Log.i(logTag, "Changed handle successfully!")
