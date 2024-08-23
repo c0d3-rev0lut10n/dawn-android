@@ -486,6 +486,9 @@ class ReceiveMessagesService: Service() {
                     chat.id = nextId.unwrap().id!!
                     chat.idStamp = nextTimestamp.unwrap().timestamp!!
                     chat.lastMessageId = 0U
+
+                    subscription.associatedChats.remove(id)
+                    subscriptions[subscriptionId] = subscription
                 }
 
                 chat.lastSuccessfulReception = Clock.now().epochSecond
