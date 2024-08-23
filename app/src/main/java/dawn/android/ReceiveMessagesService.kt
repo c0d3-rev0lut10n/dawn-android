@@ -56,6 +56,7 @@ import dawn.android.data.Result.Companion.err
 import dawn.android.data.Result.Companion.ok
 import dawn.android.data.numeric
 import dawn.android.data.toContentType
+import dawn.android.init.HandleState
 import dawn.android.messagereception.PollingId
 import dawn.android.messagereception.Subscription
 import dawn.android.messagereception.SubscriptionUpdates
@@ -601,6 +602,8 @@ class ReceiveMessagesService: Service() {
         val handleNameResult = PreferenceManager.get(Preferences.profileHandle)
         if(handleNameResult.isErr() || handleNameResult.unwrap() == "") return ok(Ok)
         val handle = handleNameResult.unwrap()
+        val handlePasswordResult = PreferenceManager.get("profileHandlePassword")
+        val handlePassword = if(handlePasswordResult.isErr()) "" else handlePasswordResult.unwrap()
         val initMdcResult = PreferenceManager.get("initMdc")
         if(initMdcResult.isErr()) {
             return err("Could not get init MDC: ${initMdcResult.unwrapErr()}")
@@ -610,6 +613,32 @@ class ReceiveMessagesService: Service() {
         if(!handleDir.isDirectory) handleDir.mkdir()
 
         // TODO: get handle state from server, check referrers, change keys if needed
+        val stateRequest = RequestFactory.buildGetHandleStatusRequest(handle, handlePassword)
+        val stateResult: Result<Response, String>
+        try {
+            stateResult = makeRequest(stateRequest)
+        }
+        catch (e: Exception) {
+            return err("manageHandle: ${e.message}")
+        }
+        val stateResponse = stateResult.unwrap()
+        if(!stateResponse.isSuccessful) return err("manageHandle: ${stateResponse.message}")
+        val stateResponseBody = stateResponse.body?: return err("manageHandle: empty body")
+        val stateResponseString: String?
+        try {
+            stateResponseString = stateResponseBody.string()
+        }
+        catch (e: SocketTimeoutException) { return err("manageHandle: body timeout") }
+        val state: HandleState
+        try {
+            state = Json.decodeFromString<HandleState>(stateResponseString)
+        }
+        catch (e: Exception) { return err("manageHandle: invalid state response") }
+        for(i  in 0..15) {
+            val serverHash = state.key_slot_hashes.getOrNull(i)
+
+            val keyFile = File(handleDir, i.toString())
+        }
         return err("not implemented")
     }
 
